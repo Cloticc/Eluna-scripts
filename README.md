@@ -1,3 +1,3 @@
 # Eluna-scripts
 
-Random Scripts:D
+Bunch of random scripts for Eluna. 
