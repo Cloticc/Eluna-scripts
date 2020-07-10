@@ -1,5 +1,6 @@
--- dg deletes object and you get info
--- dc check info will not delete the item
+-- old file.
+-- #obd deletes object and you get info
+-- #obc check info will not delete the item
 local MSG_GD = "#obd" -- What messege in chat box
 local MSG_GC = "#obc" -- What messege in chat box
 local RANGE = 10 -- What range you want the delete to detect in.

@@ -14,6 +14,7 @@ local function TargetJump(event, player, msg, Type, lang)
             y = selectTarget:GetY()
             z = selectTarget:GetZ()
             player:MoveJump(x, y, z, 20, 25, 0)
+            return false
         end
     end
 end
