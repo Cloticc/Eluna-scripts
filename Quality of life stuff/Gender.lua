@@ -3,7 +3,7 @@ local Cost = 1000000 --This is in copper so the value that is now 100g so 100000
 
 local function SwitchGender(event, player, msg, Type, lang)
     local gmRank = player:GetGMRank()
-    if (gmRank >= 0) then -- change number (0-3) 0 - to all  1,2,3 GM with rank--- if player has +2 rank gm
+    if (gmRank >= 0) then -- change number (0-3) 0 - to all  1,2,3 GM with rank
         if (msg:find(MSG_GEN)) then
             if player:GetCoinage() >= Cost then
             else
