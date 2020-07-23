@@ -9,9 +9,10 @@ local RANGE = 10 -- What range you want the delete to detect in.
 local function DeleteObjectNearby(event, player, msg, _, lang)
     local gmRank = player:GetGMRank()
     if (gmRank >= 3) then -- change number (0-3) 0 - to all  1,2,3 GM with rank
-        if player:GetNearestGameObject(RANGE) then
-            player:SendBroadcastMessage("nothing here")
-        end
+        if not player:GetNearestGameObject(RANGE) then
+            player:SendBroadcastMessage("There is nothing near. Try increase the range or move closer to a object.")
+            return false
+        else
         
         local a = player:GetNearestGameObject(RANGE)
         local b = a:GetEntry()
@@ -33,6 +34,7 @@ local function DeleteObjectNearby(event, player, msg, _, lang)
             return false
         end
     end
+end
 end
 
 RegisterPlayerEvent(18, DeleteObjectNearby)
