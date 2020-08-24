@@ -1,7 +1,8 @@
--- made by rochet
--- edit by Clotic
--- Updated with Ranged bows and added some other enchants.
-local npcid = 36979
+-- Made by Foereaper
+-- Fixed by rochet
+-- edit by Clotic Updated with Ranged bows and added some other enchants
+
+local npcid = X
 
 local T = {
     ["Menu"] = {
