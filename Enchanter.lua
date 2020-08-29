@@ -2,7 +2,7 @@
 -- Fixed by rochet
 -- edit by Clotic Updated with Ranged bows and added some other enchants
 
-local npcid = X
+local npcid = 36979
 
 local T = {
     ["Menu"] = {
@@ -158,8 +158,8 @@ local T = {
 		--Ranged
         {"Diamond-cut Refractor Scope", 3843, false},
         {"Sun Scope", 3607, false},
-        {"Heartseeker Scope", 3608, false},
-        {"Khorium Scope", 2723, false}
+        {"Heartseeker Scope", 3608, false}
+        -- {"Khorium Scope", 2723, false}
     
     }
 }
@@ -178,7 +178,7 @@ function EnchanterSelect(event, player, unit, sender, intid, code)
     if (intid < 500) then
         local ID = intid
         local f
-        if (intid == 171 or intid == 161 or intid == 151) then
+        if (intid == 161 or intid == 151) then
             ID = math.floor(intid / 10)
             f = true
         end
@@ -196,7 +196,7 @@ function EnchanterSelect(event, player, unit, sender, intid, code)
         Enchanter(event, player, unit)
     elseif (intid >= 900) then
         local ID = pVar[player:GetName()]
-        if (ID == 171 or ID == 161 or ID == 151) then
+        if (ID == 161 or ID == 151) then
             ID = math.floor(ID / 10)
         end
         for k, v in pairs(T[ID]) do
@@ -220,7 +220,7 @@ function EnchanterSelect(event, player, unit, sender, intid, code)
                                 player:SendAreaTriggerMessage("You do not have a Shield equipped!")
                             end
                         elseif pVar[player:GetName()] == 17 then
-                            if (WType == 15) then
+                            if (WType == 2 or WType == 3 or Wtype == 18) then
                                 item:ClearEnchantment(0, 0)
                                 item:SetEnchantment(intid, 0, 0)
                             else
