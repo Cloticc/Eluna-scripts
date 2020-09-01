@@ -1,20 +1,20 @@
+local npcid = x -- npc id
+local cost = 0 --price is coppar
 
-
-local npcid = XXX
 
 local SPELL_SHADOWMELD = 20580
 local SPELL_STEALTH = 1784
 
 local Racial = {
     [1] = {20598, 20597, 58985, 20864, 59752, 20599}, -- Human
-    [2] = {33702, 20573, 65222, 20572, 20574}, -- Orc
+    [2] = {65222, 20572, 20574}, -- Orc
     [3] = {2481, 20596, 59224, 20594}, -- Dwarf
     [4] = {21009, 20583, 20582, 58984, 20585}, -- Night Elf
     [5] = {20577, 20579, 5227, 7744}, -- Undread
     [6] = {20552, 20550, 20551, 20549}, -- Tauren
     [7] = {20592, 20593, 20589, 20591}, -- Gnome
     [8] = {20557, 26297, 26290, 58943, 20555, 20558}, -- Troll
-    [10] = {28877, 822, 25046, 28730, 50613}, -- Blood Elf
+    [10] = {28877, 822}, -- Blood Elf
     [11] = {59542, 28875, 6562, 59221} -- Draenei}
 }
 
@@ -23,16 +23,16 @@ local function OnHelloRacialSwitch(event, player, creature)
         not player:IsInCombat() and not player:HasAura(SPELL_SHADOWMELD) and not player:HasAura(SPELL_STEALTH) and
             not player:InBattleground()
      then
-        player:GossipMenuAddItem(3, "Human", 0, 1, nil, "Are you sure?", 1000000)
-        player:GossipMenuAddItem(3, "Orc", 0, 2)
-        player:GossipMenuAddItem(3, "Dwarf", 0, 3)
-        player:GossipMenuAddItem(3, "Night Elf", 0, 4)
-        player:GossipMenuAddItem(3, "Undead", 0, 5)
-        player:GossipMenuAddItem(3, "Tauren", 0, 6)
-        player:GossipMenuAddItem(3, "Gnome", 0, 7)
-        player:GossipMenuAddItem(3, "Troll", 0, 8)
-        player:GossipMenuAddItem(3, "Blood Elf", 0, 10)
-        player:GossipMenuAddItem(3, "Draenei", 0, 11)
+        player:GossipMenuAddItem(3, "Human", 0, 1, nil, "Are you sure?", cost)
+        player:GossipMenuAddItem(3, "Orc", 0, 2, nil, "Are you sure?", cost)
+        player:GossipMenuAddItem(3, "Dwarf", 0, 3, nil, "Are you sure?", cost)
+        player:GossipMenuAddItem(3, "Night Elf", 0, 4, nil, "Are you sure?", cost)
+        player:GossipMenuAddItem(3, "Undead", 0, 5, nil, "Are you sure?", cost)
+        player:GossipMenuAddItem(3, "Tauren", 0, 6, nil, "Are you sure?", cost)
+        player:GossipMenuAddItem(3, "Gnome", 0, 7, nil, "Are you sure?", cost)
+        player:GossipMenuAddItem(3, "Troll", 0, 8, nil, "Are you sure?", cost)
+        player:GossipMenuAddItem(3, "Blood Elf", 0, 10, nil, "Are you sure?", cost)
+        player:GossipMenuAddItem(3, "Draenei", 0, 11, nil, "Are you sure?", cost)
         player:GossipMenuAddItem(0, "Nevermind", 0, 999)
         player:GossipSendMenu(1, creature)
     else
@@ -108,6 +108,11 @@ local function OnGossipRacialSwitch(event, player, creature, sender, intid, code
         if not player:HasSpell(33702) then
             for _, v in ipairs(Unlearn) do
                 player:RemoveSpell(v)
+            end
+            if player:GetPower(1 or 2 or 6) then
+                player:LearnSpell(20572)
+            elseif player:GetPower(0) then
+                player:LearnSpell(33702)
             end
             for _, v in ipairs(Racial[2]) do
                 player:LearnSpell(v)
@@ -207,6 +212,13 @@ local function OnGossipRacialSwitch(event, player, creature, sender, intid, code
         if not player:HasSpell(28877) then
             for _, v in ipairs(Unlearn) do
                 player:RemoveSpell(v)
+            end
+            if player:GetPower(0) then
+                player:LearnSpell(28730)
+            elseif player:GetPower(2) then
+                player:LearnSpell(25046)
+            elseif player:GetPower(6) then
+                player:LearnSpell(50613)
             end
             for k, v in pairs(Racial[10]) do
                 player:LearnSpell(v)
