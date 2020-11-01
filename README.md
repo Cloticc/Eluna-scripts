@@ -1,3 +1,4 @@
 # Eluna-scripts
 
-Bunch of random scripts for Eluna. 
+A repositoy
+Scripts for Eluna public releases
