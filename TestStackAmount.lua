@@ -1,4 +1,5 @@
-local StackTest = {26393} -- Can put mkae in with ,
+--[[ -- Can put more in with the comma like 123, 123. Also it seems 255 is max for stack ]]
+local StackTest = {26393}
 
 local MSG_TESTSTACK = ("#stack")
 
@@ -13,7 +14,7 @@ local function TestStack(event, player, msg, Type, lang)
                     v:SetStackAmount(v:GetStackAmount() + 3) --Give stacks from StackTest
                 end
 
-                player:SendBroadcastMessage("|cFFFFFF9F" .. "You Have max stacks " .. v:GetStackAmount())
+                player:SendBroadcastMessage("|cFFFFFF9F" .. "You Have " .. v:GetStackAmount().. " Stacks")
             end
         end
         return false

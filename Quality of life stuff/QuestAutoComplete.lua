@@ -1,4 +1,6 @@
-local MSG_QC = "#qc"
+--[[ Never really use sql querys so might be a smarter way of doing this. You live and you learn ]]
+
+local MSG_QC = "#qc" -- Message to complete all the quest in log.
 
 local function UpdateQuest(player)
     local query = WorldDBQuery("SELECT ID, LogTitle FROM quest_template")
@@ -29,3 +31,4 @@ local function QuestAutoComplete(event, player, msg, Type, lang)
 end
 
 RegisterPlayerEvent(18, QuestAutoComplete)
+

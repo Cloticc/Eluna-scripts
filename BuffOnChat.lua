@@ -1,4 +1,4 @@
---Probably want to change Buffs you want active. All the non targeted once are normal class buffs. 
+--Probably want to change Buffs you want active. All the non targeted once are normal class buffs.
 local MSG_BUFF = "#buff"
 local Cost = 1000000 --- How much buff msg cost to use. 10gold atm
 local buffID = {
@@ -43,9 +43,7 @@ local function BuffOnMsg(event, player, msg, type, language)
             selectTarget = player
         end
     end
-    
-    msg = msg:lower()
-    if (msg == MSG_BUFF) then
+    if (msg:find(MSG_BUFF)) then
         if (player:GetCoinage() >= Cost) then
             player:ModifyMoney(-Cost)
             for k, v in pairs(buffID) do
@@ -53,7 +51,7 @@ local function BuffOnMsg(event, player, msg, type, language)
             end
             player:SendBroadcastMessage("|cFDFEFEbuffed, Enjoy!|r")
         end
-        
+
         return false
     end
 end
