@@ -1,33 +1,32 @@
 local npcid = 43284
--- local DatabaseCache = {}
+
 -- local T = {
 -- [0] = {}}
-
--- function LoadDatabase()
---     local playerGUID = player:GetGUIDLow()
---     local ExampleQuery = CharDBQuery("SELECT guid, spell FROM character_spell")
---     if (ExampleQuery) then
---         repeat
---             DatabaseCache[ExampleQuery:GetUInt32(0)] = {
---                 Guid = ExampleQuery:GetUInt32(1),
---                 Spell = ExampleQuery:GetUInt32(2)
---             }
---         until not ExampleQuery:NextRow()
---     end
--- end
--- -- LoadDataBase()
-
-function LoadDB(player)
-    -- DD = {}
-    local Q = CharDBQuery("SELECT spell FROM character_spell")
-    if (Q) then
+local DatabaseCache = {}
+LoadDatabase(player)
+    local ExampleQuery = CharDBQuery("SELECT guid, spell FROM character_spell")
+    if (ExampleQuery) then
         repeat
-            local spell = Q:GetUInt32(0)
+            DatabaseCache[ExampleQuery:GetUInt32(0)] = {
+                Spell = ExampleQuery:GetUInt32(1)
+            }
             player:RemoveSpell(spell, false, true)
-        until -- DD[guid] = spell
-        not Q:NextRow()
+        until not ExampleQuery:NextRow()
     end
 end
+-- LoadDataBase()
+
+-- function LoadDB(player)
+--     -- DD = {}
+--     local Q = CharDBQuery("SELECT spell FROM character_spell")
+--     if (Q) then
+--         repeat
+--             local spell = Q:GetUInt32(0)
+--             player:RemoveSpell(spell, false, true)
+--         until -- DD[guid] = spell
+--         not Q:NextRow()
+--     end
+-- end
 -- LoadDB()
 
 -- local guid = player:GetGUIDLow()
@@ -87,7 +86,8 @@ local function OnGossipTestVendor(event, player, creature, sender, intid, code, 
     end
 
     if (intid == 5) then
-        LoadDB(player)
+        -- LoadDB(player)
+        LoadDatabase(player)
     end
 
     if (intid == 6) then
