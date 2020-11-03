@@ -2,10 +2,6 @@
 
 local npcid = 43284
 
--- local T = {
--- [0] = {}}
-
-
 
 local function LoadDB(player)
     local guid = player:GetGUIDLow()
