@@ -1,4 +1,4 @@
 # Eluna-scripts
 
-A repositoy
+A repositoy.
 Scripts for Eluna public releases
