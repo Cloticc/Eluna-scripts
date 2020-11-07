@@ -21,20 +21,23 @@ local function DeleteObjectNearby(event, player, msg, _, lang)
         local b = a:GetEntry()
         local c = a:GetDisplayId()
         local d = a:GetName()
-local e = a:GetDBTableGUIDLow()
-        -- local e = tostring(GetObjectGUID(a:GetGUIDLow(), a:GetEntry()))
-
+        local e = a:GetDBTableGUIDLow()
         if (msg:find(MSG_OBD)) then
             a:RemoveFromWorld(true)
 
             player:SendBroadcastMessage(
                 "|cFFffffff Name: |r " ..
-                    d .. " |cFFffffff Entry Deleted:|r " .. b .. " |cFFffffff GUID: |r " ..e.. " |cFFffffff Display ID: |r " .. c .. ""
+                    d ..
+                        " |cFFffffff Entry Deleted:|r " ..
+                            b .. " |cFFffffff GUID: |r " .. e .. " |cFFffffff Display ID: |r " .. c .. ""
             )
             return false
         elseif (msg:find(MSG_OBC)) then
             player:SendBroadcastMessage(
-                "|cFFffffff Name: |r " .. d .. " |cFFffffff Entry:|r  " .. b .. " |cFFffffff GUID: |r " ..e.. " |cFFffffff Display ID: |r " .. c .. ""
+                "|cFFffffff Name: |r " ..
+                    d ..
+                        " |cFFffffff Entry:|r  " ..
+                            b .. " |cFFffffff GUID: |r " .. e .. " |cFFffffff Display ID: |r " .. c .. ""
             )
             return false
         end
