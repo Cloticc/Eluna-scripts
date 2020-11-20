@@ -1,4 +1,4 @@
---[[ Helped a person to fix this. Kill the ]]
+--[[ Helped a person to fix this.]]
 local npcid = 17259
 
 local chance = 0.30
