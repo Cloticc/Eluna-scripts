@@ -1,7 +1,7 @@
 
 local npcid = XXX
-local TitleReward = XXX --Title
 local MaxRating = XXX --Raiting
+local TitleReward = XXX --Title
 local Items = {XXX} --Random items u want them to get
 
 local function onGossipHello(event, player, object)
