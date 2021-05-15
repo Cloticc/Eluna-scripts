@@ -1,5 +1,5 @@
 
---Probably want to change Buffs you want active. All the non targeted once are normal class buffs. 
+--Probably want to change Buffs you want active. All the non targeted once are normal class buffs.
 local NPC_ID = xXx -- Npcs ID
 
 --Remove or add buffs you want the npc to buff. BUFF_CHECK is buff that npc will check if u got buffs.
