@@ -31,6 +31,7 @@ local BUFF_IDS = {
     36880,
     15366,
     43223,
+
     -- 65077, -- tower of frost 40% health
     -- 65075, -- tower of fire 40% health 50% fire damage
     38734, -- Master Ranged Buff

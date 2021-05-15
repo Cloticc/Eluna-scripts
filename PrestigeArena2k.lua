@@ -1,5 +1,5 @@
 
-local npcid = XXX
+local npcid = XXX --npc id
 local MaxRating = XXX --Raiting
 local TitleReward = XXX --Title
 local Items = {XXX} --Random items u want them to get
