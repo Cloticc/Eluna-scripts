@@ -2,7 +2,7 @@
 -- Fixed by rochet
 -- edit by Clotic Updated with Ranged bows and added some other enchants
 
-local npcid = 36979
+local npcid = XXX -- ID for npc
 
 local T = {
     ["Menu"] = {
@@ -19,7 +19,7 @@ local T = {
         {"Off-Hand Weapons", 16},
         {"Shields", 161},
         {"Ranged", 17}
-    
+
     },
     [0] = {
         -- Headpiece
@@ -80,7 +80,7 @@ local T = {
         {"Expertise", 3231, false},
         {"Greater Stats", 2661, false},
         {"Exceptional Intellect", 1119, false}
-    
+
     },
     [9] = {
         -- Gloves
@@ -93,7 +93,7 @@ local T = {
         {"Precision", 3234, false},
         {"Expertise", 3231, false},
         {"Exceptional Spellpower", 3246, false}
-    
+
     },
     [14] = {
         -- Cloak
@@ -127,7 +127,7 @@ local T = {
         {"Scourgebane", 3247, true},
         {"Giant Slayer", 3251, true},
         {"Greater Spellpower", 3854, true}
-    
+
     },
     [16] = {
         -- Offhand
@@ -152,7 +152,7 @@ local T = {
         {"Resilience", 3229, true},
         {"Major Stamina", 1071, true},
         {"Tough Shield", 2653, true},
-    
+
     },
     [17] = {
 		--Ranged
@@ -160,14 +160,14 @@ local T = {
         {"Sun Scope", 3607, false},
         {"Heartseeker Scope", 3608, false}
         -- {"Khorium Scope", 2723, false}
-    
+
     }
 }
 local pVar = {}
 
 function Enchanter(event, player, unit)
     pVar[player:GetName()] = nil
-    
+
     for _, v in ipairs(T["Menu"]) do
         player:GossipMenuAddItem(3, "|cFFffffff " .. v[1] .. ".|R", 0, v[2])
     end
