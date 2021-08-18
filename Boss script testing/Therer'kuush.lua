@@ -1,4 +1,4 @@
---[[ local npcId = XXX
+local npcId = XXX
 
 local Therer = {}
 
@@ -50,4 +50,3 @@ end
 RegisterCreatureEvent(npcId, 1, Therer.OnEnterCombat)
 RegisterCreatureEvent(npcId, 2, Therer.OnLeaveCombat)
 RegisterCreatureEvent(npcId, 4, Therer.OnDied)
- ]]
