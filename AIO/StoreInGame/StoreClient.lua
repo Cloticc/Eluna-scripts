@@ -22,15 +22,14 @@ local StoreShop = AIO.AddHandlers("storeframe", {})
 
 -- local function OnLeaveFrame(self, motion) GameTooltip:Hide() end
 
-
-
 function OpenStore()
 
     ToggleGameMenu()
     TestFrameOne:Show()
 end
 
-local frame = CreateFrame("Button", "UIPanelButtonTemplateTest", GameMenuFrame,"UIPanelButtonTemplate")
+local frame = CreateFrame("Button", "UIPanelButtonTemplateTest", GameMenuFrame,
+                          "UIPanelButtonTemplate")
 frame:SetHeight(20)
 frame:SetWidth(145)
 frame:SetText("STORE")
@@ -38,8 +37,6 @@ frame:ClearAllPoints()
 frame:SetPoint("bottom", 0, -20)
 frame:SetScript("OnClick", function() OpenStore() end)
 frame:SetFrameLevel(100)
-
-
 
 local MainFrame = CreateFrame("Frame", "TestFrameOne", UIParent)
 MainFrame:SetResizable(true)
@@ -71,9 +68,9 @@ MainFrame:SetScript("OnHide", MainFrame.StopMovingOrSizing)
 
 -- (4)
 function CloseFrameOnEscape(self, keyOrButton)
-    if keyOrButton=="ESCAPE" then
+    if keyOrButton == "ESCAPE" then
         MainFrame:Hide()
-      return
+        return
     end
 end
 
@@ -82,91 +79,17 @@ local close = CreateFrame("Button", "YourCloseButtonName", MainFrame,
 close:SetPoint("TOPRIGHT", MainFrame, "TOPRIGHT")
 close:SetScript("OnClick", function() MainFrame:Hide() end)
 
+-- (Page function)
+--[[     function ItemFlip(event)
+        if (event == "STORE_SHOW")then
+local FlipPage = CreateFrame("Button","PagePage1",TestFrameOne)
+local page = ItemTextGetPage();
+		local next = ItemTextHasNextPage();
+        end ]]
 
+-- (This is the cards on the right side of the window. Should just loop them instead dunno tho)
 
-
-
-
-
---(Closes to Left/Bars)
-local ShopBar1 = CreateFrame("Frame", "ShopBar1", TestFrameOne)
-ShopBar1:SetSize(250, 300)
-ShopBar1.t = ShopBar1:CreateTexture()
-ShopBar1.t:SetAllPoints()
-ShopBar1.t:SetTexture("interface/icons/ShopBorderItem")
--- ShopBar1.t:SetBlendMode("ADD")
--- ShopBar1.t:SetVertexColor(0, 1, 0, 1)
-ShopBar1:SetPoint("center", -100, 150)
-
-local ShopBar2 = CreateFrame("Frame", "ShopBar2", TestFrameOne)
-ShopBar2:SetSize(250, 300)
-ShopBar2.t = ShopBar2:CreateTexture()
-ShopBar2.t:SetAllPoints()
-ShopBar2.t:SetTexture("interface/icons/ShopBorderItem")
--- ShopBar2.t:SetBlendMode("ADD")
--- ShopBar2.t:SetVertexColor(0, 1, 0, 1)
-ShopBar2:SetPoint("center", -100, -125)
-
---(Left)
-local ShopBar3 = CreateFrame("Frame", "ShopBar3", TestFrameOne)
-ShopBar3:SetSize(250, 300)
-ShopBar3.t = ShopBar3:CreateTexture()
-ShopBar3.t:SetAllPoints()
-ShopBar3.t:SetTexture("interface/icons/ShopBorderItem")
--- ShopBar3.t:SetBlendMode("ADD")
--- ShopBar3.t:SetVertexColor(0, 1, 0, 1)
-ShopBar3:SetPoint("center", 55, 150)
-
-local ShopBar4 = CreateFrame("Frame", "ShopBar4", TestFrameOne)
-ShopBar4:SetSize(250, 300)
-ShopBar4.t = ShopBar4:CreateTexture()
-ShopBar4.t:SetAllPoints()
-ShopBar4.t:SetTexture("interface/icons/ShopBorderItem")
--- ShopBar4.t:SetBlendMode("ADD")
--- ShopBar4.t:SetVertexColor(0, 1, 0, 1)
-ShopBar4:SetPoint("center", 55, -125)
-
---(Right)
-local ShopBar5 = CreateFrame("Frame", "ShopBar5", TestFrameOne)
-ShopBar5:SetSize(250, 300)
-ShopBar5.t = ShopBar5:CreateTexture()
-ShopBar5.t:SetAllPoints()
-ShopBar5.t:SetTexture("interface/icons/ShopBorderItem")
--- ShopBar5.t:SetBlendMode("ADD")
--- ShopBar5.t:SetVertexColor(0, 1, 0, 1)
-ShopBar5:SetPoint("center", 210, 150)
-
-local ShopBar6 = CreateFrame("Frame", "ShopBar6", TestFrameOne)
-ShopBar6:SetSize(250, 300)
-ShopBar6.t = ShopBar6:CreateTexture()
-ShopBar6.t:SetAllPoints()
-ShopBar6.t:SetTexture("interface/icons/ShopBorderItem")
--- ShopBar6.t:SetBlendMode("ADD")
--- ShopBar6.t:SetVertexColor(0, 1, 0, 1)
-ShopBar6:SetPoint("center", 210, -125)
-
---(Closes to the right)
-local ShopBar7 = CreateFrame("Frame", "ShopBar7", TestFrameOne)
-ShopBar7:SetSize(250, 300)
-ShopBar7.t = ShopBar7:CreateTexture()
-ShopBar7.t:SetAllPoints()
-ShopBar7.t:SetTexture("interface/icons/ShopBorderItem")
--- ShopBar7.t:SetBlendMode("ADD")
--- ShopBar7.t:SetVertexColor(0, 1, 0, 1)
-ShopBar7:SetPoint("center", 365, 150)
-
-local ShopBar8 = CreateFrame("Frame", "ShopBar8", TestFrameOne)
-ShopBar8:SetSize(250, 300)
-ShopBar8.t = ShopBar8:CreateTexture()
-ShopBar8.t:SetAllPoints()
-ShopBar8.t:SetTexture("interface/icons/ShopBorderItem")
--- ShopBar8.t:SetBlendMode("ADD")
--- ShopBar8.t:SetVertexColor(0, 1, 0, 1)
-ShopBar8:SetPoint("center", 365, -125)
-
-
-
-
+-- (Closes to Left/Bars)
 
 local Square1 = CreateFrame("Frame", "Square1", ShopBar1)
 Square1:SetSize(85, 85)
@@ -179,11 +102,10 @@ Square1:SetPoint("TOP", 5, -45)
 Square1:SetFrameLevel(1000)
 Square1:SetFrameLevel(2)
 
+-- (This is the Circle,Icon,Bar)
 
-
---(This is the Circle,Icon,Bar)
-
-local CorruptedInventoryIcon = CreateFrame("Frame", "CorruptedInventoryIcon", TestFrameOne)
+local CorruptedInventoryIcon = CreateFrame("Frame", "CorruptedInventoryIcon",
+                                           TestFrameOne)
 CorruptedInventoryIcon:SetSize(200, 200)
 CorruptedInventoryIcon.t = CorruptedInventoryIcon:CreateTexture()
 CorruptedInventoryIcon.t:SetAllPoints()
@@ -192,10 +114,116 @@ CorruptedInventoryIcon.t:SetTexture("interface/icons/CorruptedInventoryIcon")
 -- CorruptedInventoryIcon.t:SetVertexColor(0, 1, 0, 1)
 CorruptedInventoryIcon:SetPoint("topleft", 0, 0)
 
+-- local OnClick = "OnClick"
 
+-- (LeftBar)
+function LoadThisShit(self, event)
 
+    if event == OnClick then
+        local ShopBar1 = CreateFrame("Button", "ShopBar1", TestFrameOne)
+        ShopBar1:SetSize(250, 300)
+        ShopBar1.t = ShopBar1:CreateTexture()
+        ShopBar1.t:SetAllPoints()
+        ShopBar1.t:SetTexture("interface/icons/ShopBorderItem")
+        ShopBar1:SetPushedTexture("Interface/icons/ShopBorderItemBlue")
+        ShopBar1:SetHighlightTexture("Interface/icons/ShopBorderGlow")
+        -- ShopBar1.t:SetBlendMode("ADD")
+        -- ShopBar1.t:SetVertexColor(0, 1, 0, 1)
+        ShopBar1:SetPoint("center", -100, 150)
+        ShopBar1:Show()
 
---(LeftBar)
+        local ShopBar2 = CreateFrame("Button", "ShopBar2", TestFrameOne)
+        ShopBar2:SetSize(250, 300)
+        ShopBar2.t = ShopBar2:CreateTexture()
+        ShopBar2.t:SetAllPoints()
+        ShopBar2.t:SetTexture("interface/icons/ShopBorderItem")
+        ShopBar2:SetPushedTexture("Interface/icons/ShopBorderItemBlue")
+        ShopBar2:SetHighlightTexture("Interface/icons/ShopBorderGlow")
+        -- ShopBar2.t:SetBlendMode("ADD")
+        -- ShopBar2.t:SetVertexColor(0, 1, 0, 1)
+        ShopBar2:SetPoint("center", -100, -125)
+        ShopBar2:Show()
+        -- (Left)
+        local ShopBar3 = CreateFrame("Button", "ShopBar3", TestFrameOne)
+        ShopBar3:SetSize(250, 300)
+        ShopBar3.t = ShopBar3:CreateTexture()
+        ShopBar3.t:SetAllPoints()
+        ShopBar3.t:SetTexture("interface/icons/ShopBorderItem")
+        ShopBar3:SetPushedTexture("Interface/icons/ShopBorderItemBlue")
+        ShopBar3:SetHighlightTexture("Interface/icons/ShopBorderGlow")
+        -- ShopBar3.t:SetBlendMode("ADD")
+        -- ShopBar3.t:SetVertexColor(0, 1, 0, 1)
+        ShopBar3:SetPoint("center", 55, 150)
+        ShopBar3:Show()
+        local ShopBar4 = CreateFrame("Button", "ShopBar4", TestFrameOne)
+        ShopBar4:SetSize(250, 300)
+        ShopBar4.t = ShopBar4:CreateTexture()
+        ShopBar4.t:SetAllPoints()
+        ShopBar4.t:SetTexture("interface/icons/ShopBorderItem")
+        ShopBar4:SetPushedTexture("Interface/icons/ShopBorderItemBlue")
+        ShopBar4:SetHighlightTexture("Interface/icons/ShopBorderGlow")
+        -- ShopBar4.t:SetBlendMode("ADD")
+        -- ShopBar4.t:SetVertexColor(0, 1, 0, 1)
+        ShopBar4:SetPoint("center", 55, -125)
+        ShopBar4:Show()
+        -- (Right)
+        local ShopBar5 = CreateFrame("Button", "ShopBar5", TestFrameOne)
+        ShopBar5:SetSize(250, 300)
+        ShopBar5.t = ShopBar5:CreateTexture()
+        ShopBar5.t:SetAllPoints()
+        ShopBar5.t:SetTexture("interface/icons/ShopBorderItem")
+        ShopBar5:SetPushedTexture("Interface/icons/ShopBorderItemBlue")
+        ShopBar5:SetHighlightTexture("Interface/icons/ShopBorderGlow")
+        -- ShopBar5.t:SetBlendMode("ADD")
+        -- ShopBar5.t:SetVertexColor(0, 1, 0, 1)
+        ShopBar5:SetPoint("center", 210, 150)
+        ShopBar5:Show()
+        local ShopBar6 = CreateFrame("Button", "ShopBar6", TestFrameOne)
+        ShopBar6:SetSize(250, 300)
+        ShopBar6.t = ShopBar6:CreateTexture()
+        ShopBar6.t:SetAllPoints()
+        ShopBar6.t:SetTexture("interface/icons/ShopBorderItem")
+        ShopBar6:SetPushedTexture("Interface/icons/ShopBorderItemBlue")
+        ShopBar6:SetHighlightTexture("Interface/icons/ShopBorderGlow")
+        -- ShopBar6.t:SetBlendMode("ADD")
+        -- ShopBar6.t:SetVertexColor(0, 1, 0, 1)
+        ShopBar6:SetPoint("center", 210, -125)
+        ShopBar6:Show()
+        -- (Closes to the right)
+        local ShopBar7 = CreateFrame("Button", "ShopBar7", TestFrameOne)
+        ShopBar7:SetSize(250, 300)
+        ShopBar7.t = ShopBar7:CreateTexture()
+        ShopBar7.t:SetAllPoints()
+        ShopBar7.t:SetTexture("interface/icons/ShopBorderItem")
+        ShopBar7:SetPushedTexture("Interface/icons/ShopBorderItemBlue")
+        ShopBar7:SetHighlightTexture("Interface/icons/ShopBorderGlow")
+        -- ShopBar7.t:SetBlendMode("ADD")
+        -- ShopBar7.t:SetVertexColor(0, 1, 0, 1)
+        ShopBar7:SetPoint("center", 365, 150)
+        ShopBar7:Show()
+        local ShopBar8 = CreateFrame("Button", "ShopBar8", TestFrameOne)
+        ShopBar8:SetSize(250, 300)
+        ShopBar8.t = ShopBar8:CreateTexture()
+        ShopBar8.t:SetAllPoints()
+        ShopBar8.t:SetTexture("interface/icons/ShopBorderItem")
+        ShopBar8:SetPushedTexture("Interface/icons/ShopBorderItemBlue")
+        ShopBar8:SetHighlightTexture("Interface/icons/ShopBorderGlow")
+        -- ShopBar8.t:SetBlendMode("ADD")
+        -- ShopBar8.t:SetVertexColor(0, 1, 0, 1)
+        ShopBar8:SetPoint("center", 365, -125)
+        ShopBar8:Show()
+    else
+
+        ShopBar1:Hide()
+        ShopBar2:Hide()
+        ShopBar3:Hide()
+        ShopBar4:Hide()
+        ShopBar5:Hide()
+        ShopBar6:Hide()
+        ShopBar7:Hide()
+        ShopBar8:Hide()
+    end
+end
 
 -- local LeftBar = CreateFrame("Frame", "TestFrameOne", TestFrameOne)
 -- LeftBar:SetBackdrop({
@@ -211,9 +239,7 @@ CorruptedInventoryIcon:SetPoint("topleft", 0, 0)
 -- LeftBar:SetPoint("LEFT", MainFrame, 0)
 -- LeftBar:SetSize(265, 745)
 
-
-
-local BlackBar1 = CreateFrame("Frame", "TestFrameOne", TestFrameOne)
+--[[ local BlackBar1 = CreateFrame("Frame", "TestFrameOne", TestFrameOne)
 BlackBar1:SetBackdrop({
     bgFile = "Interface\\ChatFrame\\ChatFrameBackground",
     edgeFile = "Interface\\ChatFrame\\ChatFrameBackground",
@@ -224,30 +250,30 @@ BlackBar1:SetBackdrop({
 
 BlackBar1:SetBackdropColor(0, 0, 0, .6)
 BlackBar1:SetBackdropBorderColor(0, 0, 0)
-
 BlackBar1:SetSize(200, 50)
-BlackBar1:SetPoint("LEFT", 25, 225)
+BlackBar1:SetPoint("LEFT", 25, 225) ]]
 
-
-
-
-local Special = CreateFrame("Button", "Special", BlackBar1)
+local Special = CreateFrame("Button", "Special", MainFrame)
 Special:SetSize(65, 65)
 Special.t = Special:CreateTexture()
 Special.t:SetAllPoints()
 Special.t:SetTexture("interface/icons/category-icon-featured")
 -- Special.t:SetBlendMode("ADD")
-Special:SetPoint("LEFT", BlackBar1, 0)
+Special:SetPoint("LEFT", 10, 250)
+Special:SetPushedTexture("Interface/icons/ShopBorderItemBlue") -- replace placeholders
+Special:SetHighlightTexture("Interface/icons/ShopBorderGlow") -- replace placeholders
+Special:SetScript("OnClick", function() LoadThisShit() end)
 
-local Services = CreateFrame("Button", "Services", LeftBar)
+local Services = CreateFrame("Button", "Services", MainFrame)
 Services:SetSize(65, 65)
 Services.t = Services:CreateTexture()
 Services.t:SetAllPoints()
 Services.t:SetTexture("interface/icons/category-icon-services")
 -- Services.t:SetBlendMode("ADD")
 Services:SetPoint("LEFT", 10, 200)
+Services:SetScript("OnClick", function() LoadThisShit() end)
 
-local Scroll = CreateFrame("Button", "Scroll", LeftBar)
+local Scroll = CreateFrame("Button", "Scroll", MainFrame)
 Scroll:SetSize(65, 65)
 Scroll.t = Scroll:CreateTexture()
 Scroll.t:SetAllPoints()
@@ -255,7 +281,7 @@ Scroll.t:SetTexture("interface/icons/category-icon-scroll")
 -- Scroll.t:SetBlendMode("ADD")
 Scroll:SetPoint("LEFT", 10, 150)
 
-local Enchantscroll = CreateFrame("Button", "Enchantscroll", LeftBar)
+local Enchantscroll = CreateFrame("Button", "Enchantscroll", MainFrame)
 Enchantscroll:SetSize(65, 65)
 Enchantscroll.t = Enchantscroll:CreateTexture()
 Enchantscroll.t:SetAllPoints()
@@ -263,8 +289,7 @@ Enchantscroll.t:SetTexture("interface/icons/category-icon-enchantscroll")
 -- Enchantscroll.t:SetBlendMode("ADD")
 Enchantscroll:SetPoint("LEFT", 10, 100)
 
-
-local Free = CreateFrame("Button", "Free", LeftBar)
+local Free = CreateFrame("Button", "Free", MainFrame)
 Free:SetSize(65, 65)
 Free.t = Free:CreateTexture()
 Free.t:SetAllPoints()
@@ -272,7 +297,7 @@ Free.t:SetTexture("interface/icons/category-icon-free")
 -- Free.t:SetBlendMode("ADD")
 Free:SetPoint("LEFT", 10, 50)
 
-local Book = CreateFrame("Button", "Book", LeftBar)
+local Book = CreateFrame("Button", "Book", MainFrame)
 Book:SetSize(65, 65)
 Book.t = Book:CreateTexture()
 Book.t:SetAllPoints()
@@ -280,9 +305,16 @@ Book.t:SetTexture("interface/icons/category-icon-book")
 -- Book.t:SetBlendMode("ADD")
 Book:SetPoint("LEFT", 10, 0)
 
-
-
-
+-- local BarRightSide = CreateFrame("Button", "BarRightSide", Special)
+-- BarRightSide:SetSize(100, 100)
+-- BarRightSide.t = BarRightSide:CreateTexture()
+-- BarRightSide.t:SetAllPoints()
+-- BarRightSide.t:SetTexture("interface/icons/ShopBar")
+-- BarRightSide:SetPushedTexture("Interface/icons/ShopBorderItemBlue")
+-- BarRightSide:SetHighlightTexture("Interface/icons/BlueBar")
+-- -- BarRightSide.t:SetBlendMode("ADD")
+-- -- BarRightSide.t:SetVertexColor(0, 1, 0, 1)
+-- BarRightSide:SetPoint("center", 0, "center")
 
 -- if Buffs then
 --     Frame1:Show()
@@ -290,12 +322,9 @@ Book:SetPoint("LEFT", 10, 0)
 -- Frame1:Hide()
 -- end
 
-
 print("Check after if condition")
 
---(This will be something )
-
-
+-- (This will be something )
 
 -- local f = CreateFrame("Frame", "Buffs", TestFrameOne)
 -- f:SetSize(135, 125)
@@ -304,9 +333,6 @@ print("Check after if condition")
 -- f.t:SetTexture("interface/icons/UI-SpellbookIcon-NextPage-Up")
 -- -- f.t:SetBlendMode("ADD")
 -- f:SetPoint("center", 0, 0)
-
-
-
 
 -- local f = CreateFrame("Frame", "UI-QuestLog-BookIcon", TestFrameOne)
 -- f:SetSize(100, 100)
@@ -324,68 +350,45 @@ print("Check after if condition")
 -- -- f.t:SetBlendMode("ADD")
 -- f:SetPoint("left", 0, 0)
 
+-- ItemTextNextPageButton()
+-- ItemTextPrevPageButton()
 
-
-
-
-
-
-function SwitchPage() print("fuck") end
--- ,"UIPanelButtonTemplate"
-local Sabilities = CreateFrame("Button", "Store", TestFrameOne)
-Sabilities:SetSize(50, 50)
-Sabilities:SetPoint("CENTER", 200, 0)
-
-Sabilities:RegisterForClicks("LeftButtonUp")
-Sabilities:SetScript("OnClick", function() SwitchPage() end)
-Sabilities:SetAlpha(0.2)
-Sabilities:SetScript("OnEnter", function(self) self:SetAlpha(1) end)
-Sabilities:SetScript("OnLeave", function(self) self:SetAlpha(0.2) end)
-
-
+-- ItemTextGetPage() - Get the page number of the currently viewed page.
+-- ItemTextGetText() - Get the page contents of the currently viewed page.
 
 if not DropDownMenuTest then
-    CreateFrame("Button", "DropDownMenuTest", MainFrame, "UIDropDownMenuTemplate")
- end
+    CreateFrame("Button", "DropDownMenuTest", MainFrame,
+                "UIDropDownMenuTemplate")
+end
 
- DropDownMenuTest:ClearAllPoints()
- DropDownMenuTest:SetPoint("TOPRIGHT", 0, 0)
- DropDownMenuTest:Show()
+DropDownMenuTest:ClearAllPoints()
+DropDownMenuTest:SetPoint("TOPRIGHT", 0, 0)
+DropDownMenuTest:Show()
 
- local items = {
-    "HUE",
-    "OK",
-    "asdasd",
+local items = {"HUE", "OK", "asdasd"}
 
- }
-
- local function OnClick(self)
+local function OnClick(self)
     UIDropDownMenu_SetSelectedID(DropDownMenuTest, self:GetID())
- end
+end
 
- local function initialize(self, level)
+local function initialize(self, level)
     local info = UIDropDownMenu_CreateInfo()
-    for k,v in pairs(items) do
-       info = UIDropDownMenu_CreateInfo()
-       info.text = v
-       info.value = v
-       info.func = OnClick
-       UIDropDownMenu_AddButton(info, level)
+    for k, v in pairs(items) do
+        info = UIDropDownMenu_CreateInfo()
+        info.text = v
+        info.value = v
+        info.func = OnClick
+        UIDropDownMenu_AddButton(info, level)
     end
- end
+end
 
-
- UIDropDownMenu_Initialize(DropDownMenuTest, initialize)
- UIDropDownMenu_SetWidth(DropDownMenuTest, 100);
- UIDropDownMenu_SetButtonWidth(DropDownMenuTest, 124)
- UIDropDownMenu_SetSelectedID(DropDownMenuTest, 1)
- UIDropDownMenu_JustifyText(DropDownMenuTest, "LEFT")
-
-
+UIDropDownMenu_Initialize(DropDownMenuTest, initialize)
+UIDropDownMenu_SetWidth(DropDownMenuTest, 100);
+UIDropDownMenu_SetButtonWidth(DropDownMenuTest, 124)
+UIDropDownMenu_SetSelectedID(DropDownMenuTest, 1)
+UIDropDownMenu_JustifyText(DropDownMenuTest, "LEFT")
 
 print(End)
-
-
 
 -- local frameVars = {
 
