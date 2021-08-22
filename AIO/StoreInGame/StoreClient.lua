@@ -75,7 +75,50 @@ local close = CreateFrame("Button", "YourCloseButtonName", TestFrameOne,
 close:SetPoint("TOPRIGHT", MainFrame, "TOPRIGHT")
 close:SetScript("OnClick", function() MainFrame:Hide() end)
 
--- (This is the Circle,Icon,Bar)
+StaticPopupDialogs["EXAMPLE_HELLOWORLD"] = {
+    text = "Do you want to greet the world today?",
+    button1 = "Yes",
+    button2 = "No",
+    OnAccept = function() SendChatMessage("HelloWorld!", "SAY") end,
+    timeout = 0,
+    whileDead = true,
+    hideOnEscape = true
+}
+StaticPopup_Show("EXAMPLE_HELLOWORLD")
+-- (DropDown)
+if not DropDownMenuTest then
+    CreateFrame("Button", "DropDownMenuTest", TestFrameOne,
+                "UIDropDownMenuTemplate")
+end
+
+DropDownMenuTest:ClearAllPoints()
+DropDownMenuTest:SetPoint("TOPRIGHT", -50, 0)
+DropDownMenuTest:Show()
+
+local items = {"HUE", "OK", "asdasd"}
+
+local function OnClick(self)
+    UIDropDownMenu_SetSelectedID(DropDownMenuTest, self:GetID())
+end
+
+local function initialize(self, level)
+    local info = UIDropDownMenu_CreateInfo()
+    for k, v in pairs(items) do
+        info = UIDropDownMenu_CreateInfo()
+        info.text = v
+        info.value = v
+        info.func = OnClick
+        UIDropDownMenu_AddButton(info, level)
+    end
+end
+
+UIDropDownMenu_Initialize(DropDownMenuTest, initialize)
+UIDropDownMenu_SetWidth(DropDownMenuTest, 100);
+UIDropDownMenu_SetButtonWidth(DropDownMenuTest, 124)
+UIDropDownMenu_SetSelectedID(DropDownMenuTest, 1)
+UIDropDownMenu_JustifyText(DropDownMenuTest, "LEFT")
+
+-- (end of dropdown menu)
 
 print("Start LoadThisShit")
 -- (LeftBar)
@@ -99,7 +142,95 @@ print("Start LoadThisShit")
 --     end
 -- end
 
-function LoadBrownBoxes2()
+function PrevNextPage()
+    local frame = _G["PageButton"]
+    if not frame then end
+end
+
+local PER_PAGE = 10;
+local PAGE_NUMBER = "Page %s of %s";
+
+-- (create the navbar page info text)
+
+local PageNumber = frame:CreateFontString("PageNumber", "OVERLAY",
+                                          "GameFontNormalSmall")
+PageNumber:Show()
+PageNumber:ClearAllPoints()
+PageNumber:SetPoint("TOP", MainFrame, "BOTTOM", 0, -10)
+PageNumber:SetTextColor(1, 1, 1)
+PageNumber:SetText("Page 1 of n")
+
+-- (prev button)
+frame = CreateFrame("Button", "PrevButton", MainFrame)
+frame:SetWidth(32);
+frame:SetHeight(32);
+frame:Show()
+frame:ClearAllPoints()
+frame:SetPoint("RIGHT", PageNumber, "LEFT", -10, 0)
+frame:SetNormalTexture("Interface\\Buttons\\UI-SpellbookIcon-PrevPage-Up")
+frame:SetPushedTexture("Interface\\Buttons\\UI-SpellbookIcon-PrevPage-Down")
+frame:SetDisabledTexture(
+    "Interface\\Buttons\\UI-SpellbookIcon-PrevPage-Disabled")
+frame:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight")
+frame:GetHighlightTexture():SetBlendMode("ADD")
+frame:SetScript("OnClick", function() end)
+-- (next button)
+frame = CreateFrame("Button", "NextButton", MainFrame)
+frame:SetWidth(32);
+frame:SetHeight(32);
+frame:Show()
+frame:ClearAllPoints()
+frame:SetPoint("LEFT", PageNumber, "RIGHT", 10, 0)
+frame:SetNormalTexture("Interface\\Buttons\\UI-SpellbookIcon-NextPage-Up")
+frame:SetPushedTexture("Interface\\Buttons\\UI-SpellbookIcon-NextPage-Down")
+frame:SetDisabledTexture(
+    "Interface\\Buttons\\UI-SpellbookIcon-NextPage-Disabled")
+frame:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight")
+frame:GetHighlightTexture():SetBlendMode("ADD")
+frame:SetScript("OnClick", function() end)
+
+function SwitchPage(num)
+    Box1 = num;
+
+    num = num + 1; -- For easier usage
+    local maxpage = ceil(GetNumCompanions("MOUNT") / PER_PAGE);
+    NecrosisCompanionPageNumber:SetFormattedText(PAGE_NUMBER, num, maxpage);
+
+    if (num <= 1) then
+        PrevButton:Disable();
+    else
+        PrevButton:Enable();
+    end
+
+    if (num >= maxpage) then
+        NextButton:Disable();
+    else
+        NextButton:Enable();
+    end
+
+    SwitchPage:UpdateMountButtons();
+
+end
+
+-- local NextPage = CreateFrame("Button", "NextPage", TestFrameOne, nil)
+-- NextPage:SetSize(35, 35)
+-- NextPage:SetPoint("CENTER", 175, -270)
+-- NextPage:EnableMouse(true)
+-- NextPage:SetNormalTexture("Interface/BUTTONS/UI-SpellbookIcon-NextPage-Up")
+-- NextPage:SetHighlightTexture("Interface/BUTTONS/UI-Panel-MinimizeButton-Highlight")
+-- NextPage:SetPushedTexture("Interface/BUTTONS/UI-SpellbookIcon-NextPage-Down")
+-- NextPage:SetScript("OnMouseUp", function()  end)
+
+-- local PrevPage = CreateFrame("Button", "PrevPage", TestFrameOne, nil)
+-- PrevPage:SetSize(35, 35)
+-- PrevPage:SetPoint("CENTER", 100, -270)
+-- PrevPage:EnableMouse(true)
+-- PrevPage:SetNormalTexture("Interface/BUTTONS/UI-SpellbookIcon-PrevPage-Up")
+-- PrevPage:SetHighlightTexture("Interface/BUTTONS/UI-Panel-MinimizeButton-Highlight")
+-- PrevPage:SetPushedTexture("Interface/BUTTONS/UI-SpellbookIcon-PrevPage-Down")
+-- PrevPage:SetScript("OnMouseUp", function()  end)
+
+function LoadBrownBoxes1()
 
     local Box1 = _G["BrownBox1"]
     local Box2 = _G["BrownBox2"]
@@ -109,7 +240,6 @@ function LoadBrownBoxes2()
     local Box6 = _G["BrownBox6"]
     local Box7 = _G["BrownBox7"]
     local Box8 = _G["BrownBox8"]
-
 
     if not Box1 then
         Box1 = CreateFrame("Button", "BrownBox1", MainFrame)
@@ -196,6 +326,7 @@ function LoadBrownBoxes2()
             Box7:Show()
             Box8:Show()
         end
+
     end
 end
 
@@ -208,7 +339,7 @@ Special.t:SetTexture("interface/icons/category-icon-featured")
 Special:SetPoint("LEFT", 10, 250)
 Special:SetPushedTexture("Interface/icons/ShopBorderItemBlue") -- replace placeholders
 Special:SetHighlightTexture("Interface/icons/ShopBorderGlow") -- replace placeholders
-Special:SetScript("OnClick", function() LoadBrownBoxes() end)
+Special:SetScript("OnClick", function() LoadBrownBoxes1() end)
 
 local Services = CreateFrame("Button", "Services", TestFrameOne)
 Services:SetSize(65, 65)
@@ -219,6 +350,7 @@ Services:SetPushedTexture("Interface/icons/ShopBorderItemBlue") -- replace place
 Services:SetHighlightTexture("Interface/icons/ShopBorderGlow") -- replace placeholders
 -- Services.t:SetBlendMode("ADD")
 Services:SetPoint("LEFT", 10, 200)
+-- Services:SetScript("OnClick", function() LoadBrownBoxes2() end)
 
 local Scroll = CreateFrame("Button", "Scroll", TestFrameOne)
 Scroll:SetSize(65, 65)
@@ -229,6 +361,7 @@ Scroll:SetPushedTexture("Interface/icons/ShopBorderItemBlue") -- replace placeho
 Scroll:SetHighlightTexture("Interface/icons/ShopBorderGlow") -- replace placeholders
 -- Scroll.t:SetBlendMode("ADD")
 Scroll:SetPoint("LEFT", 10, 150)
+-- Scroll:SetScript("OnClick", function() LoadBrownBoxes2() end)
 
 local Enchantscroll = CreateFrame("Button", "Enchantscroll", TestFrameOne)
 Enchantscroll:SetSize(65, 65)
@@ -239,6 +372,7 @@ Enchantscroll:SetPushedTexture("Interface/icons/ShopBorderItemBlue") -- replace 
 Enchantscroll:SetHighlightTexture("Interface/icons/ShopBorderGlow") -- replace placeholders
 -- Enchantscroll.t:SetBlendMode("ADD")
 Enchantscroll:SetPoint("LEFT", 10, 100)
+-- Enchantscroll:SetScript("OnClick", function() LoadBrownBoxes2() end)
 
 local Free = CreateFrame("Button", "Free", TestFrameOne)
 Free:SetSize(65, 65)
@@ -249,6 +383,7 @@ Free:SetPushedTexture("Interface/icons/ShopBorderItemBlue") -- replace placehold
 Free:SetHighlightTexture("Interface/icons/ShopBorderGlow") -- replace placeholders
 -- Free.t:SetBlendMode("ADD")
 Free:SetPoint("LEFT", 10, 50)
+-- Free:SetScript("OnClick", function() LoadBrownBoxes2() end)
 
 local Book = CreateFrame("Button", "Book", TestFrameOne)
 Book:SetSize(65, 65)
@@ -259,39 +394,9 @@ Book:SetPushedTexture("Interface/icons/ShopBorderItemBlue") -- replace placehold
 Book:SetHighlightTexture("Interface/icons/ShopBorderGlow") -- replace placeholders
 -- Book.t:SetBlendMode("ADD")
 Book:SetPoint("LEFT", 10, 0)
-Book:SetScript("OnClick", function() LoadBrownBoxes2() end)
+-- Book:SetScript("OnClick", function() LoadBrownBoxes2() end)
 
-if not DropDownMenuTest then
-    CreateFrame("Button", "DropDownMenuTest", TestFrameOne,
-                "UIDropDownMenuTemplate")
-end
-
-DropDownMenuTest:ClearAllPoints()
-DropDownMenuTest:SetPoint("TOPRIGHT", 0, 0)
-DropDownMenuTest:Show()
-
-local items = {"HUE", "OK", "asdasd"}
-
-local function OnClick(self)
-    UIDropDownMenu_SetSelectedID(DropDownMenuTest, self:GetID())
-end
-
-local function initialize(self, level)
-    local info = UIDropDownMenu_CreateInfo()
-    for k, v in pairs(items) do
-        info = UIDropDownMenu_CreateInfo()
-        info.text = v
-        info.value = v
-        info.func = OnClick
-        UIDropDownMenu_AddButton(info, level)
-    end
-end
-
-UIDropDownMenu_Initialize(DropDownMenuTest, initialize)
-UIDropDownMenu_SetWidth(DropDownMenuTest, 100);
-UIDropDownMenu_SetButtonWidth(DropDownMenuTest, 124)
-UIDropDownMenu_SetSelectedID(DropDownMenuTest, 1)
-UIDropDownMenu_JustifyText(DropDownMenuTest, "LEFT")
+-- (Gonna use this later for gear choose weapons. Will change it if i figure out better way)
 
 print("End of file")
 
