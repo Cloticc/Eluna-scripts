@@ -189,28 +189,7 @@ frame:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight")
 frame:GetHighlightTexture():SetBlendMode("ADD")
 frame:SetScript("OnClick", function() end)
 
-function SwitchPage(num)
-    Box1 = num;
 
-    num = num + 1; -- For easier usage
-    local maxpage = ceil(GetNumCompanions("MOUNT") / PER_PAGE);
-    NecrosisCompanionPageNumber:SetFormattedText(PAGE_NUMBER, num, maxpage);
-
-    if (num <= 1) then
-        PrevButton:Disable();
-    else
-        PrevButton:Enable();
-    end
-
-    if (num >= maxpage) then
-        NextButton:Disable();
-    else
-        NextButton:Enable();
-    end
-
-    SwitchPage:UpdateMountButtons();
-
-end
 
 -- local NextPage = CreateFrame("Button", "NextPage", TestFrameOne, nil)
 -- NextPage:SetSize(35, 35)
