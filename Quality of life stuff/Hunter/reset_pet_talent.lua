@@ -1,7 +1,7 @@
-local item = 123 --ID of the item to be used
-local PetHappiness = {}
+local item = 123 -- Item ID
+local Pet_Happiness = {}
 
-function PetHappiness.OnUse(event, player, item)
+function Pet_Happiness.OnUse(event, player, item)
     if player:GetLevel() < 25 then
         player:SendAreaTriggerMessage("You must be level 25 or higher to use this item.")
         return
@@ -21,4 +21,4 @@ function PetHappiness.OnUse(event, player, item)
     player:RemoveItem(item, 1)
 end
 
-RegisterItemGossipEvent(item, 1, PetHappiness.OnUse)
+RegisterItemGossipEvent(item, 1, Pet_Happiness.OnUse)
