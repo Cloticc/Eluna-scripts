@@ -40,7 +40,7 @@ local BUFF_IDS = {
     48074
 }
 
-local function BuffOnSight(event, creature, player)
+local function Buff_on_Sight(event, creature, player)
     if creature:IsInRange(player, 1, 15) then
        local playerGUID = player:GetGUIDLow()
         if (playerGUID > 0) then
@@ -56,4 +56,4 @@ local function BuffOnSight(event, creature, player)
         end
     end
 end
-RegisterCreatureEvent(NPC_ID, 27, BuffOnSight)
+RegisterCreatureEvent(NPC_ID, 27, Buff_on_Sight)

@@ -1,0 +1,4 @@
+Hardcore:
+```
+PermaDeath lock character
+```

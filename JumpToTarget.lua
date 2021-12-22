@@ -1,11 +1,11 @@
 local MSG_TJ = "#tj"
 
-local function TargetJump(event, player, msg, Type, lang)
+local function Target_jump(event, player, msg, Type, lang)
     local selectTarget = player:GetSelection()-- Make it so you select target
     if (not selectTarget) then -- Make it so you select urself
          selectTarget = player -- Make it so you select urself
     end
-    
+
     local gmRank = player:GetGMRank()
     if (gmRank >= 3) then -- change number (0-3) 0 - to all  1,2,3 GM with rank
 if (msg:find(MSG_TJ)) then
@@ -18,4 +18,4 @@ if (msg:find(MSG_TJ)) then
     end
 end
 
-RegisterPlayerEvent(18, TargetJump)
+RegisterPlayerEvent(18, Target_jump)

@@ -3,7 +3,7 @@ local StackTest = {26393}
 
 local MSG_TESTSTACK = ("#stack")
 
-local function TestStack(event, player, msg, Type, lang)
+local function Test_Stack(event, player, msg, Type, lang)
     if (msg:find(MSG_TESTSTACK)) then
         for _, v in pairs(StackTest) do
             if not player:HasAura(v) then
@@ -20,4 +20,4 @@ local function TestStack(event, player, msg, Type, lang)
         return false
     end
 end
-RegisterPlayerEvent(18, TestStack)
+RegisterPlayerEvent(18, Test_Stack)

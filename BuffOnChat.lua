@@ -35,7 +35,7 @@ local buffID = {
     35874 -- Master Melee Buff
 }
 
-local function BuffOnMsg(event, player, msg, type, language)
+local function Buff_Command(event, player, msg, type, language)
     local gmRank = player:GetGMRank()
     if (gmRank >= 3) then -- change number (0-3) 0 - to all  1,2,3 GM with rank
         selectTarget = player:GetSelection()
@@ -56,4 +56,4 @@ local function BuffOnMsg(event, player, msg, type, language)
     end
 end
 
-RegisterPlayerEvent(18, BuffOnMsg)
+RegisterPlayerEvent(18, Buff_Command)
