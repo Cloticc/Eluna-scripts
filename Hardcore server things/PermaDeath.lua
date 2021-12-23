@@ -2,11 +2,14 @@
 local Perma_Death = {}
 
 function Perma_Death.Died(event, killer, killed)
-    if killed:GetGMRank() >= 1 then return end
-
+    if (killed:GetGMRank() >= 1) then
+        return
+    end
     local guid = killed:GetGUIDLow()
     CharDBExecute(
-        "INSERT INTO character_banned (guid,bannedby,banreason, active) VALUES (" .. guid .. ",'PermaDeath', 'Death', 1)")
+        "INSERT INTO character_banned (guid,bannedby,banreason, active) VALUES (" ..
+            guid .. ",'PermaDeath', 'Death', 1)"
+    )
 
     killed:SaveToDB()
     SendWorldMessage(
@@ -25,5 +28,4 @@ function Perma_Death.Died(event, killer, killed)
 end
 
 RegisterPlayerEvent(6, Perma_Death.Died)
-RegisterPlayerEvent(7, Perma_Death.Died)
 RegisterPlayerEvent(8, Perma_Death.Died)
