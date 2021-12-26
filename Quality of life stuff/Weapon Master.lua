@@ -1,4 +1,4 @@
-local NpcId = nil -- NPC ID
+local NpcId = nil -- NPC ID The ID for the npc that will show you the menu
 
 local Weapon_Master = {}
 
