@@ -1,9 +1,11 @@
+--[[ To get this to work u need to have a npc and get the entry and put it on Pre_Build.Npc_Id=123. Change the ids in the Gear list to whatever u want it to be u can give more items or less. The ids that are in the gear list now are t3 and some other random ids. ]]
+
 local Pre_Build = {}
 
 Pre_Build.Npc_Id = nil --npc id of the vendor/trainer
 
 local Gear = {
-    --  [classId] = {item1, item2, item3m, ...},
+    --  [intid] = {item1, item2,so on ...},
     [1] = {22418, 22419, 22416, 22423, 22421, 22422, 22417, 22420, 23059}, -- Warrior Arms
     [2] = {51227, 22419, 22416, 22423, 22421, 22422, 22417, 22420, 23059}, -- Warrior Fury
     [3] = {22418, 22419, 22416, 22423, 22421, 22422, 22417, 22420, 23059}, -- Warrior Prot
