@@ -1,4 +1,5 @@
---[[ To get this to work u need to have a npc and get the entry and put it on Pre_Build.Npc_Id=123. Change the ids in the Gear list to whatever u want it to be u can give more items or less. The ids that are in the gear list now are t3 and some other random ids. ]]
+--[[ To get this to work u need to have a npc and get the entry and put it on Pre_Build.Npc_Id=123.
+Change the ids in the Gear list to whatever u want it to be u can give more items or less. The ids that are in the gear list now are t3 and some other random ids. ]]
 
 local Pre_Build = {}
 
