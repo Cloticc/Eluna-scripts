@@ -2,30 +2,6 @@ local Pre_Build = {}
 
 Pre_Build.Npc_Id = nil-- npc id of the vendor/trainer
 
---     EQUIPMENT_SLOT_START        = 0,
---     EQUIPMENT_SLOT_HEAD         = 0,
---     EQUIPMENT_SLOT_NECK         = 1,
---     EQUIPMENT_SLOT_SHOULDERS    = 2,
---     EQUIPMENT_SLOT_BODY         = 3,
---     EQUIPMENT_SLOT_CHEST        = 4,
---     EQUIPMENT_SLOT_WAIST        = 5,
---     EQUIPMENT_SLOT_LEGS         = 6,
---     EQUIPMENT_SLOT_FEET         = 7,
---     EQUIPMENT_SLOT_WRISTS       = 8,
---     EQUIPMENT_SLOT_HANDS        = 9,
---     EQUIPMENT_SLOT_FINGER1      = 10,
---     EQUIPMENT_SLOT_FINGER2      = 11,
---     EQUIPMENT_SLOT_TRINKET1     = 12,
---     EQUIPMENT_SLOT_TRINKET2     = 13,
---     EQUIPMENT_SLOT_BACK         = 14,
---     EQUIPMENT_SLOT_MAINHAND     = 15,
---     EQUIPMENT_SLOT_OFFHAND      = 16,
---     EQUIPMENT_SLOT_RANGED       = 17,
---     EQUIPMENT_SLOT_TABARD       = 18,
---     EQUIPMENT_SLOT_END          = 19
---     INVENTORY_SLOT_BAG_START    = 19,
---     INVENTORY_SLOT_BAG_END      = 23
---
 
 --[[ So this might be a bit painful for the first time u need to add all the gear u want urself. Where it says nil = u highlight it and write the id of the item u want to be equipped when u select the option. ]]
 
