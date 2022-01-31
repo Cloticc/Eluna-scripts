@@ -1,12 +1,11 @@
 local Pre_Build = {}
 
-Pre_Build.Npc_Id = nil-- npc id of the vendor/trainer
-
+Pre_Build.Npc_Id = nil -- npc id of the vendor/trainer
 
 --[[ So this might be a bit painful for the first time u need to add all the gear u want urself. Where it says nil = u highlight it and write the id of the item u want to be equipped when u select the option. ]]
-
 local Gear = {
     [1] = {
+        -- Warrior Arms
         [0] = nil, -- Head
         [1] = nil, -- Neck
         [2] = nil, -- Shoulders
@@ -27,6 +26,7 @@ local Gear = {
         [18] = nil -- Tabard
     }, -- Warrior Arms
     [2] = {
+        -- Warrior Fury
         [0] = nil, -- Head
         [1] = nil, -- Neck
         [2] = nil, -- Shoulders
@@ -47,6 +47,7 @@ local Gear = {
         [18] = nil -- Tabard
     }, -- Warrior Fury
     [3] = {
+        -- Warrior Prot
         [0] = nil, -- Head
         [1] = nil, -- Neck
         [2] = nil, -- Shoulders
@@ -67,6 +68,7 @@ local Gear = {
         [18] = nil -- Tabard
     }, -- Warrior Prot
     [4] = {
+        -- Paladin Holy
         [0] = nil, -- Head
         [1] = nil, -- Neck
         [2] = nil, -- Shoulders
@@ -87,6 +89,7 @@ local Gear = {
         [18] = nil -- Tabard
     }, -- Paladin Holy
     [5] = {
+        -- Paladin Protection
         [0] = nil, -- Head
         [1] = nil, -- Neck
         [2] = nil, -- Shoulders
@@ -107,6 +110,7 @@ local Gear = {
         [18] = nil -- Tabard
     }, -- Paladin Protection
     [6] = {
+        -- Paladin Retribution
         [0] = nil, -- Head
         [1] = nil, -- Neck
         [2] = nil, -- Shoulders
@@ -127,6 +131,7 @@ local Gear = {
         [18] = nil -- Tabard
     }, -- Paladin Retribution
     [7] = {
+        -- Hunter  Beast         Mastery
         [0] = nil, -- Head
         [1] = nil, -- Neck
         [2] = nil, -- Shoulders
@@ -147,6 +152,7 @@ local Gear = {
         [18] = nil -- Tabard
     }, -- Hunter  Beast         Mastery
     [8] = {
+        -- Hunter  Marksmanship
         [0] = nil, -- Head
         [1] = nil, -- Neck
         [2] = nil, -- Shoulders
@@ -167,6 +173,7 @@ local Gear = {
         [18] = nil -- Tabard
     }, -- Hunter  Marksmanship
     [9] = {
+        -- Hunter  Survival
         [0] = nil, -- Head
         [1] = nil, -- Neck
         [2] = nil, -- Shoulders
@@ -187,6 +194,7 @@ local Gear = {
         [18] = nil -- Tabard
     }, -- Hunter  Survival
     [10] = {
+        -- Rogue   Assassination
         [0] = nil, -- Head
         [1] = nil, -- Neck
         [2] = nil, -- Shoulders
@@ -207,6 +215,7 @@ local Gear = {
         [18] = nil -- Tabard
     }, -- Rogue   Assassination
     [11] = {
+        -- Rogue   Subtlety
         [0] = nil, -- Head
         [1] = nil, -- Neck
         [2] = nil, -- Shoulders
@@ -227,6 +236,7 @@ local Gear = {
         [18] = nil -- Tabard
     }, -- Rogue   Subtlety
     [12] = {
+        -- Rogue   Combat
         [0] = nil, -- Head
         [1] = nil, -- Neck
         [2] = nil, -- Shoulders
@@ -247,6 +257,7 @@ local Gear = {
         [18] = nil -- Tabard
     }, -- Rogue   Combat
     [13] = {
+        -- Priest  Discipline
         [0] = nil, -- Head
         [1] = nil, -- Neck
         [2] = nil, -- Shoulders
@@ -267,6 +278,7 @@ local Gear = {
         [18] = nil -- Tabard
     }, -- Priest  Discipline
     [14] = {
+        -- Priest  Holy
         [0] = nil, -- Head
         [1] = nil, -- Neck
         [2] = nil, -- Shoulders
@@ -287,6 +299,7 @@ local Gear = {
         [18] = nil -- Tabard
     }, -- Priest  Holy
     [15] = {
+        -- Priest  Shadow
         [0] = nil, -- Head
         [1] = nil, -- Neck
         [2] = nil, -- Shoulders
@@ -307,6 +320,7 @@ local Gear = {
         [18] = nil -- Tabard
     }, -- Priest  Shadow
     [16] = {
+        -- Death   Knight        Blood
         [0] = nil, -- Head
         [1] = nil, -- Neck
         [2] = nil, -- Shoulders
@@ -327,6 +341,7 @@ local Gear = {
         [18] = nil -- Tabard
     }, -- Death   Knight        Blood
     [17] = {
+        -- Death   Knight        Frost
         [0] = nil, -- Head
         [1] = nil, -- Neck
         [2] = nil, -- Shoulders
@@ -347,6 +362,7 @@ local Gear = {
         [18] = nil -- Tabard
     }, -- Death   Knight        Frost
     [18] = {
+        -- Death   Knight        Unholy
         [0] = nil, -- Head
         [1] = nil, -- Neck
         [2] = nil, -- Shoulders
@@ -367,6 +383,7 @@ local Gear = {
         [18] = nil -- Tabard
     }, -- Death   Knight        Unholy
     [19] = {
+        -- Shaman  Elemental
         [0] = nil, -- Head
         [1] = nil, -- Neck
         [2] = nil, -- Shoulders
@@ -387,6 +404,7 @@ local Gear = {
         [18] = nil -- Tabard
     }, -- Shaman  Elemental
     [20] = {
+        -- Shaman  Enhancement
         [0] = nil, -- Head
         [1] = nil, -- Neck
         [2] = nil, -- Shoulders
@@ -407,6 +425,7 @@ local Gear = {
         [18] = nil -- Tabard
     }, -- Shaman  Enhancement
     [21] = {
+        -- Shaman  Restoration
         [0] = nil, -- Head
         [1] = nil, -- Neck
         [2] = nil, -- Shoulders
@@ -427,6 +446,7 @@ local Gear = {
         [18] = nil -- Tabard
     }, -- Shaman  Restoration
     [22] = {
+        -- Mage    Arcane
         [0] = nil, -- Head
         [1] = nil, -- Neck
         [2] = nil, -- Shoulders
@@ -447,6 +467,7 @@ local Gear = {
         [18] = nil -- Tabard
     }, -- Mage    Arcane
     [23] = {
+        -- Mage    Fire
         [0] = nil, -- Head
         [1] = nil, -- Neck
         [2] = nil, -- Shoulders
@@ -467,6 +488,7 @@ local Gear = {
         [18] = nil -- Tabard
     }, -- Mage    Fire
     [24] = {
+        -- Mage    Frost
         [0] = nil, -- Head
         [1] = nil, -- Neck
         [2] = nil, -- Shoulders
@@ -487,6 +509,7 @@ local Gear = {
         [18] = nil -- Tabard
     }, -- Mage    Frost
     [25] = {
+        -- Warlock Affliction
         [0] = nil, -- Head
         [1] = nil, -- Neck
         [2] = nil, -- Shoulders
@@ -507,6 +530,7 @@ local Gear = {
         [18] = nil -- Tabard
     }, -- Warlock Affliction
     [26] = {
+        -- Warlock Demonology
         [0] = nil, -- Head
         [1] = nil, -- Neck
         [2] = nil, -- Shoulders
@@ -527,6 +551,7 @@ local Gear = {
         [18] = nil -- Tabard
     }, -- Warlock Demonology
     [27] = {
+        -- Warlock Destruction
         [0] = nil, -- Head
         [1] = nil, -- Neck
         [2] = nil, -- Shoulders
@@ -547,6 +572,7 @@ local Gear = {
         [18] = nil -- Tabard
     }, -- Warlock Destruction
     [28] = {
+        -- Druid Balance
         [0] = nil, -- Head
         [1] = nil, -- Neck
         [2] = nil, -- Shoulders
@@ -565,8 +591,9 @@ local Gear = {
         [16] = nil, -- OffHand
         [17] = nil, -- Ranged
         [18] = nil -- Tabard
-    }, -- Druid   Balance
+    }, -- Druid Balance
     [29] = {
+        -- Druid Feral
         [0] = nil, -- Head
         [1] = nil, -- Neck
         [2] = nil, -- Shoulders
@@ -585,8 +612,9 @@ local Gear = {
         [16] = nil, -- OffHand
         [17] = nil, -- Ranged
         [18] = nil -- Tabard
-    }, -- Druid   Feral
+    }, -- Druid Feral
     [30] = {
+        -- Druid Restoration
         [0] = nil, -- Head
         [1] = nil, -- Neck
         [2] = nil, -- Shoulders
@@ -605,8 +633,9 @@ local Gear = {
         [16] = nil, -- OffHand
         [17] = nil, -- Ranged
         [18] = nil -- Tabard
-    }, -- Druid   Restoration
+    }, -- Druid Restoration
     [31] = {
+        -- Druid Restoration
         [0] = nil, -- Head
         [1] = nil, -- Neck
         [2] = nil, -- Shoulders
@@ -625,7 +654,7 @@ local Gear = {
         [16] = nil, -- OffHand
         [17] = nil, -- Ranged
         [18] = nil -- Tabard
-    } -- Druid   Restoration
+    } -- Druid Restoration
 }
 
 Pre_Build.T = {
@@ -641,24 +670,12 @@ Pre_Build.T = {
             {"|TInterface/ICONS/Spell_Holy_SealOfMight:50|t Retribution", 6}
         },
         [3] = {
-            {
-                "|TInterface/ICONS/Ability_Hunter_BeastWithin:50|t Beast Mastery",
-                7
-            },
-            {
-                "|TInterface/ICONS/Ability_Hunter_MarkedForDeath:50|t Marksmanship",
-                8
-            },
-            {
-                "|TInterface/ICONS/Ability_Hunter_SurvivalInstincts:50|t Survival",
-                9
-            }
+            {"|TInterface/ICONS/Ability_Hunter_BeastWithin:50|t Beast Mastery", 7},
+            {"|TInterface/ICONS/Ability_Hunter_MarkedForDeath:50|t Marksmanship", 8},
+            {"|TInterface/ICONS/Ability_Hunter_SurvivalInstincts:50|t Survival", 9}
         },
         [4] = {
-            {
-                "|TInterface/ICONS/Ability_Rogue_ShadowDance:50|t Assassination",
-                10
-            },
+            {"|TInterface/ICONS/Ability_Rogue_ShadowDance:50|t Assassination", 10},
             {"|TInterface/ICONS/Ability_Rogue_CombatReadiness:50|t Combat", 11},
             {"|TInterface/ICONS/Ability_Rogue_Subtlety:50|t Subtlety", 12}
         },
@@ -670,21 +687,12 @@ Pre_Build.T = {
         [6] = {
             {"|TInterface/ICONS/Spell_Deathknight_BloodPresence:50|t Blood", 16},
             {"|TInterface/ICONS/Spell_Deathknight_FrostPresence:50|t Frost", 17},
-            {
-                "|TInterface/ICONS/Spell_Deathknight_UnholyPresence:50|t Unholy",
-                18
-            }
+            {"|TInterface/ICONS/Spell_Deathknight_UnholyPresence:50|t Unholy", 18}
         },
         [7] = {
             {"|TInterface/ICONS/Spell_Nature_Lightning:50|t Elemental", 19},
-            {
-                "|TInterface/ICONS/Spell_Nature_LightningShield:50|t Enhancement",
-                20
-            },
-            {
-                "|TInterface/ICONS/Spell_Nature_MagicImmunity:50|t Restoration",
-                21
-            }
+            {"|TInterface/ICONS/Spell_Nature_LightningShield:50|t Enhancement", 20},
+            {"|TInterface/ICONS/Spell_Nature_MagicImmunity:50|t Restoration", 21}
         },
         [8] = {
             {"|TInterface/ICONS/Spell_Holy_MagicalSentry:50|t Arcane", 22},
@@ -693,14 +701,8 @@ Pre_Build.T = {
         },
         [9] = {
             {"|TInterface/ICONS/Spell_Shadow_DeathCoil:50|t Affliction", 25},
-            {
-                "|TInterface/ICONS/Spell_Shadow_DemonicEmpathy:50|t Demonology",
-                26
-            },
-            {
-                "|TInterface/ICONS/Spell_Shadow_Metamorphosis:50|t Destruction",
-                27
-            }
+            {"|TInterface/ICONS/Spell_Shadow_DemonicEmpathy:50|t Demonology", 26},
+            {"|TInterface/ICONS/Spell_Shadow_Metamorphosis:50|t Destruction", 27}
         },
         [11] = {
             {"|TInterface/ICONS/Spell_Nature_Lightning:50|t Balance", 28},
