@@ -2,6 +2,7 @@ local Pre_Build = {}
 
 Pre_Build.Npc_Id = nil -- npc id of the vendor/trainer
 
+local FILE_NAME = string.match(debug.getinfo(1,'S').source, "[^/\\]*.lua$")
 --[[ So this might be a bit painful for the first time u need to add all the gear u want urself. Where it says nil = u highlight it and write the id of the item u want to be equipped when u select the option. ]]
 local Gear = {
     [1] = {
@@ -735,5 +736,6 @@ function Pre_Build.Selection(event, player, object, sender, intid, code, menuid)
     player:SendBroadcastMessage("|cff00ff00 Gear has been equipped. |r")
     Pre_Build.Hello(event, player, object)
 end
+PrintInfo("["..FILE_NAME.."] Loaded  .")
 RegisterCreatureGossipEvent(Pre_Build.Npc_Id, 1, Pre_Build.Hello)
 RegisterCreatureGossipEvent(Pre_Build.Npc_Id, 2, Pre_Build.Selection)
