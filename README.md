@@ -1,6 +1,6 @@
 # [Eluna-scripts]
 
-A repositoy.
+A repository.
 Scripts for Eluna public releases
 Some of them might be incompleted.
 
