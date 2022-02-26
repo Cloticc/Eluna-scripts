@@ -106,12 +106,17 @@ function Vip.Chat_Commands(event, player, msg, Type, lang)
     end
     if (Vip.Pet) then
         if (msg == Vip.List[4]) then
-        elseif not (player:GetClass() == 3) then
-            player:SendBroadcastMessage("You are not a hunter.")
+            if (gmRank <= 1) then
+                return
+            end
+            if not (player:GetClass() == 3) then
+                player:SendBroadcastMessage("You are not a hunter.")
+                return
+            end
+            player:SendBroadcastMessage("|cff00ff00[VIP]|r You have |cff00ffffreset pet talent|r.")
+            player:ResetPetTalents()
+            return false
         end
-        player:SendBroadcastMessage("|cff00ff00[VIP]|r You have |cff00ffffreset pet talent|r.")
-        player:ResetPetTalents()
-        return false
     end
 
     if (Vip.RepairAll) then
@@ -146,16 +151,14 @@ function Vip.Chat_Commands(event, player, msg, Type, lang)
     end
     if (Vip.Mall) then
         if (msg == Vip.List[8]) then
+            if (gmRank <= 1) then
+                return
+            end
             if (player:IsInCombat() == true) then
-                if (gmRank <= 1) then
-                    return
-                end
                 player:SendBroadcastMessage("|cff00ff00[VIP]|r You can't use this command in combat.")
             end
+
             player:SendBroadcastMessage("|cff00ff00[VIP]|r Teleported to |cff00ffffmall|r.")
-
-            -- player:RegisterEvent(Vip.TeleportMall, Vip.TimerMall, 1)
-
             player:RegisterEvent(Vip.TimerTeleport, 1000, 5) -- 5 seconds
             player:Teleport(Vip.Mapid, Vip.X, Vip.Y, Vip.Z, Vip.O)
             return false
