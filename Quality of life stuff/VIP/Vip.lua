@@ -5,13 +5,13 @@ Vip.AnnounceModule = true --change to false if u wanna disable this shows a mess
 Vip.Buffenabled = true
 Vip.ResetInstance = true
 Vip.ResetTalents = true
-Vip.Pet = false --change to true if u wanna enable this. Not sure if this works on ur server might sql crash it.
+Vip.Pet = true --change to true if u wanna enable this. Not sure if this works on ur server might sql crash it.
 Vip.RepairAll = true --Repair all gear
 Vip.Commands = true -- show command list
 Vip.Maxskill = true -- max skill
 Vip.Mall = true -- teleport mall
-
-Vip.Mapid, Vip.X, Vip.Y, Vip.Z, Vip.O = 0, -9443.9541015625, 65.456764221191, 56.173454284668, 0 -- mapid, x, y, z, o location for mall!
+-- Vip.CordMall = mappId, xCoord, yCoord, zCoord
+Vip.Mapid, Vip.X, Vip.Y, Vip.Z, Vip.O = 0, -9443.9541015625, 65.456764221191, 56.173454284668, 0 -- mapid, x, y, z, o
 
 Vip.List = {
     "#buff",
@@ -25,7 +25,7 @@ Vip.List = {
 }
 
 Vip.Buffs = {
-    --Place the buffs here just do exmaple: ID if u want more then one keep adding ID, ID, ID
+    --Place the buffs here just do exmaple:
     26393, -- Eluns blessing 10% Stats
     23735, -- Sayge's Dark Fortune of Strength
     23737, -- Sayge's Dark Fortune of Stamina
@@ -58,6 +58,8 @@ Vip.Buffs = {
 } -- vip buffs for players
 
 function Vip.TimerTeleport(eventid, delay, repeats, player)
+    -- local TeleportIn = 6 -- This will be TeleportIn - repeats, start at 6 to have 5 seconds
+
     player:SendAreaTriggerMessage("Teleporting in " .. repeats .. " seconds.")
 end
 
@@ -70,10 +72,10 @@ local FILE_NAME = string.match(debug.getinfo(1, "S").source, "[^/\\]*.lua$")
 function Vip.Chat_Commands(event, player, msg, Type, lang)
     local gmRank = player:GetGMRank()
     if (gmRank <= 1) then -- change number (0-3) 0 - to all  1,2,3 GM with rank
-        print(FILE_NAME .. ": " .. player:GetName() .. " tried to use a VIP command.")
-        player:SendBroadcastMessage("|cffFF0000[VIP]|r You can't use this vip command.")
-        return false
+        --if player use command then tell him he cant use it
+        return
     end
+
     if (Vip.Buffenabled) then
         if (msg == Vip.List[1]) then
             player:SendBroadcastMessage("|cff00ff00VIP|r|cff00ffff Buff|r")
@@ -89,6 +91,7 @@ function Vip.Chat_Commands(event, player, msg, Type, lang)
             player:UnbindAllInstances()
             return false
         end
+
     end
 
     if (Vip.ResetTalents) then
@@ -98,16 +101,15 @@ function Vip.Chat_Commands(event, player, msg, Type, lang)
             return false
         end
     end
-    if (Vip.Pet) then
-        if not (player:GetClass() == 3) then
-            return
-        end
-        if (msg == Vip.List[4]) then
-            player:SendBroadcastMessage("|cff00ff00[VIP]|r You have |cff00ffffreset pet talent.|r")
-            player:ResetPetTalents()
-            return false
-        end
-    end
+    -- if (Vip.Pet) then
+    --     if not (player:GetClass() == 3) then
+
+    --     end
+    --     if (msg == Vip.List[4]) then
+    --         player:SendBroadcastMessage("|cff00ff00[VIP]|r You have |cff00ffffreset pet talent.|r")
+    --         player:ResetPetTalents()
+    --     end
+    -- end
     if (Vip.RepairAll) then
         if (msg == Vip.List[5]) then
             player:SendBroadcastMessage("|cff00ff00[VIP]|r You have |cff00ffff repaired |r your gear.")
@@ -133,7 +135,7 @@ function Vip.Chat_Commands(event, player, msg, Type, lang)
         if (msg == Vip.List[8]) then
             if (player:IsInCombat() == true) then
                 player:SendBroadcastMessage("|cff00ff00[VIP]|r You can't use this command in combat.")
-                return false
+
             end
             player:SendBroadcastMessage("|cff00ff00[VIP]|r Teleported to |cff00ffffmall|r.")
 
@@ -141,6 +143,7 @@ function Vip.Chat_Commands(event, player, msg, Type, lang)
 
             player:RegisterEvent(Vip.TimerTeleport, 1000, 5) -- 5 seconds
         -- player:Teleport(Vip.Mapid, Vip.X, Vip.Y, Vip.Z, Vip.O)
+        return false
         end
 
     end
