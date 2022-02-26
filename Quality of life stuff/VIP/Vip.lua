@@ -6,7 +6,7 @@ Vip.AnnounceModule = true --change to false if u wanna disable this shows a mess
 Vip.Buffenabled = true
 Vip.ResetInstance = true
 Vip.ResetTalents = true
-Vip.Pet = true --change to true if u wanna enable this. Not sure if this works on ur server might sql crash it.
+Vip.Pet = false --change to true if u wanna enable this. Not sure if this works on ur server might sql crash it.
 Vip.RepairAll = true --Repair all gear
 Vip.Commands = true -- show command list
 Vip.Maxskill = true -- max skill
@@ -119,7 +119,6 @@ function Vip.Chat_Commands(event, player, msg, Type, lang)
             return false
         end
     end
-
     if (Vip.RepairAll) then
         if (msg == Vip.List[5]) then
             if (gmRank <= Vip.Rank) then
@@ -146,6 +145,8 @@ function Vip.Chat_Commands(event, player, msg, Type, lang)
             if (gmRank <= Vip.Rank) then
                 return
             end
+
+            player:AdvanceAllSkills(999)
             player:SendBroadcastMessage("|cff00ff00[VIP]|r You have |cff00ffffmaxskill|r.")
             return false
         end
@@ -160,7 +161,7 @@ function Vip.Chat_Commands(event, player, msg, Type, lang)
             end
             player:SendBroadcastMessage("|cff00ff00[VIP]|r Teleported to |cff00ffffmall|r.")
             player:RegisterEvent(Vip.TimerTeleport, 1000, 5) -- 5 seconds
-            player:Teleport(Vip.Mapid, Vip.X, Vip.Y, Vip.Z, Vip.O)
+            player:RegisterEvent(Vip.TeleportMall, 6000, 0)
             return false
         end
     end
