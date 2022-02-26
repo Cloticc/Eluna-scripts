@@ -1,5 +1,5 @@
 Vip = {}
-Vip.Rank = 2 -- 1 = GM, 2 = VIP, 3 = SVIP, 4 = Admin, 5 = Owner
+Vip.Rank = 2 -- 1 = VIP, 2 = GM, 3 = Admin 4 = Admin
 
 Vip.AnnounceModule = true --change to false if u wanna disable this shows a message in the chat that it is enabled
 --change to false if u wanna disable this
