@@ -71,13 +71,11 @@ local FILE_NAME = string.match(debug.getinfo(1, "S").source, "[^/\\]*.lua$")
 
 function Vip.Chat_Commands(event, player, msg, Type, lang)
     local gmRank = player:GetGMRank()
-    if (gmRank <= 1) then -- change number (0-3) 0 - to all  1,2,3 GM with rank
-        --if player use command then tell him he cant use it
-        return
-    end
-
     if (Vip.Buffenabled) then
         if (msg == Vip.List[1]) then
+            if (gmRank <= 1) then
+                return
+            end
             player:SendBroadcastMessage("|cff00ff00VIP|r|cff00ffff Buff|r")
             for _, v in pairs(Vip.Buffs) do
                 player:AddAura(v, player)
@@ -87,31 +85,40 @@ function Vip.Chat_Commands(event, player, msg, Type, lang)
     end
     if (Vip.ResetInstance) then
         if (msg == Vip.List[2]) then
-            player:SendBroadcastMessage("|cff00ff00[VIP]|r You have reset your|cff00ffff instance |r.")
+            if (gmRank <= 1) then
+                return
+            end
+            player:SendBroadcastMessage("|cff00ff00[VIP]|r You have reset your|cff00ffff instance|r.")
             player:UnbindAllInstances()
             return false
         end
-
     end
 
     if (Vip.ResetTalents) then
         if (msg == Vip.List[3]) then
+            if (gmRank <= 1) then
+                return
+            end
             player:SendBroadcastMessage("|cff00ff00[VIP]|r You have reset your|cff00ffff talents|r.")
             player:ResetTalents()
             return false
         end
     end
-    -- if (Vip.Pet) then
-    --     if not (player:GetClass() == 3) then
+    if (Vip.Pet) then
+        if (msg == Vip.List[4]) then
+        elseif not (player:GetClass() == 3) then
+            player:SendBroadcastMessage("You are not a hunter.")
+        end
+        player:SendBroadcastMessage("|cff00ff00[VIP]|r You have |cff00ffffreset pet talent|r.")
+        player:ResetPetTalents()
+        return false
+    end
 
-    --     end
-    --     if (msg == Vip.List[4]) then
-    --         player:SendBroadcastMessage("|cff00ff00[VIP]|r You have |cff00ffffreset pet talent.|r")
-    --         player:ResetPetTalents()
-    --     end
-    -- end
     if (Vip.RepairAll) then
         if (msg == Vip.List[5]) then
+            if (gmRank <= 1) then
+                return
+            end
             player:SendBroadcastMessage("|cff00ff00[VIP]|r You have |cff00ffff repaired |r your gear.")
             player:DurabilityRepairAll(false)
             return false
@@ -119,6 +126,9 @@ function Vip.Chat_Commands(event, player, msg, Type, lang)
     end
     if (Vip.Commands) then
         if (msg == Vip.List[6]) then
+            if (gmRank <= 1) then
+                return
+            end
             for _, v in pairs(Vip.List) do
                 player:SendBroadcastMessage("|cff00ff00[VIP]|r You have |cff00ffff" .. v .. "|r.")
             end
@@ -127,6 +137,9 @@ function Vip.Chat_Commands(event, player, msg, Type, lang)
     end
     if (Vip.Maxskill) then
         if (msg == Vip.List[7]) then
+            if (gmRank <= 1) then
+                return
+            end
             player:SendBroadcastMessage("|cff00ff00[VIP]|r You have |cff00ffffmaxskill|r.")
             return false
         end
@@ -134,18 +147,19 @@ function Vip.Chat_Commands(event, player, msg, Type, lang)
     if (Vip.Mall) then
         if (msg == Vip.List[8]) then
             if (player:IsInCombat() == true) then
+                if (gmRank <= 1) then
+                    return
+                end
                 player:SendBroadcastMessage("|cff00ff00[VIP]|r You can't use this command in combat.")
-
             end
             player:SendBroadcastMessage("|cff00ff00[VIP]|r Teleported to |cff00ffffmall|r.")
 
             -- player:RegisterEvent(Vip.TeleportMall, Vip.TimerMall, 1)
 
             player:RegisterEvent(Vip.TimerTeleport, 1000, 5) -- 5 seconds
-        player:Teleport(Vip.Mapid, Vip.X, Vip.Y, Vip.Z, Vip.O)
-        return false
+            player:Teleport(Vip.Mapid, Vip.X, Vip.Y, Vip.Z, Vip.O)
+            return false
         end
-
     end
 end
 
