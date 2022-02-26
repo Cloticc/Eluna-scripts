@@ -5,13 +5,13 @@ Vip.AnnounceModule = true --change to false if u wanna disable this shows a mess
 Vip.Buffenabled = true
 Vip.ResetInstance = true
 Vip.ResetTalents = true
-Vip.Pet = true --change to true if u wanna enable this. Not sure if this works on ur server might sql crash it.
+Vip.Pet = false --change to true if u wanna enable this. Not sure if this works on ur server might sql crash it.
 Vip.RepairAll = true --Repair all gear
 Vip.Commands = true -- show command list
 Vip.Maxskill = true -- max skill
 Vip.Mall = true -- teleport mall
--- Vip.CordMall = mappId, xCoord, yCoord, zCoord
-Vip.Mapid, Vip.X, Vip.Y, Vip.Z, Vip.O = 0, -9443.9541015625, 65.456764221191, 56.173454284668, 0 -- mapid, x, y, z, o
+
+Vip.Mapid, Vip.X, Vip.Y, Vip.Z, Vip.O = 0, -9443.9541015625, 65.456764221191, 56.173454284668, 0 -- mapid, x, y, z, o location for mall!
 
 Vip.List = {
     "#buff",
@@ -25,7 +25,7 @@ Vip.List = {
 }
 
 Vip.Buffs = {
-    --Place the buffs here just do exmaple:
+    --Place the buffs here just do exmaple: ID if u want more then one keep adding ID, ID, ID
     26393, -- Eluns blessing 10% Stats
     23735, -- Sayge's Dark Fortune of Strength
     23737, -- Sayge's Dark Fortune of Stamina
@@ -58,8 +58,6 @@ Vip.Buffs = {
 } -- vip buffs for players
 
 function Vip.TimerTeleport(eventid, delay, repeats, player)
-    -- local TeleportIn = 6 -- This will be TeleportIn - repeats, start at 6 to have 5 seconds
-
     player:SendAreaTriggerMessage("Teleporting in " .. repeats .. " seconds.")
 end
 
