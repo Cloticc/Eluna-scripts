@@ -1,4 +1,5 @@
 Vip = {}
+Vip.Rank = 2 -- 1 = GM, 2 = VIP, 3 = SVIP, 4 = Admin, 5 = Owner
 
 Vip.AnnounceModule = true --change to false if u wanna disable this shows a message in the chat that it is enabled
 --change to false if u wanna disable this
@@ -73,7 +74,7 @@ function Vip.Chat_Commands(event, player, msg, Type, lang)
     local gmRank = player:GetGMRank()
     if (Vip.Buffenabled) then
         if (msg == Vip.List[1]) then
-            if (gmRank <= 1) then
+            if (gmRank <= Vip.Rank) then
                 return
             end
             player:SendBroadcastMessage("|cff00ff00VIP|r|cff00ffff Buff|r")
@@ -85,7 +86,7 @@ function Vip.Chat_Commands(event, player, msg, Type, lang)
     end
     if (Vip.ResetInstance) then
         if (msg == Vip.List[2]) then
-            if (gmRank <= 1) then
+            if (gmRank <= Vip.Rank) then
                 return
             end
             player:SendBroadcastMessage("|cff00ff00[VIP]|r You have reset your|cff00ffff instance|r.")
@@ -96,7 +97,7 @@ function Vip.Chat_Commands(event, player, msg, Type, lang)
 
     if (Vip.ResetTalents) then
         if (msg == Vip.List[3]) then
-            if (gmRank <= 1) then
+            if (gmRank <= Vip.Rank) then
                 return
             end
             player:SendBroadcastMessage("|cff00ff00[VIP]|r You have reset your|cff00ffff talents|r.")
@@ -106,7 +107,7 @@ function Vip.Chat_Commands(event, player, msg, Type, lang)
     end
     if (Vip.Pet) then
         if (msg == Vip.List[4]) then
-            if (gmRank <= 1) then
+            if (gmRank <= Vip.Rank) then
                 return
             end
             if not (player:GetClass() == 3) then
@@ -121,7 +122,7 @@ function Vip.Chat_Commands(event, player, msg, Type, lang)
 
     if (Vip.RepairAll) then
         if (msg == Vip.List[5]) then
-            if (gmRank <= 1) then
+            if (gmRank <= Vip.Rank) then
                 return
             end
             player:SendBroadcastMessage("|cff00ff00[VIP]|r You have |cff00ffff repaired |r your gear.")
@@ -131,7 +132,7 @@ function Vip.Chat_Commands(event, player, msg, Type, lang)
     end
     if (Vip.Commands) then
         if (msg == Vip.List[6]) then
-            if (gmRank <= 1) then
+            if (gmRank <= Vip.Rank) then
                 return
             end
             for _, v in pairs(Vip.List) do
@@ -142,7 +143,7 @@ function Vip.Chat_Commands(event, player, msg, Type, lang)
     end
     if (Vip.Maxskill) then
         if (msg == Vip.List[7]) then
-            if (gmRank <= 1) then
+            if (gmRank <= Vip.Rank) then
                 return
             end
             player:SendBroadcastMessage("|cff00ff00[VIP]|r You have |cff00ffffmaxskill|r.")
@@ -151,13 +152,12 @@ function Vip.Chat_Commands(event, player, msg, Type, lang)
     end
     if (Vip.Mall) then
         if (msg == Vip.List[8]) then
-            if (gmRank <= 1) then
+            if (gmRank <= Vip.Rank) then
                 return
             end
             if (player:IsInCombat() == true) then
                 player:SendBroadcastMessage("|cff00ff00[VIP]|r You can't use this command in combat.")
             end
-
             player:SendBroadcastMessage("|cff00ff00[VIP]|r Teleported to |cff00ffffmall|r.")
             player:RegisterEvent(Vip.TimerTeleport, 1000, 5) -- 5 seconds
             player:Teleport(Vip.Mapid, Vip.X, Vip.Y, Vip.Z, Vip.O)
