@@ -142,7 +142,7 @@ function Vip.Chat_Commands(event, player, msg, Type, lang)
             -- player:RegisterEvent(Vip.TeleportMall, Vip.TimerMall, 1)
 
             player:RegisterEvent(Vip.TimerTeleport, 1000, 5) -- 5 seconds
-        -- player:Teleport(Vip.Mapid, Vip.X, Vip.Y, Vip.Z, Vip.O)
+        player:Teleport(Vip.Mapid, Vip.X, Vip.Y, Vip.Z, Vip.O)
         return false
         end
 
