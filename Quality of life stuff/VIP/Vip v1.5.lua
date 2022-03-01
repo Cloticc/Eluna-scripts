@@ -3,7 +3,7 @@
 Vip = {}
 
 Vip.ItemId = 1 -- Item ID to be consumed by the VIP
-Vip.SpellId = 36356 -- Spell ID For enabling the commands to be used by the VIP
+Vip.SpellId = 36356 -- Spell ID For enabling the commands to be used by the VIP atm it set to https://wotlkdb.com/?spell=36356
 Vip.AnnounceModule = true -- change to false if u wanna disable this shows a message in the chat that it is enabled
 -- change to false if u wanna disable this
 Vip.Buffenabled = true -- Buffs
