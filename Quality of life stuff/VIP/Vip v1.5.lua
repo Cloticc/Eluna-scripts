@@ -162,7 +162,7 @@ function Vip.Chat_Commands(event, player, msg, Type, lang)
             end
             player:SendBroadcastMessage("|cff00ff00[VIP]|r Teleported to |cff00ffffmall|r.")
             player:RegisterEvent(Vip.TimerTeleport, 1000, 5) -- 5 seconds
-            player:Teleport(Vip.Mapid, Vip.X, Vip.Y, Vip.Z, Vip.O)
+            player:RegisterEvent(Vip.TeleportMall, 6000, 0)
             return false
         end
     end
