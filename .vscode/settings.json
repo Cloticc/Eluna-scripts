@@ -3,6 +3,7 @@
         "gmRank",
         "RegisterPlayerEvent",
         "RegisterCreatureGossipEvent",
-        "GetItemLink"
+        "GetItemLink",
+        "PrintInfo"
     ]
 }

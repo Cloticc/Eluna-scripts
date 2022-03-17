@@ -489,7 +489,7 @@ end
 
 local function OnCommand(event, player, command)
     if (GM_LearnAllCmd and (command:lower() == "learn all mounts") and (player:GetGMRank() >= 1)) then
-        print("FUCK")
+
         player:LearnSpell(33388) -- Apprentince Riding (75)
         player:LearnSpell(33391) -- Journeyman Riding (150)
         player:LearnSpell(34090) -- Expert Riding (225)
