@@ -32,7 +32,7 @@ FILE_NAME = string.match(debug.getinfo(1, "S").source, "[^/\\]*.lua$")
 function teleportToNpc.command(event, player, command)
     LoadDatabase()
     if (command:find(MSG_TPN)) then
-        local npcGuid = tonumber(tostring(string.gsub(command, "tpn ", "")))
+        local npcGuid = tonumber(tostring(string.gsub(command, MSG_TPN , "")))
         if (npcGuid) then
             local npc = DatabaseCache[npcGuid]
             if (npc) then
