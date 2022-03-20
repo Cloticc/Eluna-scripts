@@ -4,11 +4,11 @@ local teleportToNpc = {}
 local DatabaseCache = {}
 
 local function LoadDatabase()
-    local ExampleQuery =
+    local Query =
         WorldDBQuery("SELECT guid, map, position_x, position_y, position_z, orientation FROM creature;")
-    if (ExampleQuery) then
+    if (Query) then
         repeat
-            local row = ExampleQuery:GetRow()
+            local row = Query:GetRow()
             if (row) then
                 local guid = row.guid
                 local map = row.map
@@ -24,7 +24,7 @@ local function LoadDatabase()
                     o = o
                 }
             end
-        until not ExampleQuery:NextRow()
+        until not Query:NextRow()
     end
 end
 
