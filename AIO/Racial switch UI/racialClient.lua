@@ -14,8 +14,7 @@ local racialUtilityList = {
     7744,
     26297,
     28730,
-    59542,
-    7
+    59542
 }
 
 local racialPassiveList = {
@@ -27,7 +26,6 @@ local racialPassiveList = {
     822,
     20591,
     20592,
-    7744,
     5227,
     6562,
     20582,
@@ -40,16 +38,16 @@ local racialPassiveList = {
     20598
 }
 
-local frame = CreateFrame("Frame", "MAINFRAME", UIParent)
+local frame = CreateFrame("Frame", "MAINFRAME", UIParent, "UIPanelDialogTemplate")
 frame.width = 600
-frame.height = 600
+frame.height = 700
 frame:SetFrameStrata("FULLSCREEN_DIALOG")
 frame:SetSize(frame.width, frame.height)
 frame:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
 frame:SetBackdrop(
     {
         bgFile = "Interface\\DialogFrame\\UI-DialogBox-Background",
-        edgeFile = "Interface\\DialogFrame\\UI-DialogBox-Border",
+        edgeFile = "Interface\\T    -DialogFrame-NewButton",
         tile = true,
         tileSize = 32,
         edgeSize = 32,
@@ -68,6 +66,13 @@ frame:SetScript("OnDragStart", frame.StartMoving)
 frame:SetScript("OnDragStop", frame.StopMovingOrSizing)
 
 tinsert(UISpecialFrames, "MAINFRAME")
+--set frame level to be above the default
+
+--set text middle at the top of the frame
+local text = frame:CreateFontString(nil, "OVERLAY")
+text:SetFont("Fonts\\FRIZQT__.TTF", 15)
+text:SetPoint("TOP", frame, "TOP", 0, -7)
+text:SetText("Racial Switch")
 
 local closeButton = CreateFrame("Button", nil, frame, "UIPanelButtonTemplate")
 closeButton:SetPoint("BOTTOM", 0, 10)
@@ -82,24 +87,16 @@ closeButton:SetScript(
 )
 frame.closeButton = closeButton
 
---Testing a button for handle.
-local testButton = CreateFrame("Button", nil, frame, "UIPanelButtonTemplate")
-testButton:SetPoint("BOTTOMRIGHT", -10, 10)
-testButton:SetHeight(25)
-testButton:SetWidth(70)
-testButton:SetText("Test")
-testButton:SetScript(
-    "OnClick",
-    function()
-        AIO.Handle("racialSwitch", "unLearnAllRacials")
-    end
-)
-frame.testButton = testButton
+local utilityText = frame:CreateFontString(nil, "OVERLAY")
+utilityText:SetFont("Fonts\\FRIZQT__.TTF", 20)
+utilityText:SetPoint("TOPLEFT", frame, "TOPLEFT", frame.height / 6.8, -40)
+utilityText:SetText("Utility")
+frame.utilityText = utilityText
 
 local utilityButton = {}
 for i = 1, #racialUtilityList do
     utilityButton[i] = CreateFrame("Button", nil, frame, "UIPanelButtonTemplate")
-    utilityButton[i]:SetPoint("TOPLEFT", frame, "TOPLEFT", 10, -10 - (i * 50))
+    utilityButton[i]:SetPoint("TOPLEFT", frame, "TOPLEFT", 25, -35 - (i * 50))
     utilityButton[i]:SetHeight(32)
     utilityButton[i]:SetWidth(32)
     utilityButton[i].texture = utilityButton[i]:CreateTexture(nil, "BACKGROUND")
@@ -128,51 +125,55 @@ for i = 1, #racialUtilityList do
     utilityButton[i].text:SetWordWrap(false)
     utilityButton[i].text:SetShadowOffset(1, -1)
     utilityButton[i].text:SetShadowColor(0, 0, 0, 1)
-    --racialActivate
-    --racialDeactivate
---Max 1 selected button at a time.
-
-
-
-
-    -- utilityButton[i]:SetScript(
-    --     "OnClick",
-    --     function(self)
-
-
-    --         if self.isSelected then
-    --             self.isSelected = false
-    --             self.text:SetTextColor(1, 1, 1) --white
-    --             -- self.texture:SetAlpha(0.5) --50%
-    --             AIO.Handle("racialSwitch", "racialDeactivate", racialUtilityList[i])
-    --         else
-    --             self.isSelected = true
-    --             self.text:SetTextColor(0, 1, 0)
-    --             self.texture:SetAlpha(1)
-    --             AIO.Handle("racialSwitch", "racialActivate", racialUtilityList[i])
-    --         end
-    --     end
-    -- )
-
-    --max 1 button active with all the above code
     utilityButton[i]:SetScript(
         "OnClick",
         function(self)
-            for i = 1, #utilityButton do
-                utilityButton[i].isSelected = false
-                utilityButton[i].text:SetTextColor(1, 1, 1) --white
-                utilityButton[i].texture:SetAlpha(0.5) --50%
+
+            if self.isSelected then
+                self.isSelected = false
+                self.text:SetTextColor(1, 1, 1) --white
+                self.texture:SetAlpha(0.5) --50%
                 AIO.Handle("racialSwitch", "racialDeactivate", racialUtilityList[i])
+            else
+
+                for i = 1, #utilityButton do
+                    utilityButton[i].isSelected = false
+                    utilityButton[i].text:SetTextColor(1, 1, 1) --white
+                    utilityButton[i].texture:SetAlpha(0.5) --50%
+                    AIO.Handle("racialSwitch", "racialDeactivate", racialUtilityList[i])
+                end
+                self.isSelected = true
+                self.text:SetTextColor(1, 1, 0)
+                self.texture:SetAlpha(1)
+                AIO.Handle("racialSwitch", "racialActivate", racialUtilityList[i])
             end
-            self.isSelected = true
-            self.text:SetTextColor(0, 1, 0)
-            self.texture:SetAlpha(1)
-            AIO.Handle("racialSwitch", "racialActivate", racialUtilityList[i])
         end
     )
 
     frame.utilityButton = utilityButton
 end
+
+
+--reload
+local reloadButton = CreateFrame("Button", nil, frame, "UIPanelButtonTemplate")
+reloadButton:SetPoint("BOTTOMLEFT", frame, "BOTTOMLEFT", 10, 10)
+reloadButton:SetHeight(25)
+reloadButton:SetWidth(70)
+reloadButton:SetText("RELOADUI")
+reloadButton:SetScript(
+    "OnClick",
+    function(self)
+        ReloadUI()
+    end
+)
+frame.reloadButton = reloadButton --save the button in the frame
+
+--set text above passiveButton saying "Passive"
+local passiveText = frame:CreateFontString(nil, "OVERLAY")
+passiveText:SetFont("Fonts\\FRIZQT__.TTF", 20)
+passiveText:SetPoint("TOPLEFT", frame, "TOPLEFT", frame.height / 2.1, -40)
+passiveText:SetText("Passive")
+frame.passiveText = passiveText
 
 local passiveButton = {}
 for i = 1, #racialPassiveList do
@@ -182,9 +183,9 @@ for i = 1, #racialPassiveList do
     --    passiveButton[i]:SetPoint("TOPLEFT", frame, "TOPLEFT",  200, -10 - (i * 50))
     --if button go over 10 then move it to the right
     if i > 10 then
-        passiveButton[i]:SetPoint("TOPLEFT", frame, "TOPLEFT", 400, -10 - (i - 10) * 50)
+        passiveButton[i]:SetPoint("TOPLEFT", frame, "TOPLEFT", 425, -35 - (i - 10) * 50)
     else
-        passiveButton[i]:SetPoint("TOPLEFT", frame, "TOPLEFT", 200, -10 - (i * 50))
+        passiveButton[i]:SetPoint("TOPLEFT", frame, "TOPLEFT", 225, -35 - (i * 50))
     end
     passiveButton[i]:SetHeight(32)
     passiveButton[i]:SetWidth(32)
@@ -217,52 +218,93 @@ for i = 1, #racialPassiveList do
     passiveButton[i].highlight:SetTexCoord(0.1, 0.9, 0.1, 0.9)
     passiveButton[i].highlight:SetAlpha(0.5)
     passiveButton[i].highlight:SetBlendMode("ADD")
-
     passiveButton[i].highlight:Hide()
-
-    -- passiveButton[i]:SetScript(
-    --     "OnClick",
-    --     function(self)
-    --         for j = 1, #passiveButton do
-    --             passiveButton[j]:SetBackdropColor(0, 0, 0, 0)
-    --             passiveButton[j].text:SetTextColor(1, 1, 1)
-    --             passiveButton[j].highlight:Hide()
-    --         end
-    --         self:SetBackdropColor(0, 0, 0, 0.5)
-    --         self.text:SetTextColor(1, 0, 0)
-    --         self.highlight:Show()
-    --
-    --     end
-    -- )
-    --GameTooltip
     passiveButton[i]:SetScript(
         "OnClick",
         function(self)
-            for i = 1, #passiveButton do
-                passiveButton[i].isSelected = false
-                passiveButton[i].text:SetTextColor(1, 1, 1) --white
-                passiveButton[i].texture:SetAlpha(0.5) --50%
+
+            if self.isSelected then
+                self.isSelected = false
+                self.text:SetTextColor(1, 1, 1) --white
+                self.texture:SetAlpha(0.5) --50%
                 AIO.Handle("racialSwitch", "racialDeactivate", racialPassiveList[i])
+            else
+
+                for i = 1, #racialPassiveList do
+                    passiveButton[i].isSelected = false
+                    passiveButton[i].text:SetTextColor(1, 1, 1) --white
+                    utilityButton[i].texture:SetAlpha(0.5) --50%
+                    AIO.Handle("racialSwitch", "racialDeactivate", racialPassiveList[i])
+                end
+                self.isSelected = true
+                self.text:SetTextColor(1, 1, 0)
+                self.texture:SetAlpha(1)
+                AIO.Handle("racialSwitch", "racialActivate", racialPassiveList[i])
             end
-            self.isSelected = true
-            self.text:SetTextColor(0, 1, 0)
-            self.texture:SetAlpha(1)
-            AIO.Handle("racialSwitch", "racialActivate", racialPassiveList[i])
         end
     )
 
     frame.passiveButton = passiveButton
 end
 
-SLASH_AHF1 = "/tt"
+
+local testButton = CreateFrame("Button", nil, frame, "UIPanelButtonTemplate")
+testButton:SetPoint("BOTTOMRIGHT", -10, 10)
+testButton:SetHeight(25)
+testButton:SetWidth(70)
+testButton:SetText("Reset")
+testButton:SetScript(
+    "OnClick",
+    function(self)
+        for i = 1, #passiveButton do
+            passiveButton[i].isSelected = false
+            passiveButton[i].text:SetTextColor(1, 1, 1) --white
+            passiveButton[i].texture:SetAlpha(0.5) --50%
+            AIO.Handle("racialSwitch", "racialDeactivate", racialPassiveList[i])
+        end
+        for i = 1, #utilityButton do
+            utilityButton[i].isSelected = false
+            utilityButton[i].text:SetTextColor(1, 1, 1) --white
+            utilityButton[i].texture:SetAlpha(0.5) --50%
+            AIO.Handle("racialSwitch", "racialDeactivate", racialUtilityList[i])
+        end
+        -- for i = 1, #racialButton do
+        --     racialButton[i].isSelected = false
+        --     racialButton[i].text:SetTextColor(1, 1, 1) --white
+        --     racialButton[i].texture:SetAlpha(0.5) --50%
+        --     AIO.Handle("racialSwitch", "racialDeactivate", racialList[i])
+        -- end
+    end
+)
+
+frame.testButton = testButton
+
+SLASH_AHF1 = "/tf"
 SlashCmdList.AHF = function()
-    if MAINFRAME:IsShown() then
-        MAINFRAME:Hide()
+    if frame:IsShown() then
+        frame:Hide()
     else
-        MAINFRAME:Show()
+        frame:Show()
     end
 end
 
 function MyHandlers.MyAddonFrame(player)
     frame:Show()
+    -- frame:Hide()
 end
+
+-- -- This script shows how to
+
+-- -- Make a global variable
+-- -- Notice how the variable is only initialized if it doesnt exist yet because
+-- -- the persisting variable can be loaded already
+-- PLAYER_STUFF = PLAYER_STUFF or { var = 0 }
+
+-- -- Then you add it as a saved variable for account or character
+-- AIO.AddSavedVar("PLAYER_STUFF")
+
+-- -- Then you store data to it or read data from it
+-- PLAYER_STUFF.var = PLAYER_STUFF.var+1
+-- print("This value should increment on reloads of UI:", PLAYER_STUFF.var)
+
+--save selection of utilityButton and passiveButton
