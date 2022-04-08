@@ -233,7 +233,7 @@ for i = 1, #racialPassiveList do
                 for i = 1, #racialPassiveList do
                     passiveButton[i].isSelected = false
                     passiveButton[i].text:SetTextColor(1, 1, 1) --white
-                    utilityButton[i].texture:SetAlpha(0.5) --50%
+                    passiveButton[i].texture:SetAlpha(0.5) --50%
                     AIO.Handle("racialSwitch", "racialDeactivate", racialPassiveList[i])
                 end
                 self.isSelected = true
