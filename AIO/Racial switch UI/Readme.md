@@ -8,4 +8,4 @@
 
 #### To open the UI, write in chat `/tt` or `.tt` key
 
-[![Watch the video](https://ibb.co/vschkhz)](https://streamable.com/xwtxoh)
+[![Watch the video](https://i.ibb.co/DG1YQYK/image.png)](https://streamable.com/xwtxoh)
