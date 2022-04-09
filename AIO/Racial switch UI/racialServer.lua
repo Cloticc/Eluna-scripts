@@ -24,7 +24,6 @@ local racialPassiveList = {
     822,
     20591,
     20592,
-    7744,
     5227,
     6562,
     20582,
@@ -38,45 +37,33 @@ local racialPassiveList = {
 }
 
 function MyHandlers.racialActivate(player, spellId)
-    print("Start")
+    for i = 1, #racialUtilityList do --Need to redo this later.
+        if player:HasSpell(racialUtilityList[i]) then
+            player:RemoveSpell(racialUtilityList[i])
+        end
 
-    print("Learn " .. spellId)
-
+    end
     player:LearnSpell(spellId)
-
-    print("End")
-
 end
 
 function MyHandlers.racialDeactivate(player, spellId)
-    print("Start")
-
-    print("Unlearn " .. spellId)
-
-    player:RemoveSpell(spellId)
-
-    print("End")
-
+player:RemoveSpell(spellId)--might bug out so u be able to select multiple passives if u relog need to fix.
 end
 
+
 function MyHandlers.unLearnAllRacials(player, spellId)
-
-
     for i = 1, #racialUtilityList do
-        print("Unlearn " .. racialUtilityList[i])
         player:RemoveSpell(racialUtilityList[i])
     end
     for i = 1, #racialPassiveList do
-        print("Unlearn " .. racialPassiveList[i])
         player:RemoveSpell(racialPassiveList[i])
     end
-
-
-
 end
 
+
+
 local function showWindowPls(event, player, command)
-    if (command == "tt") then
+    if (command == "tf") then
         AIO.Handle(player, "racialSwitch", "MyAddonFrame")
         return false
     end
