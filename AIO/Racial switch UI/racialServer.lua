@@ -37,19 +37,31 @@ local racialPassiveList = {
 }
 
 function MyHandlers.racialActivate(player, spellId)
-    for i = 1, #racialUtilityList do --Need to redo this later.
+    for i = 1, #racialUtilityList do
         if player:HasSpell(racialUtilityList[i]) then
             player:RemoveSpell(racialUtilityList[i])
         end
-
     end
     player:LearnSpell(spellId)
+
+    --TODO add a check if the player has any other spell learned
 end
 
-function MyHandlers.racialDeactivate(player, spellId)
-player:RemoveSpell(spellId)--might bug out so u be able to select multiple passives if u relog need to fix.
+function MyHandlers.racialDeactivateUtility(player, spellId)
+    for i = 1, #racialUtilityList do
+        if spellId == racialUtilityList[i] then
+            return player:RemoveSpell(spellId)
+        end
+    end
 end
 
+function MyHandlers.racialDeactivatePassive(player, spellId)
+    for i = 1, #racialPassiveList do
+        if spellId == racialPassiveList[i] then
+            return player:RemoveSpell(spellId)
+        end
+    end
+end
 
 function MyHandlers.unLearnAllRacials(player, spellId)
     for i = 1, #racialUtilityList do
@@ -59,6 +71,7 @@ function MyHandlers.unLearnAllRacials(player, spellId)
         player:RemoveSpell(racialPassiveList[i])
     end
 end
+
 
 
 
