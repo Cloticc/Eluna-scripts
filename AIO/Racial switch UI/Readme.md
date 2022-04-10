@@ -8,4 +8,4 @@
 
 #### To open the UI, write in chat `/tf` or `.tf` key
 
-[![Watch the video](https://i.ibb.co/47B73Tw/image.png)](https://streamable.com/jn58dn)
+[![Watch the video](https://i.ibb.co/8rhNStB/image.png)](https://streamable.com/jn58dn)
