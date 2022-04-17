@@ -8,4 +8,4 @@
 
 #### To open the UI, write in chat `/tu` or `.tu` key
 
-<!-- [![Watch the video](https://i.ibb.co/8rhNStB/image.png)](https://streamable.com/jn58dn) -->
+[![Watch the video](https://i.ibb.co/MV1Nzr0/image.png)](https://streamable.com/pt8ppi)
