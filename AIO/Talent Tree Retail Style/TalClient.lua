@@ -376,7 +376,7 @@ for i = 1, #talentT[playerClass] do
                 GameTooltip:SetHyperlink("spell:" .. spellId)
                 GameTooltip:AddLine("Rank: " .. select(2, GetSpellInfo(spellId)))
 
-                -- if buttonGrid[i][j].active == true then
+                -- if buttonGrid[i][j].active == true then ----testing
                 --     GameTooltip:AddLine("|CFF0042FF Require Xitem |r")
                 --     GameTooltip:AddLine("|cffff0000 Right-click to unlearn spell |r")
                 -- else
