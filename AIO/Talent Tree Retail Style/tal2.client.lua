@@ -178,7 +178,7 @@ function con.createButton(parent, text, height, point, relativeFrame, relativePo
     return button
 end
 
-local function createtalentT(button, i, j)
+local function createtalentT(button, i, j)--test
     local talent = CreateFrame("Button", nil, button, "UIPanelButtonTemplate")
     talent:SetHeight(64)
     talent:SetWidth(64)
