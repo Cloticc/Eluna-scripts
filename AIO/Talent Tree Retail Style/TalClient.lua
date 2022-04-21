@@ -256,10 +256,10 @@ elseif playerClass == "DRUID" then
 end
 
 local buttonGrid = {}
---3x9 grid for talentT
-local resting = IsResting()
-local inLockdown = InCombatLockdown()
---get player level
+
+-- local resting = IsResting()
+-- local inLockdown = InCombatLockdown()
+
 local playerLevel = UnitLevel("player")
 local player = UnitName("player")
 for i = 1, #talentT[playerClass] do
