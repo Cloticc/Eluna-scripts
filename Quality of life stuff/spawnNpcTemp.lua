@@ -1,7 +1,7 @@
 
 --[[
     spawnNpcTemp.lua
-    short script to spawn a npc at a given location with despawn time in minutes.
+    script to spawn a npc infront of player location with despawn time in minutes.
     usage: .npt entry min
 
  ]]
