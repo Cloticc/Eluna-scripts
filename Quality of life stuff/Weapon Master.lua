@@ -51,7 +51,10 @@ function Weapon_Master.Select(event, player, object, sender, intid, code, menu_i
         for k, v in pairs(Skills) do
             if (k == playerclass) then
                 for _, v in ipairs(v) do
-                    player:LearnSpell(v)
+                    if player:HasSpell(v) == false then
+                        player:LearnSpell(v)
+                    end
+
                 end
             end
         end
