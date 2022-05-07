@@ -453,7 +453,7 @@ local SKILL = {
         [14] = {689, 6222},
         [16] = {1455, 5697},
         [18] = {693, 1014, 5676},
-        [20] = {698, 706, 1088, 1094, 1710, 3698, 5740, 712, 5785},
+        [20] = {698, 706, 1088, 1094, 1710, 3698, 5740, 712, 5785,5784 },
         [22] = {126, 699, 6202, 6205},
         [24] = {5138, 5500, 6223, 8288},
         [26] = {132, 1456, 1714, 17919},
@@ -463,7 +463,7 @@ local SKILL = {
         [34] = {5699, 6219, 7648, 17920},
         [36] = {2362, 3700, 7641, 11687, 17951},
         [38] = {7651, 8289, 11711},
-        [40] = {5484, 11665, 11733, 20755, 23160},
+        [40] = {5484, 11665, 11733, 20755, 23160,23161},
         [42] = {6789, 11683, 11707, 11739, 17921},
         [44] = {11659, 11671, 11693, 11725},
         [46] = {11677, 11688, 11699, 11721, 11729, 17952},
@@ -552,8 +552,8 @@ local SKILL = {
 local TEAMSKILL = {
     [0] = {
         [CLASS_PALADIN] = {
-            [20] = {13820},
-            [40] = {23215},
+            [20] = {13820, 13819},
+            [40] = {23215,34767},
             [64] = {31801}
         },
         [CLASS_SHAMAN] = {
@@ -571,8 +571,8 @@ local TEAMSKILL = {
     },
     [1] = {
         [CLASS_PALADIN] = {
-            [20] = {34768},
-            [40] = {34766},
+            [20] = {34768,34769},
+            [40] = {34766,34767},
             [66] = {53736}
         },
         [CLASS_SHAMAN] = {
@@ -960,7 +960,13 @@ local function onLevelChange(event, player, oldLevel)
         for i = oldLevel + 1, level do
             local LevelSkills = RIDING[i] or {}
             for _, v in pairs(LevelSkills) do
-                player:LearnSpell(v)
+                if (not player:HasSpell(v)) then -- If the player doesn't already know the skill try to reduce the amount of queries in console
+                    player:LearnSpell(v)
+                else
+                    break
+
+                end
+
             end
         end
     end
