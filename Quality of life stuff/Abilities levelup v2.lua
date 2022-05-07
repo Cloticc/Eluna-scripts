@@ -930,12 +930,9 @@ local function onLevelChange(event, player, oldLevel)
         for i = oldLevel + 1, level do
             local LevelSkills = ClassSkills[i] or {}
             for _, v in pairs(LevelSkills) do
-
-                if (not player:HasSpell(v)) then -- If the player doesn't already know the skill
+                if (not player:HasSpell(v)) then -- If the player doesn't already know the skill try to reduce the amount of queries in console
                     player:LearnSpell(v)
                 end
-
-
             end
         end
     end
@@ -992,14 +989,14 @@ local function onLearnTalent(event, player, talentId, talentRank, spellId)
 end
 
 local function onLogin(event, player)
-    if (MaxLevel) then
-        player:SetLevel(MaxPlayerLevel)
-    end
 
     player:SendBroadcastMessage("This server is running the |cff4CFF00" .. FILE_NAME .. "|r module loaded.")
 end
 
 local function onFirstLogin(event, player)
+    if (MaxLevel) then
+        player:SetLevel(MaxPlayerLevel)
+    end
     onLevelChange(1, player, 0)
 end
 
@@ -1008,7 +1005,7 @@ RegisterPlayerEvent(39, onLearnTalent) -- PLAYER_EVENT_ON_LEARN_TALENTS
 RegisterPlayerEvent(30, onFirstLogin) -- PLAYER_EVENT_ON_FIRST_LOGIN
 
 if (AnnounceModule) then
-    RegisterPlayerEvent(3, onLogin) -- PLAYER_EVENT_ON_LOGIN
+    RegisterPlayerEvent(30, onLogin) -- PLAYER_EVENT_ON_LOGIN
 end
 
 PrintInfo("[" .. FILE_NAME .. "] AutoLearnSkills module loaded.")
