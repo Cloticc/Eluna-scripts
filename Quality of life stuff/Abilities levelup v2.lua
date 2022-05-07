@@ -4,7 +4,7 @@
 local EnableModule = true
 local AnnounceModule = true -- Announce module on player login ?
 
-local MaxLevel = false -- Set to true to enable max level skills instantly when login
+local MaxLevel = true -- Set to true to enable max level skills instantly when login
 local MaxPlayerLevel = 80 -- Max player level change to your liking.
 
 local AutoDualSpec = true -- Auto learn Dual Specialization
@@ -930,10 +930,12 @@ local function onLevelChange(event, player, oldLevel)
         for i = oldLevel + 1, level do
             local LevelSkills = ClassSkills[i] or {}
             for _, v in pairs(LevelSkills) do
-                if player:HasSpell(v) then
-                    return
+
+                if (not player:HasSpell(v)) then -- If the player doesn't already know the skill
+                    player:LearnSpell(v)
                 end
-                player:LearnSpell(v)
+
+
             end
         end
     end
