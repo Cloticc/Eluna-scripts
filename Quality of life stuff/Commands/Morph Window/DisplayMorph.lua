@@ -1,14 +1,7 @@
---[[
-    Open with #morph
- A menu that allows player to go threw morph ids and see what they look like.
+-- Open with #morph A menu that allows player to go threw morph ids and see what they look like.
 
 
- ]]
-
-
-
-
- local PLAYER_EVENT_ON_CHAT = 18
+local PLAYER_EVENT_ON_CHAT = 18
 -- local GOSSIP_EVENT_ON_HELLO = 1
 local GOSSIP_EVENT_ON_SELECT = 2
 local MENU_ID = 1
@@ -27,7 +20,9 @@ end
 
 local function onSelect(event, player, object, sender, intid, code, menu_id)
     if (intid == 1) then
-        if (player:GetDisplayId() == flase) then player:SetDisplayId(1) end
+        if (player:GetDisplayId() == flase) then
+            player:SetDisplayId(1)
+        end
         player:SetDisplayId(player:GetDisplayId() + 1)
 
         menuToggle(event, player)
