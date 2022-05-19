@@ -11,12 +11,10 @@ unJailAlliance or Horde is the location where the player will be teleported to w
 
  ]] local MSG_JAIL = "jail"
  local MSG_UNJAIL = "unjail"
- local FILE_NAME = string.match(debug.getinfo(1, "S").source, "[^/\\]*.lua$")
- local PLAYER_EVENT_ON_COMMAND = 42
- local PLAYER_EVENT_ON_UPDATE_ZONE = 27
- -- local PLAYER_EVENT_ON_MAP_CHANGE = 28
 
- local jailSpell = 7 -- The spell ID for the spell "Jail" this is used to check if the player is jailed or not.
+
+
+ local jailSpell = 2481 -- The spell ID for the spell "Jail" this is used to check if the player is jailed or not.
 
  local jailLoc = {1, 16206.40625, 16216.223632812, 2.5386452674866, 1.0740673542023} -- gmisland
  -- 1,  16219.421875,  16403.408203125,  -64.37858581543,  0.017713271081448  ----White room at gmisland
@@ -24,6 +22,11 @@ unJailAlliance or Horde is the location where the player will be teleported to w
  local unJailAlliance = {0, -8865.5966796875, 673.04827880859, 100.587059021, 4.9373631477356} -- stormwind
  local unJailHorde = {1, 1635.765625, -4443.3647460938, 16.921722412109, 2.5195200443268} -- orgrimmar
 
+
+ local FILE_NAME = string.match(debug.getinfo(1, "S").source, "[^/\\]*.lua$")
+ local PLAYER_EVENT_ON_COMMAND = 42
+ local PLAYER_EVENT_ON_UPDATE_ZONE = 27
+ -- local PLAYER_EVENT_ON_MAP_CHANGE = 28
  local function splitString(str, delimiter) -- Splits a string into a table of strings
      local result = {}
      local from = 1
