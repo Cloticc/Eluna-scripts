@@ -45,9 +45,7 @@ local function moveMe(event, player, msg, Type, lang)
         if (npcGuid) then
             local npc = DatabaseCache[npcGuid]
             if (npc) then
-                print(npc.x .. " " .. npc.y .. " " .. npc.z)
                 player:MoveTo(0, npc.x, npc.y, npc.z, false) -- TODO: Check for better option
-
                 player:SendBroadcastMessage("|cff00ff00[" .. FILE_NAME .. "]|r Moving to " .. npcGuid .. ".")
             else
                 player:SendBroadcastMessage("|cff00ff00[" .. FILE_NAME .. "]|r You have entered an invalid GUID ID.")
