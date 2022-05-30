@@ -5,4 +5,6 @@
 - Reward system for winning and losing
 - Raiting system
 
+### look inside script for more info
+
 [![1v1](https://i.ibb.co/brwyJ8r/image.png)]
