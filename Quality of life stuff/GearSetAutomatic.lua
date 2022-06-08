@@ -1,6 +1,6 @@
-local Pre_Build = {}
+local preBuild = {}
 
-Pre_Build.Npc_Id = nil -- npc id of the vendor/trainer
+preBuild.npcId = nil -- npc id of the vendor/trainer
 
 local FILE_NAME = string.match(debug.getinfo(1,'S').source, "[^/\\]*.lua$")
 --[[ So this might be a bit painful for the first time u need to add all the gear u want urself. Where it says nil = u highlight it and write the id of the item u want to be equipped when u select the option. ]]
@@ -658,7 +658,7 @@ local Gear = {
     } -- Druid Restoration
 }
 
-Pre_Build.T = {
+preBuild.T = {
     ["Menu"] = {
         [1] = {
             {"|TInterface/ICONS/Ability_Warrior_DefensiveStance:50|t Arms", 1},
@@ -714,12 +714,12 @@ Pre_Build.T = {
     }
 }
 
-function Pre_Build.Hello(event, player, object)
+function preBuild.Hello(event, player, object)
     local class = player:GetClass()
 
-    if Pre_Build.T["Menu"][class] then
-        for i = 1, #Pre_Build.T["Menu"][class] do
-            player:GossipMenuAddItem(0, Pre_Build.T["Menu"][class][i][1], 0, Pre_Build.T["Menu"][class][i][2])
+    if preBuild.T["Menu"][class] then
+        for i = 1, #preBuild.T["Menu"][class] do
+            player:GossipMenuAddItem(0, preBuild.T["Menu"][class][i][1], 0, preBuild.T["Menu"][class][i][2])
         end
     end
     player:GossipSendMenu(1, object)
@@ -759,7 +759,7 @@ local function forceEquip(player, slot, itemId)
 
     end
 end
-function Pre_Build.Selection(event, player, object, sender, intid, code, menuid)
+function preBuild.Selection(event, player, object, sender, intid, code, menuid)
     local class = player:GetClass()
     for i = 1, #Gear do
         if i == intid then
@@ -772,7 +772,7 @@ function Pre_Build.Selection(event, player, object, sender, intid, code, menuid)
 
     end
 
-    for i,v in pairs(Pre_Build.T["Menu"][class]) do
+    for i,v in pairs(preBuild.T["Menu"][class]) do
         if intid == v[2] then
             player:SendNotification("You have selected " .. v[1] .. " ") --Will Send message that he selected X class
         end
@@ -780,8 +780,8 @@ function Pre_Build.Selection(event, player, object, sender, intid, code, menuid)
 
 
 
-    Pre_Build.Hello(event, player, object)
+    preBuild.Hello(event, player, object)
 end
 PrintInfo("["..FILE_NAME.."] Loaded  .")
-RegisterCreatureGossipEvent(Pre_Build.Npc_Id, 1, Pre_Build.Hello)
-RegisterCreatureGossipEvent(Pre_Build.Npc_Id, 2, Pre_Build.Selection)
+RegisterCreatureGossipEvent(preBuild.npcId, 1, preBuild.Hello)
+RegisterCreatureGossipEvent(preBuild.npcId, 2, preBuild.Selection)
