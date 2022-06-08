@@ -724,16 +724,62 @@ function Pre_Build.Hello(event, player, object)
     end
     player:GossipSendMenu(1, object)
 end
+local function forceEquip(player, slot, itemId)
+    local del = player:GetEquippedItemBySlot(slot)
+    if (del) then
+        local entry = del:GetEntry()
+        if (entry == itemId) then -- item is already equipped
+            return
+        end
+        player:RemoveItem(del, 1)
+        local add = player:AddItem(entry, 1)
+        if (not add) then
+            PrintError("[" .. FILE_NAME .. "] ERROR: Could not unequip worn item " .. entry .. ' on player "' ..
+                           player:GetName() .. '" while using [' .. FILE_NAME ..
+                           "] and the item was destroyed. This should NOT happen.")
+        end
+    end
+    local item = player:GetItemByEntry(itemId)
+    local equip
+    if (item) then
+        equip = player:EquipItem(item, slot)
+    else
+        equip = player:EquipItem(itemId, slot)
+    end
 
+    if (not equip) then
+        if (not item) then
+            item = player:AddItem(itemId, 1)
+        end
+
+        PrintError(
+            "[" .. FILE_NAME .. "] ERROR: Could not equip item " .. itemId .. ' on player "' .. player:GetName() ..
+                '" while using [' .. FILE_NAME ..
+                "] and the item was destroyed or sent to bag. This should NOT happen. Porbably an issue with the Item.")
+
+    end
+end
 function Pre_Build.Selection(event, player, object, sender, intid, code, menuid)
+    local class = player:GetClass()
     for i = 1, #Gear do
         if i == intid then
             for i, v in pairs(Gear[i]) do
-                player:EquipItem(v, i)
+                -- player:EquipItem(v, i)
+                forceEquip(player, i, v)
             end
+
+        end
+
+    end
+
+    for i,v in pairs(Pre_Build.T["Menu"][class]) do
+        if intid == v[2] then
+            player:SendNotification("You have selected " .. v[1] .. " ") --Will Send message that he selected X class
         end
     end
-    player:SendBroadcastMessage("|cff00ff00 Gear has been equipped. |r")
+
+
+
     Pre_Build.Hello(event, player, object)
 end
 PrintInfo("["..FILE_NAME.."] Loaded  .")
