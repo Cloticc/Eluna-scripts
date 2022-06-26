@@ -193,7 +193,6 @@ function EnchanterSelect(event, player, object, sender, intid, code, menu_id)
         local ID = pVar[player:GetName()]
         if (ID == 161 or ID == 151 or ID == 171) then
             ID = math.floor(ID / 10)
-            print(ID)
         end
         for k, v in pairs(T[ID]) do
             if v[2] == intid then
@@ -241,7 +240,7 @@ function EnchanterSelect(event, player, object, sender, intid, code, menu_id)
                     else -- if CanBuy(event, player)
                         player:SendAreaTriggerMessage(
                             "|Cffff0000[Enchanter]|r: You do not have enough money to enchant " ..
-                                price .. " this item."
+                                priceFake .. " this item."
                         )
                     end
                 else -- if item
