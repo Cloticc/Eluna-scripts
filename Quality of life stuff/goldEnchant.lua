@@ -227,7 +227,7 @@ function EnchanterSelect(event, player, object, sender, intid, code, menu_id)
 						player:SendAreaTriggerMessage("|Cffff0000[Enchanter]|r: "..item:GetItemLink(0).." is succesfully enchanted!")
 					end
                 else
-                    player:SendAreaTriggerMessage("|Cffff0000[Enchanter]|r: You do not have enough money to enchant " ..price.." this item.")
+                    player:SendAreaTriggerMessage("|Cffff0000[Enchanter]|r: You do not have enough money to enchant " ..priceFake.." this item.")
                 end
 
 				else
