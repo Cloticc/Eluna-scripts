@@ -1,4 +1,5 @@
---[[ fixed gold cost ]] local npcid = 3460608 -- You can change this to any id as you pleased!
+--[[ fixed gold cost ]]
+local npcid = 3460608 -- You can change this to any id as you pleased!
 local price = 5 * 10000 -- 5 gold
 local priceFake = 5 -- this is for a message popup so change this with the price aswell so the gold correctly shows up in the message
 local T = {
@@ -147,10 +148,6 @@ local T = {
 local pVar = {}
 
 function CanBuy(event, player)
-    -- local coinage = player:GetCoinage()
-    -- local setCoin player:SetCoinage( copperAmt )
-
-    --get player coinage if dont have send message if they have it then remove it
     local coinage = player:GetCoinage()
     if coinage == price then
         player:SendBroadcastMessage("You do not have enough coinage to buy this item.")
@@ -198,9 +195,7 @@ function EnchanterSelect(event, player, object, sender, intid, code, menu_id)
             if v[2] == intid then
                 local item = player:GetEquippedItemBySlot(ID)
                 if item then
-
                     if (CanBuy(event, player)) then
-
                         if v[3] then
                             local WType = item:GetSubClass()
 
@@ -219,11 +214,9 @@ function EnchanterSelect(event, player, object, sender, intid, code, menu_id)
                                     player:SendAreaTriggerMessage("You do not have a Shield equipped!")
                                 end
                             elseif pVar[player:GetName()] == 171 then
-                               local class = player:GetClass()
+                                local class = player:GetClass()
 
                                 if (WType == 2 or WType == 3 or WType == 18) then
-                                -- if (WType ~= 2 or WType ~= 3 or WType ~= 18) then
-
                                     item:ClearEnchantment(0, 0)
                                     item:SetEnchantment(intid, 0, 0)
                                 else
