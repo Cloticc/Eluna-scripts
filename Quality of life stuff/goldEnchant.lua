@@ -149,7 +149,7 @@ local pVar = {}
 
 function CanBuy(event, player)
     local coinage = player:GetCoinage()
-    if coinage == price then
+    if coinage <= price then
         player:SendBroadcastMessage("You do not have enough coinage to buy this item.")
         return false
     else
