@@ -3,7 +3,7 @@ added menu to showup before enchant displaying cost of enchant
 
 ]]
 local npcid = XxxX -- You can change this to any id as you pleased!
-local price = 5 * 10000 -- 5 gold
+local price = 5 * 10000 -- 5 gold this will change for the price that show up aswell for accept or cancel enc
 local priceFake = 5 -- this is for a message popup so change this with the price aswell so the gold correctly shows up in the message
 
 
@@ -153,9 +153,6 @@ local T = {
 local pVar = {}
 
 function CanBuy(event, player)
-    -- local coinage = player:GetCoinage()
-    -- local setCoin player:SetCoinage( copperAmt )
-    --get player coinage if dont have send message if they have it then remove it
     local coinage = player:GetCoinage()
     if coinage < price then
         player:SendBroadcastMessage("You do not have enough coinage to buy this item.")
