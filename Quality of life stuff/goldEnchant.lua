@@ -1,7 +1,12 @@
---[[ fixed gold cost ]]
-local npcid = 3460608 -- You can change this to any id as you pleased!
+--[[ fixed gold cost
+added menu to showup before enchant displaying cost of enchant
+
+]]
+local npcid = XxxX -- You can change this to any id as you pleased!
 local price = 5 * 10000 -- 5 gold
 local priceFake = 5 -- this is for a message popup so change this with the price aswell so the gold correctly shows up in the message
+
+
 local T = {
     ["Menu"] = {
         {"Headpiece", 0},
@@ -148,14 +153,18 @@ local T = {
 local pVar = {}
 
 function CanBuy(event, player)
+    -- local coinage = player:GetCoinage()
+    -- local setCoin player:SetCoinage( copperAmt )
+    --get player coinage if dont have send message if they have it then remove it
     local coinage = player:GetCoinage()
-    if coinage <= price then
+    if coinage < price then
         player:SendBroadcastMessage("You do not have enough coinage to buy this item.")
         return false
     else
         player:SetCoinage(coinage - price)
         return true
     end
+
 end
 
 function Enchanter(event, player, object)
@@ -178,7 +187,7 @@ function EnchanterSelect(event, player, object, sender, intid, code, menu_id)
         if (T[ID]) then
             for i, v in ipairs(T[ID]) do
                 if ((not f and not v[3]) or (f and v[3])) then
-                    player:GossipMenuAddItem(10, "|cff182799" .. v[1] .. ".", 0, v[2])
+                    player:GossipMenuAddItem(10, "|cff182799" .. v[1] .. ".", 0, v[2] ,nil, "Cost to enchant", price )
                 end
             end
         end
@@ -198,7 +207,6 @@ function EnchanterSelect(event, player, object, sender, intid, code, menu_id)
                     if (CanBuy(event, player)) then
                         if v[3] then
                             local WType = item:GetSubClass()
-
                             if pVar[player:GetName()] == 151 then
                                 if (WType == 1 or WType == 5 or WType == 6 or WType == 8 or WType == 10) then
                                     item:ClearEnchantment(0, 0)
@@ -214,8 +222,6 @@ function EnchanterSelect(event, player, object, sender, intid, code, menu_id)
                                     player:SendAreaTriggerMessage("You do not have a Shield equipped!")
                                 end
                             elseif pVar[player:GetName()] == 171 then
-                                local class = player:GetClass()
-
                                 if (WType == 2 or WType == 3 or WType == 18) then
                                     item:ClearEnchantment(0, 0)
                                     item:SetEnchantment(intid, 0, 0)
