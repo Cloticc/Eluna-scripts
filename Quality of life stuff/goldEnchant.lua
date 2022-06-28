@@ -6,6 +6,8 @@ local npcid = XxxX -- You can change this to any id as you pleased!
 local price = 5 * 10000 -- 5 gold this will change for the price that show up aswell for accept or cancel enc
 local priceFake = 5 -- this is for a message popup so change this with the price aswell so the gold correctly shows up in the message
 
+local GOSSIP_EVENT_ON_HELLO                           = 1
+local  GOSSIP_EVENT_ON_SELECT                          = 2
 
 local T = {
     ["Menu"] = {
@@ -250,5 +252,5 @@ function EnchanterSelect(event, player, object, sender, intid, code, menu_id)
     end
 end
 
-RegisterCreatureGossipEvent(npcid, 1, Enchanter)
-RegisterCreatureGossipEvent(npcid, 2, EnchanterSelect)
+RegisterCreatureGossipEvent(npcid, GOSSIP_EVENT_ON_HELLO, Enchanter)
+RegisterCreatureGossipEvent(npcid, GOSSIP_EVENT_ON_SELECT, EnchanterSelect)
