@@ -2,12 +2,17 @@
 added menu to showup before enchant displaying cost of enchant
 
 ]]
-local npcid = XxxX -- You can change this to any id as you pleased!
-local price = 5 * 10000 -- 5 gold this will change for the price that show up aswell for accept or cancel enc
-local priceFake = 5 -- this is for a message popup so change this with the price aswell so the gold correctly shows up in the message
+-- npcid -- You can change this to any id as you pleased!
+-- price = 5 * 10000 -- 5 gold this will change for the price that show up aswell for accept or cancel enc
 
-local GOSSIP_EVENT_ON_HELLO                           = 1
-local  GOSSIP_EVENT_ON_SELECT                          = 2
+
+local enchanterG = {
+    npcid = 3460608,
+    price = 5 * 10000
+}
+
+local GOSSIP_EVENT_ON_HELLO = 1
+local GOSSIP_EVENT_ON_SELECT = 2
 
 local T = {
     ["Menu"] = {
@@ -154,19 +159,21 @@ local T = {
 }
 local pVar = {}
 
-function CanBuy(event, player)
+function enchanterG.CanBuy(event, player)
+    -- local coinage = player:GetCoinage()
+    -- local setCoin player:SetCoinage( copperAmt )
+    --get player coinage if dont have send message if they have it then remove it
     local coinage = player:GetCoinage()
-    if coinage < price then
-        player:SendBroadcastMessage("You do not have enough coinage to buy this item.")
+    if coinage < enchanterG.price then
+        player:SendBroadcastMessage("You do not have enough gold to use this.")
         return false
     else
-        player:SetCoinage(coinage - price)
+        player:SetCoinage(coinage - enchanterG.price)
         return true
     end
-
 end
 
-function Enchanter(event, player, object)
+function enchanterG.Enchanter(event, player, object)
     pVar[player:GetName()] = nil
     for event, v in ipairs(T["Menu"]) do
         player:GossipMenuAddItem(10, "|cff182799Enchant|r " .. v[1] .. ".", 0, v[2])
@@ -174,7 +181,7 @@ function Enchanter(event, player, object)
     player:GossipSendMenu(700000, object)
 end
 
-function EnchanterSelect(event, player, object, sender, intid, code, menu_id)
+function enchanterG.EnchanterSelect(event, player, object, sender, intid, code, menu_id)
     if (intid < 500) then
         local ID = intid
         local f
@@ -186,14 +193,22 @@ function EnchanterSelect(event, player, object, sender, intid, code, menu_id)
         if (T[ID]) then
             for i, v in ipairs(T[ID]) do
                 if ((not f and not v[3]) or (f and v[3])) then
-                    player:GossipMenuAddItem(10, "|cff182799" .. v[1] .. ".", 0, v[2] ,nil, "Cost to enchant", price )
+                    player:GossipMenuAddItem(
+                        10,
+                        "|cff182799" .. v[1] .. ".",
+                        0,
+                        v[2],
+                        nil,
+                        "Enchant cost",
+                        enchanterG.price
+                    )
                 end
             end
         end
         player:GossipMenuAddItem(10, "[Back]", 0, 500)
         player:GossipSendMenu(700000, object)
     elseif (intid == 500) then
-        Enchanter(event, player, object)
+        enchanterG.Enchanter(event, player, object)
     elseif (intid >= 900) then
         local ID = pVar[player:GetName()]
         if (ID == 161 or ID == 151 or ID == 171) then
@@ -203,7 +218,7 @@ function EnchanterSelect(event, player, object, sender, intid, code, menu_id)
             if v[2] == intid then
                 local item = player:GetEquippedItemBySlot(ID)
                 if item then
-                    if (CanBuy(event, player)) then
+                    if (enchanterG.CanBuy(event, player)) then
                         if v[3] then
                             local WType = item:GetSubClass()
                             if pVar[player:GetName()] == 151 then
@@ -237,8 +252,7 @@ function EnchanterSelect(event, player, object, sender, intid, code, menu_id)
                         end
                     else -- if CanBuy(event, player)
                         player:SendAreaTriggerMessage(
-                            "|Cffff0000[Enchanter]|r: You do not have enough money to enchant " ..
-                                priceFake .. " this item."
+                            "|Cffff0000[Enchanter]|r: You do not have enough money to enchant this item."
                         )
                     end
                 else -- if item
@@ -252,5 +266,5 @@ function EnchanterSelect(event, player, object, sender, intid, code, menu_id)
     end
 end
 
-RegisterCreatureGossipEvent(npcid, GOSSIP_EVENT_ON_HELLO, Enchanter)
-RegisterCreatureGossipEvent(npcid, GOSSIP_EVENT_ON_SELECT, EnchanterSelect)
+RegisterCreatureGossipEvent(enchanterG.npcid, 1, enchanterG.Enchanter)
+RegisterCreatureGossipEvent(enchanterG.npcid, 2, enchanterG.EnchanterSelect)
