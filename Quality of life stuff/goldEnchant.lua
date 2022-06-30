@@ -199,9 +199,7 @@ function enchanterG.EnchanterSelect(event, player, object, sender, intid, code, 
                         0,
                         v[2],
                         nil,
-                        "Enchant cost",
-                        enchanterG.price
-                    )
+                        v[1] , enchanterG.price)
                 end
             end
         end
