@@ -5,7 +5,7 @@ local preBuild = {
 
 }
 
-
+--recommend setting sell price for items to 0 so they cant sell the gear
 
 
 
@@ -747,7 +747,7 @@ local function forceEquip(player, slot, itemId)
     local item = player:GetItemByEntry(itemId)
     local equip
 
-    if (slot == 16) then -- TODO: Kinda stop dupe but still adds offhand to bag recommend to remove cost of the items u wanna use.
+    if (slot == 16) then
         equip = player:GetItemByEntry(itemId)
         if (equip) then -- item is in bag
             player:RemoveItem(equip, 1)
