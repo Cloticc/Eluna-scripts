@@ -1,6 +1,13 @@
-local preBuild = {}
+local preBuild = {
 
-preBuild.npcId = nil -- npc id of the vendor/trainer
+    npcId = nil -- npc id of the vendor/trainer
+
+
+}
+
+
+
+
 
 local FILE_NAME = string.match(debug.getinfo(1,'S').source, "[^/\\]*.lua$")
 --[[ So this might be a bit painful for the first time u need to add all the gear u want urself. Where it says nil = u highlight it and write the id of the item u want to be equipped when u select the option. ]]
@@ -734,13 +741,19 @@ local function forceEquip(player, slot, itemId)
         player:RemoveItem(del, 1)
         local add = player:AddItem(entry, 1)
         if (not add) then
-            PrintError("[" .. FILE_NAME .. "] ERROR: Could not unequip worn item " .. entry .. ' on player "' ..
-                           player:GetName() .. '" while using [' .. FILE_NAME ..
-                           "] and the item was destroyed. This should NOT happen.")
+            PrintError("[" .. FILE_NAME .. "] ERROR: Could not unequip worn item " .. entry .. ' on player "' .. player:GetName() .. '" while using [' .. FILE_NAME .. "] and the item was destroyed. This should NOT happen.")
         end
     end
     local item = player:GetItemByEntry(itemId)
     local equip
+
+    if (slot == 16) then -- TODO: Kinda stop dupe but still adds offhand to bag recommend to remove cost of the items u wanna use.
+        equip = player:GetItemByEntry(itemId)
+        if (equip) then -- item is in bag
+            player:RemoveItem(equip, 1)
+        end
+    end
+
     if (item) then
         equip = player:EquipItem(item, slot)
     else
@@ -752,11 +765,7 @@ local function forceEquip(player, slot, itemId)
             item = player:AddItem(itemId, 1)
         end
 
-        PrintError(
-            "[" .. FILE_NAME .. "] ERROR: Could not equip item " .. itemId .. ' on player "' .. player:GetName() ..
-                '" while using [' .. FILE_NAME ..
-                "] and the item was destroyed or sent to bag. This should NOT happen. Porbably an issue with the Item.")
-
+        PrintError( "[" .. FILE_NAME .. "] ERROR: Could not equip item " .. itemId .. ' on player "' .. player:GetName() .. '" while using [' .. FILE_NAME .. "] and the item was destroyed or sent to bag. This should NOT happen. Porbably an issue with the Item.")
     end
 end
 function preBuild.Selection(event, player, object, sender, intid, code, menuid)
