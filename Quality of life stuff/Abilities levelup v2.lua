@@ -4,7 +4,7 @@
 local EnableModule = true
 local AnnounceModule = true -- Announce module on player login ?
 
-local MaxLevel = true -- Set to true to enable max level skills instantly when login
+local MaxLevel = false -- Set to true to enable max level skills instantly when login
 local MaxPlayerLevel = 80 -- Max player level change to your liking.
 
 local AutoDualSpec = true -- Auto learn Dual Specialization
