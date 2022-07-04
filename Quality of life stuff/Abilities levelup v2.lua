@@ -29,11 +29,6 @@ local NorthrendFlyLevel = 68 -- Which level to learn Cold Weather Flying
 
     Completely remade by kebabstorm
 
-    Modification date: 2022-03-12
-    Warrior: Add missing spells
-
-    Modification date: 2022-05-07
-    Add option for MaxLevel change false to true instant learn the spells.
 
 
 ]]
@@ -709,6 +704,11 @@ local TALENTSKILL = {
             [73] = {48172},
             [80] = {48173}
         },
+        [47540] = {
+            [70] = {53005},
+            [75] = {53006},
+            [80] = {53007}
+        },
         [724] = {
             [50] = {27870},
             [60] = {27871},
@@ -729,7 +729,8 @@ local TALENTSKILL = {
             [70] = {34917},
             [75] = {48159},
             [80] = {48160}
-        }
+        },
+
     },
     [CLASS_DEATHKNIGHT] = {
         [55050] = {
