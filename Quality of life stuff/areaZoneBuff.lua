@@ -1,3 +1,5 @@
+--NOTE: Can have multipile buffs like [zoneID] = {buffId, buffId, buffId}
+
 local zoneBuffs = {
     --zoneId, buffId
     [123] = {123}
