@@ -1,11 +1,13 @@
 Vip = {}
-Vip.Rank = 2 -- All the rankings are set here. aka 1 = VIP, 2 = VIP+ etc. or gm rank 1 gm rank 2 etc.
-
 Vip.ItemId = 2070 -- Item ID to be consumed by the VIP
 Vip.SpellId = 36356 -- Title ID For enabling the commands
 Vip.AnnounceModule = true -- change to false if u wanna disable this shows a message in the chat that it is enabled
 -- change to false if u wanna disable this
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-- Vip.CordMall = mappId, xCoord, yCoord, zCoord. Just Change after "=" to the values you want.
+Vip.Mapid, Vip.X, Vip.Y, Vip.Z, Vip.O = 0, -9443.9541015625, 65.456764221191, 56.173454284668, 0 -- mapid, x, y, z, o
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+--true is active. false is not active.
 Vip.Commands = true -- show command list
 Vip.Buff = true
 Vip.ResetInstance = true
@@ -15,11 +17,10 @@ Vip.RepairAll = true -- Repair all gear
 Vip.Maxskill = true -- max skill
 Vip.Mall = true -- teleport mall
 Vip.Bank = true -- openBank
+Vip.groupreset = true -- reset group
 Vip.List = true -- list of commands
 
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
--- Vip.CordMall = mappId, xCoord, yCoord, zCoord
-Vip.Mapid, Vip.X, Vip.Y, Vip.Z, Vip.O = 0, -9443.9541015625, 65.456764221191, 56.173454284668, 0 -- mapid, x, y, z, o
 
 Vip.Buffs = {
     -- Place the buffs here just do exmaple:
@@ -61,7 +62,6 @@ function Vip.TimerTeleport(eventId, delay, repeats, player)
     -- local TeleportIn = 6 -- This will be TeleportIn - repeats, start at 6 to have 5 seconds
     player:SendAreaTriggerMessage("Teleporting in " .. repeats .. " seconds.")
 
-    --check if enter combat then cancel the teleport
     if (player:IsInCombat()) then
         player:SendAreaTriggerMessage("You are in combat, cancelling teleport.")
         return
@@ -120,8 +120,8 @@ function Vip.chatVipCommands(event, player, msg, Type, lang)
         end
         if (string.lower(string.sub(msg, 6, 16)) == "resetpet") then
             if (Vip.ResetPet == true) then
-                player:ResetPetTalents()
                 player:SendAreaTriggerMessage("You have reset your pet talents.")
+                player:ResetPetTalents()
             else
                 player:SendAreaTriggerMessage("This command is disabled.")
             end
@@ -159,7 +159,21 @@ function Vip.chatVipCommands(event, player, msg, Type, lang)
                 player:SendAreaTriggerMessage("This command is disabled.")
             end
         end
+        if (string.lower(string.sub(msg, 6, 16)) == "groupreset") then
+            if (Vip.groupreset == true) then
+                player:SendAreaTriggerMessage("You have reset your group instances.")
 
+                --get all party members
+                local party = player:GetGroup()
+                if party then
+                    for _, member in pairs(party:GetMembers()) do
+                        member:UnbindAllInstances()
+                    end
+                end
+            else
+                player:SendAreaTriggerMessage("This command is disabled.")
+            end
+        end
         if (string.lower(string.sub(msg, 6, 12)) == "list") then
             if (Vip.List == true) then
                 player:SendBroadcastMessage("Vip Commands:")
@@ -171,6 +185,7 @@ function Vip.chatVipCommands(event, player, msg, Type, lang)
                 player:SendBroadcastMessage("#vip maxskill")
                 player:SendBroadcastMessage("#vip mall")
                 player:SendBroadcastMessage("#vip bank")
+                player:SendBroadcastMessage("#vip groupreset")
             else
                 player:SendAreaTriggerMessage("This command is disabled.")
             end
