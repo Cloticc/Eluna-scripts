@@ -104,40 +104,40 @@ function Vip.chatVipCommands(event, player, msg, Type, lang)
         end
         if (string.lower(string.sub(msg, 6, 16)) == "resetinstance") then
             if (Vip.ResetInstance == true) then
-                player:SendAreaTriggerMessage("Instance has been reset.")
                 player:UnbindAllInstances()
+                player:SendAreaTriggerMessage("Instance has been reset.")
             else
                 player:SendAreaTriggerMessage("This command is disabled.")
             end
         end
         if (string.lower(string.sub(msg, 6, 16)) == "resettalent") then
             if (Vip.ResetTalents == true) then
-                player:SendAreaTriggerMessage("You have reset your talents.")
                 player:ResetTalents()
+                player:SendAreaTriggerMessage("You have reset your talents.")
             else
                 player:SendAreaTriggerMessage("This command is disabled.")
             end
         end
         if (string.lower(string.sub(msg, 6, 16)) == "resetpet") then
             if (Vip.ResetPet == true) then
-                player:SendAreaTriggerMessage("You have reset your pet talents.")
                 player:ResetPetTalents()
+                player:SendAreaTriggerMessage("You have reset your pet talents.")
             else
                 player:SendAreaTriggerMessage("This command is disabled.")
             end
         end
         if (string.lower(string.sub(msg, 6, 12)) == "repair") then
             if (Vip.RepairAll == true) then
-                player:SendAreaTriggerMessage("You have repaired all your items.")
                 player:DurabilityRepairAll(false)
+                player:SendAreaTriggerMessage("You have repaired all your items.")
             else
                 player:SendAreaTriggerMessage("This command is disabled.")
             end
         end
-        if (string.lower(string.sub(msg, 6, 12)) == "maxskill") then
+        if (string.lower(string.sub(msg, 6, 16)) == "maxskill") then
             if (Vip.Maxskill == true) then
-                player:LearnAllSpells()
-                player:SendAreaTriggerMessage("You have learned all your spells.")
+                player:AdvanceAllSkills(1000)
+                player:SendAreaTriggerMessage("You have maxed all your skills.")
             else
                 player:SendAreaTriggerMessage("This command is disabled.")
             end
