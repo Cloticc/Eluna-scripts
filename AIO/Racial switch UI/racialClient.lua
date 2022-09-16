@@ -1,1 +1,552 @@
-local AIO=AIO or require("AIO")if AIO.AddAddon()then return end;local AIO=AIO or require("AIO")if AIO.IsServer()then require("racialServer")end;local a=AIO.AddHandlers("racialSwitch",{})local b={}local c={20574,26290,20595,59224,20597,20558}local d={59752,20572,20594,58984,20549,7744,26297,28730,59542,2481}local e={20592,20596,20579,20551,822,20573,65222,20555,58943,20550,20591,5227,6562,20582,21009,20585,58985,20599,20598}local f=true;local g=false;local h,i,j=1,1,1;local k,l,m=0.5,0.5,0.5;local n,o,p=1,1,1;local q,r,s=1,1,0;local b=CreateFrame("Frame","MAINFRAME",UIParent,"ButtonFrameTemplate")b.width=900;b.height=700;b:SetFrameStrata("FULLSCREEN_DIALOG")b:SetSize(b.width,b.height)b:SetPoint("CENTER",UIParent,"CENTER",0,0)b:SetBackdropColor(0,0,0,1)b:EnableMouse(true)b:EnableMouseWheel(true)b:SetMovable(true)b:SetResizable(enable)b:SetMinResize(100,100)b:RegisterForDrag("LeftButton")b:SetScript("OnDragStart",b.StartMoving)b:SetScript("OnDragStop",b.StopMovingOrSizing)b:SetFrameLevel(0)b:Hide()local t=CreateFrame("Frame","MAINFRAME",b)t:SetPoint("TOPLEFT",b,"TOPLEFT",-7,7)t:SetSize(64,64)t.tex=t:CreateTexture()t.tex:SetAllPoints(t)SetPortraitToTexture(t.tex,"interface/icons/trade_engineering")local function u(v,w,x,y,z,A,B,C)local D=v:CreateFontString(nil,"OVERLAY")D:SetFont("Fonts\\FRIZQT__.TTF",x)D:SetPoint(y,z,A,B,C)D:SetText(w)return D end;u(b,"Racial Switch",15,"TOP",b,"TOP",0,-4)u(b,"Utility",20,"TOPLEFT",b,"TOPLEFT",b.height/6.8,-35)u(b,"Passive",20,"TOPLEFT",b,"TOPLEFT",b.height/2.2,-35)u(b,"Weapon Specialization",20,"TOPRIGHT",b,"TOPRIGHT",-45,-35)local function E(v,w,F,y,z,A,B,C)local G=CreateFrame("Button",nil,v,"UIPanelButtonTemplate")G:SetText(w)G:SetHeight(F)local H=G:GetFontString():GetStringWidth()G:SetWidth(H+20)G:SetPoint(y,z,A,B,C)return G end;b.closeButton=closeButton;E(b,"Close",25,"BOTTOM",b,"BOTTOM",0,3):SetScript("OnClick",function(self)HideParentPanel(self)end)local I={}for J=1,#d do I[J]=CreateFrame("Button",nil,b)I[J]:SetPoint("TOPLEFT",b,"TOPLEFT",25,-35-J*50)I[J]:SetHeight(32)I[J]:SetWidth(32)I[J].texture=I[J]:CreateTexture(nil,"ARTWORK")I[J].texture:SetAllPoints()I[J].texture:SetTexture(select(3,GetSpellInfo(d[J])))I[J].texture:SetTexCoord(0.1,0.9,0.1,0.9)I[J].texture:SetDesaturated(false)I[J].texture:SetVertexColor(1,1,1)I[J].text=I[J]:CreateFontString(nil,"OVERLAY","GameFontNormal")I[J].text:SetPoint("LEFT",I[J],"RIGHT",5,0)I[J].text:SetText(GetSpellInfo(d[J]))I[J].text:SetTextColor(1,1,1)I[J].text:SetJustifyH("LEFT")I[J].text:SetJustifyV("CENTER")I[J].text:SetSize(b.width,b.height-50)I[J].text:SetWordWrap(false)I[J].text:SetShadowOffset(1,-1)I[J].text:SetShadowColor(0,0,0,1)local K=IsSpellKnown(d[J])if K then I[J].active=true;I[J].texture:SetDesaturated(false)I[J].texture:SetVertexColor(h,i,j)I[J].text:SetTextColor(q,r,s)elseif K==false then I[J].active=false;I[J].texture:SetDesaturated(true)I[J].texture:SetVertexColor(h,i,j)I[J].text:SetTextColor(n,o,p)end;I[J]:SetScript("OnClick",function(self)if self.active==true then return end;for J=1,#I do if I[J].active then I[J].active=false;I[J].texture:SetDesaturated(f)I[J].texture:SetVertexColor(k,l,m)I[J].text:SetTextColor(n,o,p)AIO.Handle("racialSwitch","racialDeactivateUtility",d[J])PlaySound("igMainMenuOptionCheckBoxOff")end end;self.active=true;self.texture:SetDesaturated(g)self.texture:SetVertexColor(h,i,j)self.text:SetTextColor(q,r,s)AIO.Handle("racialSwitch","racialActivate",d[J])PlaySound("igMainMenuOptionCheckBoxOn")end)I[J].spellId=d[J]I[J]:SetScript("OnEnter",function(self)GameTooltip:SetOwner(self,"ANCHOR_RIGHT")GameTooltip:SetHyperlink("spell:"..self.spellId)GameTooltip:Show()end)I[J]:SetScript("OnLeave",function(self)GameTooltip:Hide()end)end;b.utilityButton=I;local L={}for J=1,#e do L[J]=CreateFrame("Button",nil,b)if J>10 then L[J]:SetPoint("TOPLEFT",b,"TOPLEFT",425,-35-(J-10)*50)else L[J]:SetPoint("TOPLEFT",b,"TOPLEFT",225,-35-J*50)end;L[J]:SetHeight(32)L[J]:SetWidth(32)L[J].texture=L[J]:CreateTexture(nil,"ARTWORK")L[J].texture:SetAllPoints()L[J].texture:SetTexture(select(3,GetSpellInfo(e[J])))L[J].texture:SetTexCoord(0.1,0.9,0.1,0.9)L[J].texture:SetDesaturated(false)L[J].texture:SetVertexColor(1,1,1)L[J].text=L[J]:CreateFontString(nil,"OVERLAY","GameFontNormal")L[J].text:SetPoint("LEFT",L[J],"RIGHT",5,0)L[J].text:SetText(GetSpellInfo(e[J]))L[J].text:SetTextColor(1,1,1)L[J].text:SetJustifyH("LEFT")L[J].text:SetJustifyV("CENTER")L[J].text:SetSize(b.width,b.height-50)L[J].text:SetWordWrap(false)L[J].text:SetShadowOffset(1,-1)L[J].text:SetShadowColor(0,0,0,1)local M=IsSpellKnown(e[J])if M then L[J].active=true;L[J].texture:SetDesaturated(g)L[J].texture:SetVertexColor(h,i,j)L[J].text:SetTextColor(q,r,s)elseif M==false then L[J].active=false;L[J].texture:SetDesaturated(f)L[J].texture:SetVertexColor(h,i,j)L[J].text:SetTextColor(n,o,p)end;L[J]:SetScript("OnClick",function(self)local N=0;for J=1,#L do if L[J].active then N=N+1 end end;if N>=2 then L[J].active=false;L[J].texture:SetDesaturated(f)L[J].texture:SetVertexColor(k,l,m)L[J].text:SetTextColor(n,o,p)AIO.Handle("racialSwitch","racialDeactivatePassive",e[J])PlaySound("igMainMenuOptionCheckBoxOff")return end;self.active=true;self.texture:SetDesaturated(g)self.texture:SetVertexColor(h,i,j)self.text:SetTextColor(q,r,s)AIO.Handle("racialSwitch","racialActivate",e[J])PlaySound("igMainMenuOptionCheckBoxOn")end)L[J].spellId=e[J]L[J]:SetScript("OnEnter",function(self)GameTooltip:SetOwner(self,"ANCHOR_RIGHT")GameTooltip:SetHyperlink("spell:"..self.spellId)GameTooltip:Show()end)L[J]:SetScript("OnLeave",function(self)GameTooltip:Hide()end)end;b.passiveButton=L;local O={}for J=1,#c do O[J]=CreateFrame("Button",nil,b,"SecureUnitButtonTemplate")O[J]:SetPoint("CENTER",b,"CENTER",200,295-J*50)O[J]:SetHeight(32)O[J]:SetWidth(32)O[J].texture=O[J]:CreateTexture(nil,"ARTWORK")O[J].texture:SetAllPoints()O[J].texture:SetTexture(select(3,GetSpellInfo(c[J])))O[J].texture:SetTexCoord(0.1,0.9,0.1,0.9)O[J].texture:SetDesaturated(false)O[J].texture:SetVertexColor(1,1,1)O[J].text=O[J]:CreateFontString(nil,"OVERLAY","GameFontNormal")O[J].text:SetPoint("LEFT",O[J],"RIGHT",5,0)O[J].text:SetText(GetSpellInfo(c[J]))O[J].text:SetTextColor(1,1,1)O[J].text:SetJustifyH("LEFT")O[J].text:SetJustifyV("CENTER")O[J].text:SetSize(b.width,b.height-50)O[J].text:SetWordWrap(false)O[J].text:SetShadowOffset(1,-1)O[J].text:SetShadowColor(0,0,0,1)local P=IsSpellKnown(c[J])if P then O[J].active=true;O[J].texture:SetDesaturated(g)O[J].texture:SetVertexColor(h,i,j)O[J].text:SetTextColor(q,r,s)elseif P==false then O[J].active=false;O[J].texture:SetDesaturated(f)O[J].texture:SetVertexColor(h,i,j)O[J].text:SetTextColor(n,o,p)end;O[J]:SetScript("OnClick",function(self)if self.active==true then return end;for J=1,#O do O[J].active=false;O[J].texture:SetDesaturated(true)O[J].texture:SetVertexColor(k,l,m)O[J].text:SetTextColor(n,o,p)AIO.Handle("racialSwitch","racialDeactivateWeaponSpecialization",c[J])PlaySound("igMainMenuOptionCheckBoxOff")end;self.active=true;self.texture:SetDesaturated(false)self.texture:SetVertexColor(h,i,j)self.text:SetTextColor(q,r,s)AIO.Handle("racialSwitch","racialActivate",c[J])PlaySound("igMainMenuOptionCheckBoxOn")end)O[J].spellId=c[J]O[J]:SetScript("OnEnter",function(self)GameTooltip:SetOwner(self,"ANCHOR_RIGHT")GameTooltip:SetHyperlink("spell:"..self.spellId)GameTooltip:Show()end)O[J]:SetScript("OnLeave",function(self)GameTooltip:Hide()end)end;b.weaponSpecializationButton=O;E(b,"reset button",25,"BOTTOMRIGHT",b,"BOTTOMRIGHT",-8,2):SetScript("OnClick",function(self)for J=1,#I do if I[J].active then I[J].active=false;I[J].texture:SetDesaturated(f)I[J].texture:SetVertexColor(h,i,j)I[J].text:SetTextColor(n,o,p)AIO.Handle("racialSwitch","racialDeactivateUtility",d[J])end end;for J=1,#L do if L[J].active then L[J].active=false;L[J].texture:SetDesaturated(f)L[J].texture:SetVertexColor(h,i,j)L[J].text:SetTextColor(n,o,p)AIO.Handle("racialSwitch","racialDeactivatePassive",e[J])end end;for J=1,#c do if O[J].active then O[J].active=false;O[J].texture:SetDesaturated(f)O[J].texture:SetVertexColor(h,i,j)O[J].text:SetTextColor(n,o,p)AIO.Handle("racialSwitch","racialDeactivateWeaponSpecialization",c[J])end end;PlaySound("igMainMenuOptionCheckBoxOff")end)local Q=CreateFrame("button",nil,b,"UIPanelInfoButton")Q:SetPoint("BOTTOMRIGHT",b,"BOTTOMRIGHT",-10,35)Q:SetScript("OnEnter",function(self)GameTooltip:SetOwner(self,"ANCHOR_RIGHT")GameTooltip:SetText("Racial Switch")GameTooltip:AddLine("You may select:",1,1,1)GameTooltip:AddLine("1 Utility",1,1,1)GameTooltip:AddLine("2 Passive",1,1,1)GameTooltip:AddLine("1 Specialization. ",1,1,1)GameTooltip:AddLine("Not all passives will show up in spellbook",1,1,1)GameTooltip:Show()end)Q:SetScript("OnLeave",function(self)GameTooltip:Hide()end)b.infoButton=Q;SLASH_AHF1="/rc"SlashCmdList.AHF=function()if b:IsShown()then b:Hide()PlaySound("igCharacterInfoTab")else b:Show()PlaySound("igCharacterInfoTab")end end;function a.MyAddonFrame(R)if b:IsShown()then b:Hide()PlaySound("igSpellBookClose")else b:Show()PlaySound("igSpellBookOpen")end end
+local AIO = AIO or require("AIO")
+if AIO.AddAddon() then
+    return
+end
+local AIO = AIO or require("AIO")
+
+local MyHandlers = AIO.AddHandlers("racialSwitch", {})
+
+local config = {}
+
+config.utilityList = {
+    59752,
+    20572,
+    20594,
+    58984,
+    20549,
+    7744,
+    20577,
+    26297,
+    28730,
+    59542,
+    2481,
+    20589
+}
+
+config.passiveList = {
+    20592,
+    20596,
+    20579,
+    20551,
+    822,
+    20573,
+    65222,
+    20555,
+    58943,
+    20550,
+    20591,
+    5227,
+    6562,
+    20582,
+    -- 21009,
+    20585,
+    58985,
+    20599,
+    20598
+}
+config.weapList = {
+    20574,
+    26290,
+    20595,
+    59224,
+    20597,
+    20558
+
+    -- 5586,
+    -- 4500,
+    -- 12700,
+    -- 7514,
+    -- 22811
+}
+-- config.passiveProfRacial = {
+--     59188,
+--     20593,
+--     20552,
+--     28877
+-- }
+
+-- sort table utilityList by name
+table.sort(
+    config.utilityList,
+    function(a, b)
+        return GetSpellInfo(a) < GetSpellInfo(b)
+    end
+)
+
+local function createText(parent, text, fontSize, point, relativeFrame, relativePoint, ofsx, ofsy)
+    local tex = parent:CreateFontString(nil, "OVERLAY")
+    tex:SetFont("Fonts\\FRIZQT__.TTF", fontSize)
+    tex:SetPoint(point, relativeFrame, relativePoint, ofsx, ofsy)
+    tex:SetText(text)
+    --set level above frame so it doesn't get hidden
+    tex:SetDrawLayer("OVERLAY", 7)
+
+    return tex
+end
+local function createButton(parent, text, height, point, relativeFrame, relativePoint, ofsx, ofsy)
+    local button = CreateFrame("Button", nil, parent, "UIPanelButtonTemplate")
+    button:SetText(text)
+    button:SetHeight(height)
+    --get text size set width based on text length and font size
+    local textWidth = button:GetFontString():GetStringWidth()
+    button:SetWidth(textWidth + 20)
+    button:SetPoint(point, relativeFrame, relativePoint, ofsx, ofsy)
+
+    return button
+end
+
+------------------------------------------------------------
+
+-- UIPanelDialogTemplate
+
+config.frame = CreateFrame("Frame", "MAINFRAME", UIParent, "ButtonFrameTemplate")
+config.frame.width = 900
+config.frame.height = 700
+
+--set scale of window to 1.5
+
+config.frame:SetFrameStrata("FULLSCREEN_DIALOG")
+config.frame:SetSize(config.frame.width, config.frame.height)
+config.frame:SetScale(0.9)
+config.frame:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
+config.frame:SetBackdropColor(0, 0, 0, 1)
+config.frame:EnableMouse(true)
+config.frame:EnableMouseWheel(true)
+config.frame:SetMovable(true)
+
+config.frame:RegisterForDrag("LeftButton")
+config.frame:SetScript("OnDragStart", config.frame.StartMoving)
+config.frame:SetScript("OnDragStop", config.frame.StopMovingOrSizing)
+--set lowest frame
+config.frame:SetFrameLevel(0)
+
+-- config.frame:SetFrameLevel(0)
+config.frame:Show()
+
+--set class portrait
+config.frame.portrait = config.frame:CreateTexture(nil, "ARTWORK")
+config.frame.portrait:SetSize(64, 64)
+config.frame.portrait:SetPoint("TOPLEFT", config.frame, "TOPLEFT", -8, 9)
+config.frame.portrait:SetTexture("Interface\\Glues\\CharacterCreate\\UI-CharacterCreate-Classes")
+config.frame.portrait:SetTexCoord(unpack(CLASS_ICON_TCOORDS[select(2, UnitClass("player"))]))
+
+--set class text next to icon
+config.frame.classText =
+    createText(config.frame, select(2, UnitClass("player")), 15, "TOPLEFT", config.frame.portrait, "TOPRIGHT", 10, -12)
+
+--set name next to class text
+config.frame.nameText =
+    createText(config.frame, UnitName("player"), 15, "TOPLEFT", config.frame.classText, "TOPRIGHT", 10, 0)
+
+createText(config.frame, "RACIAL CHANGE", 15, "TOP", config.frame, "TOP", 0, -4)
+createText(config.frame, "Utility", 20, "TOPLEFT", config.frame, "TOPLEFT", config.frame.height / 9.5, -35)
+createText(config.frame, "Passive", 20, "TOPLEFT", config.frame, "TOPLEFT", config.frame.height / 2, -35)
+createText(config.frame, "Weapon Specialization", 20, "TOPRIGHT", config.frame, "TOPRIGHT", -45, -35)
+
+createButton(config.frame, "Close", 25, "BOTTOM", config.frame, "BOTTOM", 0, 3):SetScript(
+    "OnClick",
+    function(self)
+        HideParentPanel(self)
+    end
+)
+
+-- config.frame:SetScript(
+--     "OnEscapePressed",
+--     function(self)
+--         self:Hide()
+--     end
+-- )
+-- _G["racialFrame"] = config.frame
+-- tinsert(UISpecialFrames, "racialFrame")
+
+--[[ Utility Specialization ]]
+-- buttons for utility racial spells
+
+for i = 1, #config.utilityList do
+    local spellID = config.utilityList[i]
+    local spellName = GetSpellInfo(spellID)
+    local spellTexture = select(3, GetSpellInfo(spellID))
+    -- local spellTexture = GetSpellTexture(spellID)
+    local button = CreateFrame("Button", nil, config.frame, "SecureActionButtonTemplate")
+
+    button:SetSize(32, 32)
+    -- button:SetSize(config.frame.height / 12, config.frame.height / 12)
+    button:SetPoint("TOPLEFT", config.frame, "TOPLEFT", config.frame.height / 13, -config.frame.height / 15 * i - 50)
+    button:SetNormalTexture(spellTexture)
+    button:SetPushedTexture(spellTexture)
+    button:SetHighlightTexture(spellTexture)
+    button:SetAttribute("type", "spell")
+    button:SetAttribute("spell", spellName)
+    button:RegisterForDrag("LeftButton")
+    button.text = createText(button, spellName, 12, "LEFT", button, "RIGHT", 5, 0)
+    button.text:SetTextColor(1, 1, 1)
+    button:SetFrameLevel(1)
+
+    local isKnownUtility = IsSpellKnown(spellID)
+
+    if isKnownUtility then
+        button:SetAlpha(1)
+        button.active = true
+    else
+        button:SetAlpha(0.5)
+        button.active = false
+    end
+
+    button:SetScript(
+        "OnDragStart",
+        function(self)
+            PickupSpell(spellName)
+        end
+    )
+
+    button:SetScript(
+        "OnEnter",
+        function(self)
+            GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+            GameTooltip:SetHyperlink(GetSpellLink(spellID))
+            -- GameTooltip:SetSpellByID(spellID)
+            GameTooltip:Show()
+        end
+    )
+    button:SetScript(
+        "OnLeave",
+        function(self)
+            GameTooltip:Hide()
+        end
+    )
+    button:SetScript(
+        "OnClick",
+        function(self)
+            local maxActive = 0
+            for i = 1, #config.utilityList do
+                if IsSpellKnown(config.utilityList[i]) then
+                    maxActive = maxActive + 1
+                end
+            end
+
+            if maxActive >= 1 then
+                self.active = false
+                AIO.Handle("racialSwitch", "racialDeactivateUtility", spellID)
+            else
+                self.active = true
+                AIO.Handle("racialSwitch", "racialActivate", spellID)
+            end
+        end
+    )
+
+    button:SetScript(
+        "OnEvent",
+        function(self, event, ...)
+            if event == "SPELL_UPDATE_COOLDOWN" then
+                local start, duration, enabled = GetSpellCooldown(spellID)
+                if duration > 0 then
+                    button.cooldown = CreateFrame("Cooldown", nil, button, "CooldownFrameTemplate")
+                    button.cooldown:SetAllPoints(button)
+                    -- button.cooldown:SetReverse(true)
+                    button.cooldown:SetCooldown(start, duration)
+                else
+                    button.cooldown:Hide()
+                end
+            end
+
+            -- if event == "LEARNED_SPELL_IN_TAB" then
+            --     for emptyBar = 1, 120 do
+            --         local name = GetActionInfo(emptyBar)
+            --         --if spell already on action bar, then return end
+            --         if not name then
+            --             PickupSpell(spellName)
+            --             PlaceAction(emptyBar)
+            --             break
+            --         end
+            --     end
+            -- end
+        end
+    )
+    button:SetScript(
+        "OnUpdate",
+        function(self, elapsed)
+            if IsSpellKnown(spellID) then
+                self:SetAlpha(1)
+            else
+                self:SetAlpha(0.5)
+            end
+        end
+    )
+
+    button:RegisterEvent("PLAYER_ENTERING_WORLD")
+    button:RegisterEvent("SPELL_UPDATE_COOLDOWN")
+    button:RegisterEvent("LEARNED_SPELL_IN_TAB")
+end
+
+for i = 1, #config.passiveList do
+    local spellID = config.passiveList[i]
+    local spellName = GetSpellInfo(spellID)
+    local spellTexture = select(3, GetSpellInfo(spellID))
+    -- local spellTexture = GetSpellTexture(spellID)
+    local button = CreateFrame("Button", nil, config.frame, "SecureActionButtonTemplate")
+
+    button:SetSize(32, 32)
+    -- button:SetSize(config.frame.height / 12, config.frame.height / 12)
+    -- button:SetPoint("TOPLEFT", config.frame, "TOPLEFT", config.frame.height / 2.2, -config.frame.height / 15 * i - 50)
+
+    if i > 12 then
+        button:SetPoint(
+            "TOPLEFT",
+            config.frame,
+            "TOPLEFT",
+            config.frame.height / 1.6,
+            -config.frame.height / 15 * (i - 12) - 50
+        )
+    else
+        button:SetPoint("TOPLEFT", config.frame, "TOPLEFT", config.frame.height / 3, -config.frame.height / 15 * i - 50)
+    end
+    button:SetNormalTexture(spellTexture)
+    button:SetPushedTexture(spellTexture)
+    button:SetHighlightTexture(spellTexture)
+    button:SetAttribute("type", "spell")
+    button:SetAttribute("spell", spellName)
+    button:RegisterForDrag("LeftButton")
+    button.text = createText(button, spellName, 12, "LEFT", button, "RIGHT", 5, 0)
+    button.text:SetTextColor(1, 1, 1)
+    button:SetFrameLevel(1)
+
+    local isKnownPassive = IsSpellKnown(spellID)
+
+    if isKnownPassive then
+        button:SetAlpha(1)
+        button.active = true
+    else
+        button:SetAlpha(0.5)
+        button.active = false
+    end
+    button:SetScript(
+        "OnDragStart",
+        function(self)
+            PickupSpell(spellName)
+        end
+    )
+    button:SetScript(
+        "OnEnter",
+        function(self)
+            GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+            GameTooltip:SetHyperlink(GetSpellLink(spellID))
+            GameTooltip:Show()
+        end
+    )
+    button:SetScript(
+        "OnLeave",
+        function(self)
+            GameTooltip:Hide()
+        end
+    )
+    button:SetScript(
+        "OnClick",
+        function(self)
+            local maxActive = 0
+            for i = 1, #config.passiveList do
+                if IsSpellKnown(config.passiveList[i]) then
+                    maxActive = maxActive + 1
+                end
+            end
+            if maxActive >= 2 then
+                self.active = false
+                AIO.Handle("racialSwitch", "racialDeactivatePassive", spellID)
+            else
+                self.active = true
+                AIO.Handle("racialSwitch", "racialActivate", spellID)
+            end
+        end
+    )
+
+    button:SetScript(
+        "OnEvent",
+        function(self, event, ...)
+            if event == "SPELL_UPDATE_COOLDOWN" then
+                local start, duration, enabled = GetSpellCooldown(spellID)
+                if duration > 0 then
+                    button.cooldown = CreateFrame("Cooldown", nil, button, "CooldownFrameTemplate")
+                    button.cooldown:SetAllPoints(button)
+                    -- button.cooldown:SetReverse(true)
+                    button.cooldown:SetCooldown(start, duration)
+                end
+            end
+        end
+    )
+    button:SetScript(
+        "OnUpdate",
+        function(self, elapsed)
+            if IsSpellKnown(spellID) then
+                self:SetAlpha(1)
+            else
+                self:SetAlpha(0.5)
+            end
+        end
+    )
+
+    button:RegisterEvent("PLAYER_ENTERING_WORLD")
+    button:RegisterEvent("SPELL_UPDATE_COOLDOWN")
+end
+
+for i = 1, #config.weapList do
+    local spellID = config.weapList[i]
+    local spellName = GetSpellInfo(spellID)
+    local spellTexture = select(3, GetSpellInfo(spellID))
+    -- local spellTexture = GetSpellTexture(spellID)
+    local button = CreateFrame("Button", nil, config.frame, "SecureActionButtonTemplate")
+
+    button:SetSize(32, 32)
+    -- button:SetSize(config.frame.height / 12, config.frame.height / 12)
+    button:SetPoint("TOPLEFT", config.frame, "TOPLEFT", config.frame.height / 1.1, -config.frame.height / 15 * i - 50)
+
+    button:SetNormalTexture(spellTexture)
+    button:SetPushedTexture(spellTexture)
+    button:SetHighlightTexture(spellTexture)
+    button:SetAttribute("type", "spell")
+    button:SetAttribute("spell", spellName)
+    button:RegisterForDrag("LeftButton")
+    button.text = createText(button, spellName, 12, "LEFT", button, "RIGHT", 5, 0)
+    button.text:SetTextColor(1, 1, 1)
+    button:SetFrameLevel(1)
+
+    local isKnownPassive = IsSpellKnown(spellID)
+
+    if isKnownPassive then
+        button:SetAlpha(1)
+
+        button.active = true
+    else
+        button:SetAlpha(0.5)
+
+        button.active = false
+    end
+
+    button:SetScript(
+        "OnDragStart",
+        function(self)
+            PickupSpell(spellName)
+        end
+    )
+    button:SetScript(
+        "OnEnter",
+        function(self)
+            GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+            GameTooltip:SetHyperlink(GetSpellLink(spellID))
+            GameTooltip:Show()
+        end
+    )
+    button:SetScript(
+        "OnLeave",
+        function(self)
+            GameTooltip:Hide()
+        end
+    )
+    button:SetScript(
+        "OnClick",
+        function(self)
+            local maxActive = 0
+            for i = 1, #config.weapList do
+                if IsSpellKnown(config.weapList[i]) then
+                    maxActive = maxActive + 1
+                end
+            end
+            if maxActive >= 1 then
+                self.active = false
+                AIO.Handle("racialSwitch", "racialDeactivateWeaponSpecialization", spellID)
+            else
+                self.active = true
+                AIO.Handle("racialSwitch", "racialActivate", spellID)
+            end
+        end
+    )
+    button:SetScript(
+        "OnEvent",
+        function(self, event, ...)
+            if event == "SPELL_UPDATE_COOLDOWN" then
+                local start, duration, enabled = GetSpellCooldown(spellID)
+                if duration > 0 then
+                    button.cooldown = CreateFrame("Cooldown", nil, button, "CooldownFrameTemplate")
+                    button.cooldown:SetAllPoints(button)
+                    -- button.cooldown:SetReverse(true)
+                    button.cooldown:SetCooldown(start, duration)
+                else
+                    button.cooldown:Hide()
+                end
+            end
+        end
+    )
+    button:SetScript(
+        "OnUpdate",
+        function(self, elapsed)
+            if IsSpellKnown(spellID) then
+                self:SetAlpha(1)
+            else
+                self:SetAlpha(0.5)
+            end
+        end
+    )
+    button:RegisterEvent("PLAYER_ENTERING_WORLD")
+    button:RegisterEvent("SPELL_UPDATE_COOLDOWN")
+    button:RegisterEvent("SPELL_UPDATE_USABLE")
+end
+
+createButton(config.frame, "reset button", 25, "BOTTOMRIGHT", config.frame, "BOTTOMRIGHT", -8, 2):SetScript(
+    "OnClick",
+    function(self)
+        AIO.Handle("racialSwitch", "unLearnAllRacials")
+        PlaySound("igMainMenuOptionCheckBoxOff")
+    end
+)
+
+--setup button
+local infoButton = CreateFrame("button", nil, config.frame, "UIPanelInfoButton")
+infoButton:SetPoint("BOTTOMRIGHT", config.frame, "BOTTOMRIGHT", -10, 35)
+infoButton:SetScript(
+    "OnEnter",
+    function(self)
+        --show text when enter
+        GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+        GameTooltip:SetText("Racial Switch")
+        GameTooltip:AddLine("You may select:", 1, 1, 1)
+        GameTooltip:AddLine("1 Utility", 1, 1, 1)
+        GameTooltip:AddLine("2 Passive", 1, 1, 1)
+        GameTooltip:AddLine("1 Specialization. ", 1, 1, 1)
+        GameTooltip:Show()
+    end
+)
+infoButton:SetScript(
+    "OnLeave",
+    function(self)
+        --hide text when leave
+        GameTooltip:Hide()
+    end
+)
+
+config.frame.infoButton = infoButton
+
+SLASH_RACIALSWITCH1 = "/rs"
+SLASH_RACIALSWITCH2 = "/racialswitch"
+SlashCmdList["RACIALSWITCH"] = function(msg)
+    if config.frame:IsShown() then
+        config.frame:Hide()
+    else
+        config.frame:Show()
+    end
+end
+
+--if press escape on keyboard then hide the frame
+local function OnKeyDown(self, key)
+    if key == "ESCAPE" then
+        config.frame:Hide()
+    end
+end
+config.frame:SetScript("OnKeyDown", OnKeyDown)
+
+function MyHandlers.MyAddonFrame()
+    if config.frame:IsShown() then
+        -- config.frame:Hide()
+        PlaySound("igSpellBookClose")
+    else
+        config.frame:Show()
+        PlaySound("igSpellBookOpen")
+    end
+end
