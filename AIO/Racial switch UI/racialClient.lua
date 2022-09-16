@@ -216,14 +216,16 @@ for i = 1, #config.utilityList do
         "OnEvent",
         function(self, event, ...)
             if event == "SPELL_UPDATE_COOLDOWN" then
-                local start, duration, enabled = GetSpellCooldown(spellID)
-                if duration > 0 then
-                    button.cooldown = CreateFrame("Cooldown", nil, button, "CooldownFrameTemplate")
-                    button.cooldown:SetAllPoints(button)
-                    -- button.cooldown:SetReverse(true)
-                    button.cooldown:SetCooldown(start, duration)
-                else
-                    button.cooldown:Hide()
+                if self.active then
+                    local start, duration, enabled = GetSpellCooldown(spellID)
+                    if duration > 0 then
+                        button.cooldown = CreateFrame("Cooldown", nil, button, "CooldownFrameTemplate")
+                        button.cooldown:SetAllPoints(button)
+                        -- button.cooldown:SetReverse(true)
+                        button.cooldown:SetCooldown(start, duration)
+                    else
+                        button.cooldown:Hide()
+                    end
                 end
             end
         end
