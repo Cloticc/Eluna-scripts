@@ -51,21 +51,7 @@ config.weapList = {
     59224,
     20597,
     20558
-
-    -- 5586,
-    -- 4500,
-    -- 12700,
-    -- 7514,
-    -- 22811
 }
--- config.passiveProfRacial = {
---     59188,
---     20593,
---     20552,
---     28877
--- }
-
--- sort table utilityList by name
 table.sort(
     config.utilityList,
     function(a, b)
@@ -103,8 +89,6 @@ config.frame = CreateFrame("Frame", "MAINFRAME", UIParent, "ButtonFrameTemplate"
 config.frame.width = 900
 config.frame.height = 700
 
---set scale of window to 1.5
-
 config.frame:SetFrameStrata("FULLSCREEN_DIALOG")
 config.frame:SetSize(config.frame.width, config.frame.height)
 config.frame:SetScale(0.9)
@@ -117,11 +101,17 @@ config.frame:SetMovable(true)
 config.frame:RegisterForDrag("LeftButton")
 config.frame:SetScript("OnDragStart", config.frame.StartMoving)
 config.frame:SetScript("OnDragStop", config.frame.StopMovingOrSizing)
---set lowest frame
+
 config.frame:SetFrameLevel(0)
 
--- config.frame:SetFrameLevel(0)
-config.frame:Show()
+config.frame:SetScript(
+    "OnEvent",
+    function(self, event, ...)
+        if event == "PLAYER_ENTERING_WORLD" then
+            self:Show()
+        end
+    end
+)
 
 --set class portrait
 config.frame.portrait = config.frame:CreateTexture(nil, "ARTWORK")
@@ -150,27 +140,15 @@ createButton(config.frame, "Close", 25, "BOTTOM", config.frame, "BOTTOM", 0, 3):
     end
 )
 
--- config.frame:SetScript(
---     "OnEscapePressed",
---     function(self)
---         self:Hide()
---     end
--- )
--- _G["racialFrame"] = config.frame
--- tinsert(UISpecialFrames, "racialFrame")
-
---[[ Utility Specialization ]]
--- buttons for utility racial spells
-
 for i = 1, #config.utilityList do
     local spellID = config.utilityList[i]
     local spellName = GetSpellInfo(spellID)
     local spellTexture = select(3, GetSpellInfo(spellID))
-    -- local spellTexture = GetSpellTexture(spellID)
+
     local button = CreateFrame("Button", nil, config.frame, "SecureActionButtonTemplate")
 
     button:SetSize(32, 32)
-    -- button:SetSize(config.frame.height / 12, config.frame.height / 12)
+
     button:SetPoint("TOPLEFT", config.frame, "TOPLEFT", config.frame.height / 13, -config.frame.height / 15 * i - 50)
     button:SetNormalTexture(spellTexture)
     button:SetPushedTexture(spellTexture)
@@ -204,7 +182,7 @@ for i = 1, #config.utilityList do
         function(self)
             GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
             GameTooltip:SetHyperlink(GetSpellLink(spellID))
-            -- GameTooltip:SetSpellByID(spellID)
+
             GameTooltip:Show()
         end
     )
@@ -248,18 +226,6 @@ for i = 1, #config.utilityList do
                     button.cooldown:Hide()
                 end
             end
-
-            -- if event == "LEARNED_SPELL_IN_TAB" then
-            --     for emptyBar = 1, 120 do
-            --         local name = GetActionInfo(emptyBar)
-            --         --if spell already on action bar, then return end
-            --         if not name then
-            --             PickupSpell(spellName)
-            --             PlaceAction(emptyBar)
-            --             break
-            --         end
-            --     end
-            -- end
         end
     )
     button:SetScript(
@@ -282,12 +248,10 @@ for i = 1, #config.passiveList do
     local spellID = config.passiveList[i]
     local spellName = GetSpellInfo(spellID)
     local spellTexture = select(3, GetSpellInfo(spellID))
-    -- local spellTexture = GetSpellTexture(spellID)
+
     local button = CreateFrame("Button", nil, config.frame, "SecureActionButtonTemplate")
 
     button:SetSize(32, 32)
-    -- button:SetSize(config.frame.height / 12, config.frame.height / 12)
-    -- button:SetPoint("TOPLEFT", config.frame, "TOPLEFT", config.frame.height / 2.2, -config.frame.height / 15 * i - 50)
 
     if i > 12 then
         button:SetPoint(
@@ -358,20 +322,6 @@ for i = 1, #config.passiveList do
         end
     )
 
-    button:SetScript(
-        "OnEvent",
-        function(self, event, ...)
-            if event == "SPELL_UPDATE_COOLDOWN" then
-                local start, duration, enabled = GetSpellCooldown(spellID)
-                if duration > 0 then
-                    button.cooldown = CreateFrame("Cooldown", nil, button, "CooldownFrameTemplate")
-                    button.cooldown:SetAllPoints(button)
-                    -- button.cooldown:SetReverse(true)
-                    button.cooldown:SetCooldown(start, duration)
-                end
-            end
-        end
-    )
     button:SetScript(
         "OnUpdate",
         function(self, elapsed)
@@ -458,22 +408,7 @@ for i = 1, #config.weapList do
             end
         end
     )
-    button:SetScript(
-        "OnEvent",
-        function(self, event, ...)
-            if event == "SPELL_UPDATE_COOLDOWN" then
-                local start, duration, enabled = GetSpellCooldown(spellID)
-                if duration > 0 then
-                    button.cooldown = CreateFrame("Cooldown", nil, button, "CooldownFrameTemplate")
-                    button.cooldown:SetAllPoints(button)
-                    -- button.cooldown:SetReverse(true)
-                    button.cooldown:SetCooldown(start, duration)
-                else
-                    button.cooldown:Hide()
-                end
-            end
-        end
-    )
+
     button:SetScript(
         "OnUpdate",
         function(self, elapsed)
@@ -486,7 +421,7 @@ for i = 1, #config.weapList do
     )
     button:RegisterEvent("PLAYER_ENTERING_WORLD")
     button:RegisterEvent("SPELL_UPDATE_COOLDOWN")
-    button:RegisterEvent("SPELL_UPDATE_USABLE")
+    -- button:RegisterEvent("SPELL_UPDATE_USABLE")
 end
 
 createButton(config.frame, "reset button", 25, "BOTTOMRIGHT", config.frame, "BOTTOMRIGHT", -8, 2):SetScript(
@@ -516,7 +451,6 @@ infoButton:SetScript(
 infoButton:SetScript(
     "OnLeave",
     function(self)
-        --hide text when leave
         GameTooltip:Hide()
     end
 )
@@ -533,7 +467,6 @@ SlashCmdList["RACIALSWITCH"] = function(msg)
     end
 end
 
---if press escape on keyboard then hide the frame
 local function OnKeyDown(self, key)
     if key == "ESCAPE" then
         config.frame:Hide()
