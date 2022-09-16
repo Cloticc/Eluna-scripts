@@ -2,4 +2,4 @@
 
 ## To open the UI, write in chat `/rs` or `.rs` key
 
-[![image.png](https://i.postimg.cc/5NfYQ9VP/image.png)](https://postimg.cc/w3bTSp3J)
+[![image.png](https://i.postimg.cc/bN4BjJyg/image.png)](https://postimg.cc/4mb56XhH)
