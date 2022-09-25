@@ -56,7 +56,7 @@ function druidMorph.menu(event, player, object)
 end
 function druidMorph.selectionMorph(event, player, object, sender, intid, code, menu_id)
     if intid == 1 then
-        if not player:HasAura(123) then
+        if not player:HasAura(5487 or 9634) then
             player:SendBroadcastMessage("You are not in bear form.")
             return druidMorph.menu(event, player, object)
         end
@@ -64,7 +64,7 @@ function druidMorph.selectionMorph(event, player, object, sender, intid, code, m
         -- print("Bear")
         player:GossipComplete()
     elseif intid == 2 then
-        if not player:HasAura(123) then
+        if not player:HasAura(1066) then
             player:SendBroadcastMessage("You are not in Aquatic form.")
             return druidMorph.menu(event, player, object)
         end
@@ -90,7 +90,7 @@ function druidMorph.selectionMorph(event, player, object, sender, intid, code, m
 
         player:GossipSendMenu(1, player, MENU_ID)
     elseif intid == 4 then
-        if not player:HasAura(123) then
+        if not player:HasAura(783) then
             player:SendBroadcastMessage("You are not in Travel form.")
             return druidMorph.menu(event, player, object)
         end
@@ -100,7 +100,7 @@ function druidMorph.selectionMorph(event, player, object, sender, intid, code, m
 
         player:GossipSendMenu(1, player, MENU_ID)
     elseif intid == 5 then
-        if not player:HasAura(123) then
+        if not player:HasAura(33943) then
             player:SendBroadcastMessage("You are not in Flight form.")
             return druidMorph.menu(event, player, object)
         end
