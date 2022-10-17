@@ -1,9 +1,9 @@
 # Racial Switch UI
 
-## To open the UI, write in chat `/rs` or `.rs` key
+## To open the UI click icon or write in chat `/rs` or `.rs` key
 
 ### Require [AIO](https://github.com/Rochet2/AIO) addon to work
 
-Feel free to change or do whatever you want with this code. Probably ways to improve it so feel free to do so.
+Feel free to change or do whatever you want with this code. Probably ways to improve it so feel free to do so. Click img for video
 
-[![image.png](https://i.postimg.cc/kGsRvDjm/image.png)](https://postimg.cc/ctKJs1y9)
+[![image.png](https://i.ibb.co/cY2fgQG/image.png)](https://streamable.com/yw5lvv)
