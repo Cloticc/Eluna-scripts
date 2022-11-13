@@ -303,9 +303,9 @@ function config.buttonCreate(parent, spellID, point, relativeFrame, relativePoin
     button:SetAttribute("type", "spell")
     button:SetAttribute("spell", spellName)
     button:RegisterForDrag("LeftButton")
-    button:GetNormalTexture():SetTexCoord(0.1, 0.9, 0.1, 0.9)
-    button:GetPushedTexture():SetTexCoord(0.1, 0.9, 0.1, 0.9)
-    button:GetHighlightTexture():SetTexCoord(0.1, 0.9, 0.1, 0.9)
+    -- button:GetNormalTexture():SetTexCoord(0.1, 0.9, 0.1, 0.9)
+    -- button:GetPushedTexture():SetTexCoord(0.1, 0.9, 0.1, 0.9)
+    -- button:GetHighlightTexture():SetTexCoord(0.1, 0.9, 0.1, 0.9)
 
     local tex = config.createText(button, spellName, 12, "LEFT", button, "RIGHT", 5, 0)
     tex:SetTextColor(1, 1, 1)
