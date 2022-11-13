@@ -152,14 +152,17 @@ config.frame:SetFrameLevel(0)
 config.frame:Show()
 
 function config.mainFrame()
-    config.infoButton = CreateFrame("button", nil, config.frame)
-    -- config.infoButton = CreateFrame("button", nil, config.frame, "UIPanelInfoButton")
-    config.infoButton:SetPoint("BOTTOMRIGHT", config.frame, "BOTTOMRIGHT", -10, 35)
 
-    config.infoButton:SetScript(
+    config.frame.portrait = CreateFrame("Button", nil, config.frame)
+    config.frame.portrait:SetSize(64, 64)
+    config.frame.portrait:SetPoint("TOPLEFT", config.frame, "TOPLEFT", -8, 9)
+    config.frame.portrait:SetNormalTexture("Interface\\Glues\\CharacterCreate\\UI-CharacterCreate-Classes")
+    config.frame.portrait:GetNormalTexture():SetTexCoord(unpack(CLASS_ICON_TCOORDS[select(2, UnitClass("player"))]))
+    config.frame.portrait:SetScript(
         "OnEnter",
         function(self)
             GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+
             GameTooltip:SetText("Racial Switch")
             GameTooltip:AddLine("You may select:", 1, 1, 1)
             GameTooltip:AddLine("1 Utility", 1, 1, 1)
@@ -169,29 +172,40 @@ function config.mainFrame()
             GameTooltip:Show()
         end
     )
-    config.infoButton:SetScript(
+    config.frame.portrait:SetScript(
         "OnLeave",
         function(self)
             GameTooltip:Hide()
         end
     )
-    --updates alpha on button
-    config.infoButton:SetScript(
+    --make indecation that the button is clickable
+    config.frame.portrait:SetHighlightTexture("Interface\\Buttons\\ButtonHilight-Square")
+    config.frame.portrait:GetHighlightTexture():SetBlendMode("ADD")
+    config.frame.portrait:GetHighlightTexture():SetAlpha(0.5)
+    --updates every 5 sec blink the button
+    config.frame.portrait:SetScript(
         "OnUpdate",
-        function(self, ...)
-            if not self:IsMouseOver() then
+        function(self, elapsed)
+            -- if frame is not shown stop blinking
+            if not config.frame:IsShown() then
                 self:SetAlpha(1)
-            else
-                self:SetAlpha(0.5)
+            end
+            --check if mouse is over the button stop blinking
+            self.elapsed = (self.elapsed or 0) + elapsed
+            if self.elapsed > 0.5 then
+                if not self:IsMouseOver() then
+                    if self:GetAlpha() == 1 then
+                        self:SetAlpha(0.5)
+                    else
+                        self:SetAlpha(1)
+                    end
+                end
+                self.elapsed = 0
             end
         end
+
+
     )
-    --set class portrait
-    config.frame.portrait = config.frame:CreateTexture(nil, "OVERLAY")
-    config.frame.portrait:SetSize(64, 64)
-    config.frame.portrait:SetPoint("TOPLEFT", config.frame, "TOPLEFT", -8, 9)
-    config.frame.portrait:SetTexture("Interface\\Glues\\CharacterCreate\\UI-CharacterCreate-Classes")
-    config.frame.portrait:SetTexCoord(unpack(CLASS_ICON_TCOORDS[select(2, UnitClass("player"))]))
 
 
     --class text next to icon
