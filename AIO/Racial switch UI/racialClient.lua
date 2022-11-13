@@ -8,6 +8,14 @@ local MyHandlers = AIO.AddHandlers("racialSwitch", {})
 
 local config = {}
 
+--[[
+TODO: Change spells to server side instead. more secure. if i wer to change the spell id's on client they would be able to use not intended spells.
+
+Fix issue with the UI not showing when login in giving template error. Change frame temp to other one that works. Without adding more stuff to download.
+
+ ]]
+
+
 config.utilityActive = 1
 config.pssiveActive = 2
 config.weaponActive = 1
@@ -52,17 +60,20 @@ config.passiveList = {
     20598
 }
 config.weaponList = {
-    20574,
+    -- 5586,
+
+    -- 20111,
+    -- 14524,
+    -- 16253,
+
+    -- 12700,
+    -- 55107,
+    -- 20574,
     26290,
     20595,
     59224,
     20597,
     20558
-    -- 5586,
-    -- 4500,
-    -- 12700,
-    -- 7514,
-    -- 22811
 }
 config.profList = {
     -- 59188,
@@ -79,28 +90,46 @@ table.sort(
     end
 )
 
+
+
+
 function config.createText(parent, text, fontSize, point, relativeFrame, relativePoint, ofsx, ofsy)
     local tex = parent:CreateFontString(nil, "OVERLAY")
     tex:SetFont("Fonts\\FRIZQT__.TTF", fontSize)
     tex:SetPoint(point, relativeFrame, relativePoint, ofsx, ofsy)
     tex:SetText(text)
+
+    if tex:GetStringWidth() > 200 then
+        tex:SetWidth(200)
+        tex:SetWordWrap(true)
+    end
+
+    tex:SetJustifyH("LEFT")
+    tex:SetJustifyV("TOP")
+
+
     return tex
 end
+
 local function createButton(parent, text, height, point, relativeFrame, relativePoint, ofsx, ofsy)
+
     local button = CreateFrame("Button", nil, parent, "UIPanelButtonTemplate")
     button:SetText(text)
     button:SetHeight(height)
     local textWidth = button:GetFontString():GetStringWidth()
     button:SetWidth(textWidth + 20)
     button:SetPoint(point, relativeFrame, relativePoint, ofsx, ofsy)
-    button:SetFrameLevel(7)
     return button
 end
 
 ------------------------------------------------------------
 
--- config.frame = CreateFrame("Frame", "MAINFRAME", UIParent)
-config.frame = CreateFrame("Frame", "MAINFRAME", UIParent, "ButtonFrameTemplate")
+
+
+
+
+config.frame = CreateFrame("Frame", "MAINFRAME", UIParent, "UIPanelDialogTemplate")
+
 
 config.frame.width = 900
 config.frame.height = 700
@@ -116,12 +145,15 @@ config.frame:SetMovable(true)
 config.frame:RegisterForDrag("LeftButton")
 config.frame:SetScript("OnDragStart", config.frame.StartMoving)
 config.frame:SetScript("OnDragStop", config.frame.StopMovingOrSizing)
-config.frame:SetFrameStrata("BACKGROUND")
+
 config.frame:SetFrameLevel(0)
-config.frame:Hide()
+
+
+config.frame:Show()
 
 function config.mainFrame()
-    config.infoButton = CreateFrame("button", nil, config.frame, "UIPanelInfoButton")
+    config.infoButton = CreateFrame("button", nil, config.frame)
+    -- config.infoButton = CreateFrame("button", nil, config.frame, "UIPanelInfoButton")
     config.infoButton:SetPoint("BOTTOMRIGHT", config.frame, "BOTTOMRIGHT", -10, 35)
 
     config.infoButton:SetScript(
@@ -143,7 +175,7 @@ function config.mainFrame()
             GameTooltip:Hide()
         end
     )
-    --make button glow around it when mouse isnt over it
+    --updates alpha on button
     config.infoButton:SetScript(
         "OnUpdate",
         function(self, ...)
@@ -155,15 +187,16 @@ function config.mainFrame()
         end
     )
     --set class portrait
-    config.frame.portrait = config.frame:CreateTexture(nil, "ARTWORK")
+    config.frame.portrait = config.frame:CreateTexture(nil, "OVERLAY")
     config.frame.portrait:SetSize(64, 64)
     config.frame.portrait:SetPoint("TOPLEFT", config.frame, "TOPLEFT", -8, 9)
     config.frame.portrait:SetTexture("Interface\\Glues\\CharacterCreate\\UI-CharacterCreate-Classes")
     config.frame.portrait:SetTexCoord(unpack(CLASS_ICON_TCOORDS[select(2, UnitClass("player"))]))
 
+
     --class text next to icon
     config.frame.classText =
-        config.createText(
+    config.createText(
         config.frame,
         select(2, UnitClass("player")),
         15,
@@ -171,33 +204,34 @@ function config.mainFrame()
         config.frame.portrait,
         "TOPRIGHT",
         10,
-        -12
+        -16
     )
+    --race name beside portrait
+    config.frame.raceName =
+    config.createText(config.frame, UnitRace("player"), 15, "TOPLEFT", config.frame.classText, "TOPRIGHT", 10, 0)
 
     --name next to class text
     config.frame.nameText =
-        config.createText(config.frame, UnitName("player"), 15, "TOPLEFT", config.frame.classText, "TOPRIGHT", 10, 0)
+    config.createText(config.frame, UnitName("player"), 15, "TOPLEFT", config.frame.raceName, "TOPRIGHT", 15, 0)
 
     config.createText(config.frame, "Racial Switch", 15, "TOP", config.frame, "TOP", 0, -4)
-    config.createText(config.frame, "Utility", 20, "TOPLEFT", config.frame, "TOPLEFT", config.frame.height / 9.5, -35)
-    config.createText(config.frame, "Passive", 20, "TOPLEFT", config.frame, "TOPLEFT", config.frame.height / 1.8, -35)
-    config.createText(config.frame, "Weapon Specialization", 20, "TOPRIGHT", config.frame, "TOPRIGHT", -45, -35)
+    config.createText(config.frame, "Utility", 20, "TOPLEFT", config.frame, "TOPLEFT", config.frame.height / 9.5, -45)
+    config.createText(config.frame, "Passive", 20, "TOPLEFT", config.frame, "TOPLEFT", config.frame.height / 1.8, -45)
+    config.createText(config.frame, "Weapon Specialization", 20, "TOPLEFT", config.frame, "TOPLEFT",
+
+        config.frame.width / 1.3,
+        -35
+    )
     if config.isActiveProf then
-        -- config.createText(config.frame, "Profession Racial", 20, "TOPRIGHT", config.frame, "TOPRIGHT", -45, -35)
+
         config.createText(config.frame, "Profession Racial", 20, "TOPRIGHT", config.frame, "TOPRIGHT", -45, -450)
     end
 
-    createButton(config.frame, "Close", 25, "BOTTOM", config.frame, "BOTTOM", 0, 3):SetScript(
+    createButton(config.frame, "Reset Button", 25, "BOTTOMRIGHT", config.frame, "BOTTOMRIGHT", -8, 10):SetScript(
         "OnClick",
-        function(self)
-            HideParentPanel(self)
-        end
-    )
-
-    createButton(config.frame, "reset button", 25, "BOTTOMRIGHT", config.frame, "BOTTOMRIGHT", -8, 2):SetScript(
-        "OnClick",
-        function(self)
+        function(self, ...)
             --gets active spells and deactivate them send spellID
+            print("reset button")
             for i = 1, #config.utilityList do
                 local spellID = config.utilityList[i]
                 local spellName = GetSpellInfo(spellID)
@@ -225,20 +259,22 @@ function config.mainFrame()
                     button:SetAlpha(0.5)
                 end
             end
-            for i = 1, #config.profList do
-                local spellID = config.profList[i]
-                local spellName = GetSpellInfo(spellID)
-                local button = _G[spellName]
-                if button.active then
-                    AIO.Handle("racialSwitch", "racialDeactivate", spellID)
-                    button:SetAlpha(0.5)
+            if config.isActiveProf then
+                for i = 1, #config.profList do
+                    local spellID = config.profList[i]
+                    local spellName = GetSpellInfo(spellID)
+                    local button = _G[spellName]
+                    if button.active then
+                        AIO.Handle("racialSwitch", "racialDeactivate", spellID)
+                        button:SetAlpha(0.5)
+                    end
                 end
             end
         end
     )
 end
-config.mainFrame()
 
+config.mainFrame()
 function config.buttonCreate(parent, spellID, point, relativeFrame, relativePoint, ofsx, ofsy, tableName, maximumActive)
     local spellName = GetSpellInfo(spellID)
     local spellTexture = select(3, GetSpellInfo(spellID))
@@ -253,20 +289,9 @@ function config.buttonCreate(parent, spellID, point, relativeFrame, relativePoin
     button:SetAttribute("type", "spell")
     button:SetAttribute("spell", spellName)
     button:RegisterForDrag("LeftButton")
-    -- button:RegisterForClicks("LeftButtonDown", "RightButtonDown")
-
     button:GetNormalTexture():SetTexCoord(0.1, 0.9, 0.1, 0.9)
     button:GetPushedTexture():SetTexCoord(0.1, 0.9, 0.1, 0.9)
     button:GetHighlightTexture():SetTexCoord(0.1, 0.9, 0.1, 0.9)
-
-    --set border around icon to show if its active or not
-    button.border = button:CreateTexture(nil, "OVERLAY")
-    button.border:SetSize(36, 36)
-    button.border:SetPoint("CENTER", button, "CENTER", 0, 0)
-    button.border:SetTexture("Interface\\Icons\\SquareRuss.blp")
-    button.border:SetTexCoord(0.1, 0.9, 0.1, 0.9)
-
-    -- button.active = false
 
     local tex = config.createText(button, spellName, 12, "LEFT", button, "RIGHT", 5, 0)
     tex:SetTextColor(1, 1, 1)
@@ -325,15 +350,27 @@ function config.buttonCreate(parent, spellID, point, relativeFrame, relativePoin
     button:SetScript(
         "OnUpdate",
         function(self, ...)
-            local isKnownSpell = IsSpellKnown(spellID)
-            if not isKnownSpell then
-                button:SetAlpha(0.5)
-                button.active = false
-                button.border:SetAlpha(0.5)
+
+            if IsSpellKnown(spellID) then
+
+                self:SetAlpha(1)
+                self.active = true
+                --check if overlay texture exists if not create it
+                if not self.overlay then
+                    self.overlay = self:CreateTexture(nil, "OVERLAY")
+                    self.overlay:SetTexture("Interface\\Buttons\\UI-Debuff-Overlays")
+                    self.overlay:SetTexCoord(0.296875, 0.5703125, 0, 0.515625)
+                    self.overlay:SetAllPoints()
+                end
+
+                self.overlay:Show()
             else
-                button:SetAlpha(1)
-                button.active = true
-                button.border:SetAlpha(1)
+                self.active = false
+                self:SetAlpha(0.5)
+                if self.overlay then
+
+                    self.overlay:Hide()
+                end
             end
         end
     )
@@ -344,7 +381,7 @@ function config.buttonCreate(parent, spellID, point, relativeFrame, relativePoin
             if event == "SPELL_UPDATE_COOLDOWN" then
                 if self.active then
                     local start, duration, enabled = GetSpellCooldown(spellID)
-                    --display cooldown text on button
+                    -- display cooldown text on button TODO: Change how it's handled might be a better way.
                     if button.cooldown then
                         button.cooldown:SetCooldown(start, duration)
                     else
@@ -355,6 +392,8 @@ function config.buttonCreate(parent, spellID, point, relativeFrame, relativePoin
                             button.cooldown:SetDrawEdge(false)
                         end
                     end
+
+
                 end
             end
         end
@@ -380,7 +419,8 @@ function config.spawnButton()
         )
     end
     --
-    --[[passiveList]] local row = 1
+    --[[passiveList]]
+    local row = 1
     local column = 1
     for i = 1, #config.passiveList do
         config.buttonCreate(
@@ -403,12 +443,6 @@ function config.spawnButton()
             column = column + 1
         end
 
-        -- if column == 14 then
-        --     row = row + 1
-        --     column = 1
-        -- else
-        --     column = column + 1
-        -- end
     end
 
     --[[ Weapon Specialization ]]
@@ -443,20 +477,17 @@ function config.spawnButton()
         end
     end
 end
+
 if not config.button then
     config.spawnButton()
 end
 tinsert(UISpecialFrames, config.frame:GetName()) -- allows frame to be closed with escape key
 
---add icon on worldframe for easy access
 local icon = CreateFrame("Button", nil, WorldFrame)
 icon:SetSize(32, 32)
-
-icon:SetPoint("TOP", WorldFrame, "TOP", 0, -125)
--- icon:SetHighlightTexture("Interface\\Buttons\\ButtonHilight-Square")
+icon:SetPoint("TOP", WorldFrame, "TOP", 0, -50)
 icon:SetNormalTexture("Interface\\Icons\\UI-Dialog-Icon-AlertOther")
 
---set tex under icon to white saying racial switch
 local tex = icon:CreateFontString(nil, "OVERLAY")
 tex:SetFont("Fonts\\FRIZQT__.TTF", 12, "OUTLINE")
 tex:SetPoint("CENTER", icon, "BOTTOM", 0, 0)
