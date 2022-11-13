@@ -1,6 +1,6 @@
 # Racial Switch UI
 
-## To open the UI click icon or write in chat `/rs` or `.rs` key
+## Place both server and client inside lua_scripts. Atm it's not secure let players have it in ther addonf older. To open the UI click icon or write in chat `/rs` or `.rs` key
 
 ### Require [AIO](https://github.com/Rochet2/AIO) addon to work
 
