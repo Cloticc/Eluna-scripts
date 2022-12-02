@@ -19,10 +19,11 @@ Vip.Mall = true -- teleport mall
 Vip.Bank = true -- openBank
 Vip.groupreset = true -- reset group
 Vip.List = true -- list of commands
+Vip.GM = true -- GM learn spell
 
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-Vip.Buffs = {
+Vip.Buffs                   = {
     -- Place the buffs here just do exmaple:
     8385,
     26393, -- Eluns blessing 10% Stats
@@ -55,9 +56,10 @@ Vip.Buffs = {
     35912, -- Master Magic Buff
     35874 -- Master Melee Buff
 } -- vip buffs for players
-local FILE_NAME = string.match(debug.getinfo(1, "S").source, "[^/\\]*.lua$")
-local PLAYER_EVENT_ON_CHAT = 18
+local FILE_NAME             = string.match(debug.getinfo(1, "S").source, "[^/\\]*.lua$")
+local PLAYER_EVENT_ON_CHAT  = 18
 local PLAYER_EVENT_ON_LOGIN = 3
+local ITEM_EVENT_ON_USE     = 2
 function Vip.TimerTeleport(eventId, delay, repeats, player)
     -- local TeleportIn = 6 -- This will be TeleportIn - repeats, start at 6 to have 5 seconds
     player:SendAreaTriggerMessage("Teleporting in " .. repeats .. " seconds.")
@@ -79,7 +81,8 @@ function Vip.Activation(event, player, item, target)
     player:LearnSpell(Vip.SpellId)
     -- player:RemoveItem(Vip.ItemId, 1)
 end
-RegisterItemEvent(Vip.ItemId, 2, Vip.Activation)
+
+RegisterItemEvent(Vip.ItemId, ITEM_EVENT_ON_USE, Vip.Activation)
 
 function Vip.chatVipCommands(event, player, msg, Type, lang)
     if (string.lower(string.sub(msg, 1, 5)) == "#vip ") then -- if the first 5 letters are #vip
@@ -87,12 +90,21 @@ function Vip.chatVipCommands(event, player, msg, Type, lang)
             player:SendAreaTriggerMessage("You cannot use this command while in combat.")
             return
         end
+        --add spell to player if gm
+        if (string.lower(string.sub(msg, 6, 8)) == "gm") then
+            if (Vip.GM == true) then
+                if not (player:GetGMRank() >= 2) then
+                    return
+                end
+                player:LearnSpell(Vip.SpellId)
+            end
+        end
 
         if (not player:HasSpell(Vip.SpellId)) then -- if player is not vip
             return player:SendAreaTriggerMessage("You are not a VIP.")
         end
 
-        if (string.lower(string.sub(msg, 6, 12)) == "buff") then
+        if (string.lower(string.sub(msg, 6, 9)) == "buff") then
             if (Vip.Buff == true) then
                 for _, v in pairs(Vip.Buffs) do
                     player:AddAura(v, player)
@@ -102,7 +114,8 @@ function Vip.chatVipCommands(event, player, msg, Type, lang)
                 player:SendAreaTriggerMessage("This command is disabled.")
             end
         end
-        if (string.lower(string.sub(msg, 6, 16)) == "resetinstance") then
+        if (string.lower(string.sub(msg, 6, 18)) == "resetinstance") then
+            -- #vip resetinstance
             if (Vip.ResetInstance == true) then
                 player:UnbindAllInstances()
                 player:SendAreaTriggerMessage("Instance has been reset.")
@@ -110,7 +123,7 @@ function Vip.chatVipCommands(event, player, msg, Type, lang)
                 player:SendAreaTriggerMessage("This command is disabled.")
             end
         end
-        if (string.lower(string.sub(msg, 6, 16)) == "resettalent") then
+        if (string.lower(string.sub(msg, 6, 16)) == "resettalents") then
             if (Vip.ResetTalents == true) then
                 player:ResetTalents()
                 player:SendAreaTriggerMessage("You have reset your talents.")
@@ -118,7 +131,7 @@ function Vip.chatVipCommands(event, player, msg, Type, lang)
                 player:SendAreaTriggerMessage("This command is disabled.")
             end
         end
-        if (string.lower(string.sub(msg, 6, 16)) == "resetpet") then
+        if (string.lower(string.sub(msg, 6, 13)) == "resetpet") then
             if (Vip.ResetPet == true) then
                 player:ResetPetTalents()
                 player:SendAreaTriggerMessage("You have reset your pet talents.")
@@ -126,7 +139,7 @@ function Vip.chatVipCommands(event, player, msg, Type, lang)
                 player:SendAreaTriggerMessage("This command is disabled.")
             end
         end
-        if (string.lower(string.sub(msg, 6, 12)) == "repair") then
+        if (string.lower(string.sub(msg, 6, 11)) == "repair") then
             if (Vip.RepairAll == true) then
                 player:DurabilityRepairAll(false)
                 player:SendAreaTriggerMessage("You have repaired all your items.")
@@ -134,7 +147,7 @@ function Vip.chatVipCommands(event, player, msg, Type, lang)
                 player:SendAreaTriggerMessage("This command is disabled.")
             end
         end
-        if (string.lower(string.sub(msg, 6, 16)) == "maxskill") then
+        if (string.lower(string.sub(msg, 6, 13)) == "maxskill") then
             if (Vip.Maxskill == true) then
                 player:AdvanceAllSkills(1000)
                 player:SendAreaTriggerMessage("You have maxed all your skills.")
@@ -142,7 +155,7 @@ function Vip.chatVipCommands(event, player, msg, Type, lang)
                 player:SendAreaTriggerMessage("This command is disabled.")
             end
         end
-        if (string.lower(string.sub(msg, 6, 12)) == "mall") then
+        if (string.lower(string.sub(msg, 6, 9)) == "mall") then
             if (Vip.Mall == true) then
                 player:SendAreaTriggerMessage("Teleported to the mall in.")
 
@@ -151,7 +164,7 @@ function Vip.chatVipCommands(event, player, msg, Type, lang)
                 player:SendAreaTriggerMessage("This command is disabled.")
             end
         end
-        if (string.lower(string.sub(msg, 6, 12)) == "bank") then
+        if (string.lower(string.sub(msg, 6, 9)) == "bank") then
             if (Vip.Bank == true) then
                 player:SendAreaTriggerMessage("Open the bank.")
                 player:SendShowBank(player)
@@ -159,7 +172,7 @@ function Vip.chatVipCommands(event, player, msg, Type, lang)
                 player:SendAreaTriggerMessage("This command is disabled.")
             end
         end
-        if (string.lower(string.sub(msg, 6, 16)) == "groupreset") then
+        if (string.lower(string.sub(msg, 6, 15)) == "resetgroup") then
             if (Vip.groupreset == true) then
                 player:SendAreaTriggerMessage("You have reset your group instances.")
 
@@ -174,7 +187,7 @@ function Vip.chatVipCommands(event, player, msg, Type, lang)
                 player:SendAreaTriggerMessage("This command is disabled.")
             end
         end
-        if (string.lower(string.sub(msg, 6, 12)) == "list") then
+        if (string.lower(string.sub(msg, 6, 10)) == "help" or string.lower(string.sub(msg, 6, 9)) == "list") then
             if (Vip.List == true) then
                 player:SendBroadcastMessage("Vip Commands:")
                 player:SendBroadcastMessage("#vip buff")
@@ -185,7 +198,11 @@ function Vip.chatVipCommands(event, player, msg, Type, lang)
                 player:SendBroadcastMessage("#vip maxskill")
                 player:SendBroadcastMessage("#vip mall")
                 player:SendBroadcastMessage("#vip bank")
-                player:SendBroadcastMessage("#vip groupreset")
+                player:SendBroadcastMessage("#vip resetgroup")
+                --if gm rank 2 then show this command aswell
+                if (player:GetGMRank() >= 2) then
+                    player:SendBroadcastMessage("#vip gm")
+                end
             else
                 player:SendAreaTriggerMessage("This command is disabled.")
             end
@@ -199,6 +216,7 @@ RegisterPlayerEvent(PLAYER_EVENT_ON_CHAT, Vip.chatVipCommands)
 local function onLogin(event, player)
     player:SendBroadcastMessage("This server is running the |cff4CFF00" .. FILE_NAME .. "|r module loaded.")
 end
+
 if (Vip.AnnounceModule) then
     RegisterPlayerEvent(PLAYER_EVENT_ON_LOGIN, onLogin) -- PLAYER_EVENT_ON_LOGIN
 end
