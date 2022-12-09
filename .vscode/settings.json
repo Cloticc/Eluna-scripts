@@ -1,9 +1,11 @@
 {
-    "Lua.diagnostics.globals": [
-        "gmRank",
-        "RegisterPlayerEvent",
-        "RegisterCreatureGossipEvent",
-        "GetItemLink",
-        "PrintInfo"
-    ]
+  "Lua.diagnostics.globals": [
+    "gmRank",
+    "RegisterPlayerEvent",
+    "RegisterCreatureGossipEvent",
+    "GetItemLink",
+    "PrintInfo",
+    "ReloadEluna",
+    "GOSSIP_EVENT_ON_TALK"
+  ]
 }
