@@ -16,6 +16,9 @@ example: .fetchzb list will show all rows in the DB
 msgFetchSql + listzone will show all buff in that zone
 example: .fetchzb listzone 10 will show all buffs in that zone aka duskwood
 
+msgFetchSql + addzone will add buff in the zone ur located in
+example: .fetchzb addzone 123 50. 123 = buffid 50 = amount. So it will get players current zoneareaid and set that.
+
 --However i already set a create table if not exist so u dont need to create it manual. Just add the buffs u want to the table and it will work.
 --This is the SQL table that will store the zone IDs, buff IDs, and buff amounts
 -- CREATE TABLE IF NOT EXISTS zone_buffs (zoneId INTEGER, buffId INTEGER, amount INTEGER DEFAULT 0, duration INTEGER DEFAULT 0, comment VARCHAR(255));
@@ -58,9 +61,7 @@ local PLAYER_EVENT_ON_LOGIN = 3
 -- This table will store the current zone for each player
 local playerZone = {}
 
-
-
-local function OnStartup()
+local function initializeZoneBuffs()
     -- This query will retrieve the zone IDs, buff IDs, and buff amounts from the SQL table
     local zoneBuffsQuery = WorldDBQuery("SELECT zoneId, buffId, amount, duration FROM " .. sqlName)
     -- Loop through the query results and add them to the zoneBuffs table
@@ -82,58 +83,39 @@ local function OnStartup()
     end
 end
 
-local function forceRemoveIfDontExist(player, deleteFromDb)
-    if player == nil then
-        return
-    end
-    --remove all buffs that are not in the DB
-
-    for rowInDb, zoneBuff in pairs(config.zoneBuffs) do
-        for _, buff in ipairs(zoneBuff) do
-            if not player:HasAura(buff.buffId) then
-                local aura = player:GetAura(buff.buffId)
-                if aura then
-                    aura:Remove()
-                    WorldDBQuery("DELETE FROM " .. sqlName .. " WHERE buffId = " .. buff.buffId)
-                end
+local function removeAllZoneBuffs(player)
+    for _, zoneBuff in pairs(config.zoneBuffs) do
+        for _, buffId in pairs(zoneBuff) do
+            local aura = player:GetAura(buffId.buffId)
+            if aura then
+                aura:Remove()
             end
         end
     end
 end
 
---this handle zones that u want to have same buff in all zones so set 0 in db for all zones
+local function addAuras(player, buff)
+    player:AddAura(buff.buffId, player)
+    local aura = player:GetAura(buff.buffId)
+    if buff.amount > 1 and aura then
+        aura:SetStackAmount(buff.amount)
+    end
+    if buff.duration > 1 and aura then
+        aura:SetDuration(buff.duration)
+    end
+
+end
+
 local function applyAllZones(player)
-    if player == nil then
-        return
-    end
-    for rowInDb, zoneBuff in pairs(config.zoneBuffs) do
-        if rowInDb == 0 then
-            for _, buff in ipairs(zoneBuff) do
-                local aura = player:GetAura(buff.buffId)
-                if aura then
-                    aura:Remove()
-                end
-
-                player:AddAura(buff.buffId, player)
-                if buff.amount >= 0 then
-                    local aura = player:GetAura(buff.buffId)
-                    if aura then
-                        aura:SetStackAmount(buff.amount)
-                    end
-                end
-                if buff.duration >= 1 then
-                    local aura = player:GetAura(buff.buffId)
-                    if aura then
-                        aura:SetDuration(buff.duration)
-                    end
-                end
-            end
+    for _, buff in ipairs(config.zoneBuffs[0]) do
+        if not player:HasAura(buff.buffId) then
+            addAuras(player, buff)
         end
+
     end
+
 end
 
--- This function checks the player's current zone and applies the appropriate buffs
--- local function checkZone(event, player, _, _)
 local function checkZone(event, player, newZone, newArea)
     if player == nil then
         return
@@ -150,45 +132,22 @@ local function checkZone(event, player, newZone, newArea)
 
     -- If the player has entered a new zone, remove all buff auras
     if zone ~= currentZone then
-        for _, zoneBuff in pairs(config.zoneBuffs) do
-            for _, buffId in pairs(zoneBuff) do
-                local aura = player:GetAura(buffId.buffId)
-                if aura then
-                    aura:Remove()
-                end
-            end
-        end
-
+        removeAllZoneBuffs(player)
         playerZone[player:GetGUIDLow()] = zone
     end
 
-    --this handle zones that u want to have same buff in all zones so set 0 in db for all zones
-    if zone ~= currentZone then
-        applyAllZones(player)
-        playerZone[player:GetGUIDLow()] = zone
-    end
+    applyAllZones(player)
 
     -- Apply the appropriate buff auras for the player's current zone
-    --this handle the zones that specific
+    if not zone then
+        return
+    end
+
     if zone ~= currentZone then
-        if not zone then
-            return
-        end
         for _, buff in ipairs(zone) do
             if not player:HasAura(buff.buffId) then
-                player:AddAura(buff.buffId, player)
-                if buff.amount > 1 then
-                    local aura = player:GetAura(buff.buffId)
-                    if aura then
-                        aura:SetStackAmount(buff.amount)
-                    end
-                end
-                if buff.duration > 1 then
-                    local aura = player:GetAura(buff.buffId)
-                    if aura then
-                        aura:SetDuration(buff.duration)
-                    end
-                end
+                addAuras(player, buff)
+                -- playerZone[player:GetGUIDLow()] = zone
             end
         end
     end
@@ -196,9 +155,11 @@ end
 
 local function onEnterWorld(event, player)
     --this will trigger when player enter world and apply all zones buffs
-    forceRemoveIfDontExist(player)
+    -- forceRemoveIfDontExist(player)
+    -- checkZone(event, player)
+    -- applyAllZones(player)
+    removeAllZoneBuffs(player)
     checkZone(event, player)
-    applyAllZones(player)
 end
 
 local function updateZoneFromSql(event, player, msg, Type, lang)
@@ -266,8 +227,19 @@ local function updateZoneFromSql(event, player, msg, Type, lang)
             local amount = msgSplit[5]
             local duration = msgSplit[6]
             local comment = msgSplit[7]
+            if amount == nil then
+                amount = 0
+            end
+            if duration == nil then
+                duration = 0
+            end
             if comment == nil then
-                comment = " "
+                -- comment = " "
+                if tonumber(zoneId) == 0 then
+                    comment = "All Zones"
+                else
+                    comment = GetAreaName(player:GetZoneId())
+                end
             end
             WorldDBQuery(
                 "INSERT INTO " ..
@@ -303,8 +275,19 @@ local function updateZoneFromSql(event, player, msg, Type, lang)
             local amount = msgSplit[5]
             local duration = msgSplit[6]
             local comment = msgSplit[7]
+            if amount == nil then
+                amount = 0
+            end
+            if duration == nil then
+                duration = 0
+            end
             if comment == nil then
-                comment = " "
+                -- comment = " "
+                if tonumber(zoneId) == 0 then
+                    comment = "All Zones"
+                else
+                    comment = GetAreaName(player:GetZoneId())
+                end
             end
             WorldDBQuery(
                 "UPDATE " ..
@@ -320,6 +303,7 @@ local function updateZoneFromSql(event, player, msg, Type, lang)
             return false
         end
     end
+
     --list will show all buffs in sql
     if msgSplit[1] == msgFetchSql then
         if msgSplit[2] == "list" then
@@ -345,7 +329,7 @@ local function updateZoneFromSql(event, player, msg, Type, lang)
     end
     --listzone show all buffs in zone
     if msgSplit[1] == msgFetchSql then
-        if msgSplit[2] == "listZone" then
+        if msgSplit[2] == "listzone" then
             if msgSplit[3] == nil then
                 player:SendBroadcastMessage("You need to add zoneId")
                 return false
@@ -367,16 +351,88 @@ local function updateZoneFromSql(event, player, msg, Type, lang)
                         " amount: " .. amount .. " duration: " .. duration .. " comment: " .. comment
                     )
                 until not query:NextRow()
+            else
+                player:SendBroadcastMessage("No buffs found in zoneId " .. zoneId)
             end
+
+            return false
+        end
+    end
+    -- player:GetZoneId + buffid + amount + duration
+    if msgSplit[1] == msgFetchSql then
+        if msgSplit[2] == "addzone" then
+            if msgSplit[3] == nil then
+                player:SendBroadcastMessage("You need to add buffId")
+                return false
+            end
+            -- if msgSplit[4] == nil then
+            --     player:SendBroadcastMessage("You need to add amount")
+            --     return false
+            -- end
+            -- if msgSplit[5] == nil then
+            --     player:SendBroadcastMessage("You need to add duration")
+            --     return false
+            -- end
+            local zoneId = player:GetZoneId()
+            local buffId = msgSplit[3]
+            local amount = msgSplit[4]
+            local duration = msgSplit[5]
+            local comment = msgSplit[6]
+            if amount == nil then
+                amount = 0
+            end
+            if duration == nil then
+                duration = 0
+            end
+            if comment == nil then
+                -- comment = " "
+                if tonumber(zoneId) == 0 then
+                    comment = "All Zones"
+                else
+                    comment = GetAreaName(player:GetZoneId())
+                end
+            end
+            WorldDBQuery(
+                "INSERT INTO " ..
+                sqlName ..
+                " (zoneId, buffId, amount, duration, comment) VALUES (" ..
+                zoneId .. ", " .. buffId .. ", " .. amount .. ", " .. duration .. ", '" .. comment .. "')"
+            )
+            player:SendBroadcastMessage("buffId " .. buffId .. " added to zoneId " .. zoneId)
+            return false
+        end
+    end
+    -- show commands
+    if msgSplit[1] == msgFetchSql then
+        if msgSplit[2] == "help" then
+            player:SendBroadcastMessage("Commands:")
+            player:SendBroadcastMessage(
+                msgFetchSql ..
+                " addzone buffId amount duration comment: Example .addzone 123 10 0 testing. Will add current zone u are in."
+            )
+            player:SendBroadcastMessage(
+                msgFetchSql .. " add zoneId buffId amount duration comment: .add 12 123  10 0 testing"
+            )
+            player:SendBroadcastMessage(
+                msgFetchSql .. " del zoneId buffId amount duration comment: .fetchzb del 12 123  10 0 testing"
+            )
+            player:SendBroadcastMessage(
+                msgFetchSql .. " update zoneId buffId amount duration comment: .update 12 123  5 0 testing"
+            )
+            player:SendBroadcastMessage(msgFetchSql .. " list: Will list all zones with auras")
+            player:SendBroadcastMessage(msgFetchSql .. " listzone zoneId: Will List zones auras")
+
+
             return false
         end
     end
 
-    OnStartup()
+    initializeZoneBuffs()
     local players = GetPlayersInWorld()
     for _, player in pairs(players) do
         if player then
-            forceRemoveIfDontExist(player)
+            -- forceRemoveIfDontExist(player)
+            removeAllZoneBuffs(player)
             checkZone(event, player)
             applyAllZones(player)
         end
@@ -385,7 +441,7 @@ local function updateZoneFromSql(event, player, msg, Type, lang)
     return false
 end
 
-OnStartup()
+initializeZoneBuffs()
 RegisterPlayerEvent(PLAYER_EVENT_ON_LOGIN, onEnterWorld)
 RegisterPlayerEvent(PLAYER_EVENT_ON_CHAT, updateZoneFromSql)
 RegisterPlayerEvent(PLAYER_EVENT_ON_UPDATE_ZONE, checkZone)
