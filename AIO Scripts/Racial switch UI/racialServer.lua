@@ -8,9 +8,6 @@ function MyHandlers.racialActivate(player, spellId, ...)
         return false
     end
 
-    -- if player:HasSpell(spellId) then
-    -- player:SendBroadcastMessage("|cff00ff00[World]|r |cffff0000You already have this racial!")
-    -- end
 
     player:LearnSpell(spellId)
 end
@@ -20,13 +17,13 @@ function MyHandlers.racialDeactivate(player, spellId, ...)
         player:SendBroadcastMessage("|cff00ff00[World]|r |cffff0000You can't use racial while in combat !")
         return false
     end
-    -- if player:HasSpell(spellId) then
+
     player:RemoveSpell(spellId)
-    -- end
-    --check if player has spell and not on cooldown
+
 
     player:SaveToDB()
 end
+
 function MyHandlers.unLearnAllRacials(player, spellId, ...)
     if (player:IsInCombat() == true) then
         player:SendBroadcastMessage("|cff00ff00[World]|r |cffff0000You can't use racial while in combat !")
@@ -42,4 +39,5 @@ local function showWindowPls(event, player, command)
         return false
     end
 end
+
 RegisterPlayerEvent(42, showWindowPls)
