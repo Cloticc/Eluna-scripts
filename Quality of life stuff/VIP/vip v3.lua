@@ -1,9 +1,16 @@
-Vip                                   = {}
-Vip.ItemId                            = 2070 -- Item ID to be consumed by the VIP
-Vip.SpellId                           = 36356 -- Title ID For enabling the commands
-Vip.AnnounceModule                    = true -- change to false if u wanna disable this shows a message in the chat that it is enabled
--- change to false if u wanna disable this
---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Vip                = {}
+Vip.ItemId         = 2070 -- Item ID to be consumed by the VIP
+Vip.SpellId        = 36356 -- Title ID For enabling the commands
+Vip.AnnounceModule = true -- change to false if u wanna disable this shows a message in the chat
+
+
+
+-------------------------------------------------------------
+-- You can use #vip gm to learn the spell instead of using item to activate it.
+-------------------------------------------------------------
+
+
+
 -- Vip.CordMall = mappId, xCoord, yCoord, zCoord. Just Change after "=" to the values you want.
 Vip.Mapid, Vip.X, Vip.Y, Vip.Z, Vip.O = 0, -9443.9541015625, 65.456764221191, 56.173454284668, 0 -- mapid, x, y, z, o
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
