@@ -169,17 +169,29 @@ function Vip.chatVipCommands(event, player, msg, Type, lang)
             player:SendAreaTriggerMessage("You cannot use this command while in combat.")
             return
         end
+
+
         if (not player:HasSpell(Vip.SpellId)) then -- if player is not vip
-            return player:SendAreaTriggerMessage("You are not a VIP.")
+            if (not player:IsGM()) then -- if player is not a GM
+                return player:SendAreaTriggerMessage("You are not a VIP.")
+            else -- if player is a GM, learn the spell for them
+                player:LearnSpell(Vip.SpellId)
+                player:SendBroadcastMessage("You have learned the VIP spell.")
+            end
         end
+
+
         if vipCommands[command] and vipCommands[command].enabled then
-            if vipCommands[command].gmRankRequired and player:GetGMRank() < vipCommands[command].gmRankRequired then
+            if vipCommands[command].gmRankRequired and player:GetGMRank() <= vipCommands[command].gmRankRequired then
                 return
             end
-            vipCommands[command].execute(player)
+
+            vipCommands[command].execute()
         else
             player:SendAreaTriggerMessage("This command is disabled.")
         end
+
+
         if (string.lower(string.sub(msg, 6, 10)) == "help" or string.lower(string.sub(msg, 6, 9)) == "list") then
             if (Vip.List == true) then
                 player:SendBroadcastMessage("Vip Commands:")
@@ -193,6 +205,7 @@ function Vip.chatVipCommands(event, player, msg, Type, lang)
                 player:SendAreaTriggerMessage("This command is disabled.")
             end
         end
+
         return false
     end
 end
