@@ -29,9 +29,11 @@ Example on how it will look
 ]
 
 ]]
--- local dir = "D:\\worldOfWarcraftStuff\\MyServer\\TrinityCore\\lua_scripts\\Clotic Scripts\\Test\\cords\\"
+-- local dir = "D:\\worldOfWarcraftStuff\\MyServer\\TrinityCore\\lua_scripts\\Clotic Scripts\\Test\\cords\\" -- example
+--local dir = "D:/worldOfWarcraftStuff/MyServer/TrinityCore/lua_scripts/Clotic Scripts/Test/cords/" -- example
 local dir = "LOCTION/TO/FILE/TO/SAVE/" --change this to where u want to save the file
 
+------------------------------------DO NOT EDIT BELOW THIS LINE------------------------------------
 local function orderedTableToJson(t)
     local jsonStr = "{"
     local first = true
