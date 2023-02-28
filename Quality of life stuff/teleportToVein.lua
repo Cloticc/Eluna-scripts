@@ -85,8 +85,6 @@ local function TeleportToNearestNode(player)
 
         if node then
             local distance = player:GetDistance(node)
-            print("distance: " ..
-            distance .. " nearestDistance: " .. nearestDistance .. " TELEPORT_DISTANCE: " .. TELEPORT_DISTANCE .. "")
             if distance < nearestDistance and distance <= TELEPORT_DISTANCE then
                 nearestDistance = distance
                 nearestNode = node
