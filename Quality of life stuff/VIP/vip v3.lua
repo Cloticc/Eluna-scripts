@@ -79,7 +79,7 @@ function Vip.Activation(event, player, item, target)
         return
     end
     player:LearnSpell(Vip.SpellId)
-    -- player:RemoveItem(Vip.ItemId, 1)
+    player:RemoveItem(Vip.ItemId, 1)
 end
 
 -- Redefined local `player`.Lua Diagnostics.(redefined-local)
