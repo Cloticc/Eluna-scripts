@@ -177,7 +177,7 @@ function Vip.chatVipCommands(event, player, msg, Type, lang)
 
         if (not player:HasSpell(Vip.SpellId)) then -- if player is not vip
             if (not player:IsGM()) then            -- if player is not a GM
-                return player:SendAreaTriggerMessage("You are not a VIP.")
+                return player:SendAreaTriggerMessage("You are not a VIP or GM.")
             else                                   -- if player is a GM, learn the spell for them
                 player:LearnSpell(Vip.SpellId)
                 player:SendBroadcastMessage("You have learned the VIP spell.")
