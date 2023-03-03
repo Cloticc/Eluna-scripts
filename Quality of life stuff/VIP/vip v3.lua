@@ -1,16 +1,9 @@
-Vip                = {}
-Vip.ItemId         = 2070 -- Item ID to be consumed by the VIP
-Vip.SpellId        = 36356 -- Title ID For enabling the commands
-Vip.AnnounceModule = true -- change to false if u wanna disable this shows a message in the chat
-
-
-
--------------------------------------------------------------
--- You can use #vip gm to learn the spell instead of using item to activate it.
--------------------------------------------------------------
-
-
-
+Vip                                   = {}
+Vip.ItemId                            = 2070  -- Item ID to be consumed by the VIP
+Vip.SpellId                           = 36356 -- Title ID For enabling the commands
+Vip.AnnounceModule                    = true  -- change to false if u wanna disable this shows a message in the chat that it is enabled
+-- change to false if u wanna disable this
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Vip.CordMall = mappId, xCoord, yCoord, zCoord. Just Change after "=" to the values you want.
 Vip.Mapid, Vip.X, Vip.Y, Vip.Z, Vip.O = 0, -9443.9541015625, 65.456764221191, 56.173454284668, 0 -- mapid, x, y, z, o
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -20,13 +13,13 @@ Vip.Buff                              = true
 Vip.ResetInstance                     = true
 Vip.ResetTalents                      = true
 Vip.Pet                               = false -- change to true if u wanna enable this. Not sure if this works on ur server might sql crash it.
-Vip.RepairAll                         = true -- Repair all gear
-Vip.Maxskill                          = true -- max skill
-Vip.Mall                              = true -- teleport mall
-Vip.Bank                              = true -- openBank
-Vip.groupreset                        = true -- reset group
-Vip.List                              = true -- list of commands
-Vip.GM                                = true -- GM learn spell
+Vip.RepairAll                         = true  -- Repair all gear
+Vip.Maxskill                          = true  -- max skill
+Vip.Mall                              = true  -- teleport mall
+Vip.Bank                              = true  -- openBank
+Vip.groupreset                        = true  -- reset group
+Vip.List                              = true  -- list of commands
+Vip.GM                                = true  -- GM learn spell
 
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -61,8 +54,8 @@ Vip.Buffs                             = {
     48074,
     38734, -- Master Ranged Buff
     35912, -- Master Magic Buff
-    35874 -- Master Melee Buff
-} -- vip buffs for players
+    35874  -- Master Melee Buff
+}          -- vip buffs for players
 local FILE_NAME                       = string.match(debug.getinfo(1, "S").source, "[^/\\]*.lua$")
 local PLAYER_EVENT_ON_CHAT            = 18
 local PLAYER_EVENT_ON_LOGIN           = 3
@@ -89,20 +82,24 @@ function Vip.Activation(event, player, item, target)
     -- player:RemoveItem(Vip.ItemId, 1)
 end
 
+-- Redefined local `player`.Lua Diagnostics.(redefined-local)
 RegisterItemEvent(Vip.ItemId, ITEM_EVENT_ON_USE, Vip.Activation)
+
 function Vip.chatVipCommands(event, player, msg, Type, lang)
     local command = string.lower(string.sub(msg, 6)) -- extract the command name from the message
+
+
     local vipCommands = {
         ["gm"] = {
             enabled = Vip.GM,
             gmRankRequired = 2,
-            execute = function(player)
+            execute = function()
                 player:LearnSpell(Vip.SpellId)
             end
         },
         ["buff"] = {
             enabled = Vip.Buff,
-            execute = function(player)
+            execute = function()
                 for _, v in pairs(Vip.Buffs) do
                     player:AddAura(v, player)
                 end
@@ -111,56 +108,56 @@ function Vip.chatVipCommands(event, player, msg, Type, lang)
         },
         ["resetinstance"] = {
             enabled = Vip.ResetInstance,
-            execute = function(player)
+            execute = function()
                 player:UnbindAllInstances()
                 player:SendAreaTriggerMessage("Instance has been reset.")
             end
         },
         ["resettalent"] = {
             enabled = Vip.ResetTalents,
-            execute = function(player)
+            execute = function()
                 player:ResetTalents()
                 player:SendAreaTriggerMessage("You have reset your talents.")
             end
         },
         ["resetpet"] = {
             enabled = Vip.ResetPet,
-            execute = function(player)
+            execute = function()
                 player:ResetPetTalents()
                 player:SendAreaTriggerMessage("You have reset your pet talents.")
             end
         },
         ["repair"] = {
             enabled = Vip.RepairAll,
-            execute = function(player)
+            execute = function()
                 player:DurabilityRepairAll(false)
                 player:SendAreaTriggerMessage("You have repaired all your items.")
             end
         },
         ["maxskill"] = {
             enabled = Vip.Maxskill,
-            execute = function(player)
+            execute = function()
                 player:AdvanceAllSkills(1000)
                 player:SendAreaTriggerMessage("You have maxed all your skills.")
             end
         },
         ["mall"] = {
             enabled = Vip.Mall,
-            execute = function(player)
+            execute = function()
                 player:SendAreaTriggerMessage("Teleported to the mall in.")
                 player:RegisterEvent(Vip.TimerTeleport, 1000, 5) -- 5 seconds
             end
         },
         ["bank"] = {
             enabled = Vip.Bank,
-            execute = function(player)
+            execute = function()
                 player:SendAreaTriggerMessage("Open the bank.")
                 player:SendShowBank(player)
             end
         },
         ["resetgroup"] = {
             enabled = Vip.groupreset,
-            execute = function(player)
+            execute = function()
                 player:SendAreaTriggerMessage("You have reset your group instances.")
                 local party = player:GetGroup()
                 if party then
@@ -169,7 +166,7 @@ function Vip.chatVipCommands(event, player, msg, Type, lang)
                     end
                 end
             end
-        }
+        },
     }
     if (string.lower(string.sub(msg, 1, 5)) == "#vip ") then -- if the first 5 letters are #vip
         if (player:IsInCombat()) then
@@ -179,9 +176,9 @@ function Vip.chatVipCommands(event, player, msg, Type, lang)
 
 
         if (not player:HasSpell(Vip.SpellId)) then -- if player is not vip
-            if (not player:IsGM()) then -- if player is not a GM
+            if (not player:IsGM()) then            -- if player is not a GM
                 return player:SendAreaTriggerMessage("You are not a VIP.")
-            else -- if player is a GM, learn the spell for them
+            else                                   -- if player is a GM, learn the spell for them
                 player:LearnSpell(Vip.SpellId)
                 player:SendBroadcastMessage("You have learned the VIP spell.")
             end
