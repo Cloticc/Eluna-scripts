@@ -1,7 +1,8 @@
 --[[
     remade it to work in DB instead.
-You can now use .fetchzb to udpate the table from the DB. instead of reload eluna
---Running the command will update the table with the latest data from the DB. If you have added new buffs to the DB, you will need to run the command again to update the table.
+
+    Do .fetch help to see the commands. Ingame
+
 
 table name will be zone_buffs change it if u want other name. Just change the sqlName = "zone_buffs" to what u want.
 
@@ -21,9 +22,6 @@ table name will be zone_buffs change it if u want other name. Just change the sq
 ]]
 local sqlName = "zone_buffs" --Set this to whatever u want the table to be called.
 -- local msgFetchSql = "#fetchzb" --Set this to whatever u want the command to be called.
-local msgFetchSql = "fetch"  --Set this to whatever u want the command to be called.
-
-local gmRank = 3             -- 0 = player, 1 = moderator, 2 = gamemaster, 3 = administrator, 4 = console
 
 --This is the player event that will trigger when a player sends a chat message
 -- local PLAYER_EVENT_ON_CHAT = 18 ----- can use this one if u want to use the command in chat like #fetchzb
@@ -35,8 +33,8 @@ local PLAYER_EVENT_ON_LOGIN = 3
 ------------------------ DO NOT EDIT BELOW THIS LINE ------------------------
 
 -- Create the buff table if it doesn't already exist
-
-local tableToQuery = "CREATE TABLE IF NOT EXISTS " ..
+local tableToQuery =
+    "CREATE TABLE IF NOT EXISTS " ..
     sqlName ..
     " (zoneId INTEGER, buffId INTEGER, amount INTEGER DEFAULT 0, duration INTEGER DEFAULT 0, comment VARCHAR(255))"
 
@@ -47,9 +45,11 @@ if not result then
     WorldDBQuery(tableToQuery)
 end
 
-
-
-
+-- WorldDBQuery(
+--     "CREATE TABLE IF NOT EXISTS " ..
+--     sqlName ..
+--     " (zoneId INTEGER, buffId INTEGER, amount INTEGER DEFAULT 0, duration INTEGER DEFAULT 0, comment VARCHAR(255))"
+-- )
 
 local config = {} -- This table will store the zone IDs, buff IDs, and buff amounts
 
@@ -109,12 +109,20 @@ local function applyAllZones(player)
 end
 
 local function checkZone(event, player, newZone, newArea)
-    if player == nil then
+    if type(player) ~= "userdata" or player:GetObjectType() ~= "Player" then
+        return
+    end
+
+    local inWorld = player:IsInWorld()
+
+    --check if player is in world and if not return
+    if not inWorld then
         return
     end
 
     -- Get the player's current zone ID
-    local zoneId = player:GetZoneId()
+    -- local zoneId = player:GetZoneId()
+    local zoneId = player:GetAreaId()
 
     -- Get the corresponding zone from the zoneBuffs table
     local zone = config.zoneBuffs[zoneId]
@@ -145,8 +153,6 @@ local function checkZone(event, player, newZone, newArea)
     end
 end
 
-
-
 local function addZoneAura(player, buffId, amount, duration, comment)
     local zoneId = player:GetZoneId()
     if zoneId == 0 then
@@ -155,17 +161,19 @@ local function addZoneAura(player, buffId, amount, duration, comment)
         comment = GetAreaName(zoneId)
     end
 
-    WorldDBExecute("INSERT INTO " ..
+    WorldDBExecute(
+        "INSERT INTO " ..
         sqlName ..
         " (zoneId, buffId, amount, duration, comment) VALUES (" ..
-        zoneId .. ", " .. buffId .. ", " .. amount .. ", " .. duration .. ", '" .. comment .. "')")
+        zoneId .. ", " .. buffId .. ", " .. amount .. ", " .. duration .. ", '" .. comment .. "')"
+    )
 
     player:SendBroadcastMessage("Aura " .. buffId .. " added to current zone")
 end
 
 local function addAuraToZone(player, zoneId, buffId, amount, duration, comment)
-    local query = WorldDBQuery("SELECT * FROM " ..
-        sqlName .. " WHERE zoneId = " .. zoneId .. " AND buffId = " .. buffId)
+    local query =
+        WorldDBQuery("SELECT * FROM " .. sqlName .. " WHERE zoneId = " .. zoneId .. " AND buffId = " .. buffId)
     if query then
         player:SendBroadcastMessage("Aura " .. buffId .. " is already added to zone " .. zoneId)
         return false
@@ -177,10 +185,12 @@ local function addAuraToZone(player, zoneId, buffId, amount, duration, comment)
         comment = GetAreaName(zoneId)
     end
 
-    WorldDBExecute("INSERT INTO " ..
+    WorldDBExecute(
+        "INSERT INTO " ..
         sqlName ..
         " (zoneId, buffId, amount, duration, comment) VALUES (" ..
-        zoneId .. ", " .. buffId .. ", " .. amount .. ", " .. duration .. ", '" .. comment .. "')")
+        zoneId .. ", " .. buffId .. ", " .. amount .. ", " .. duration .. ", '" .. comment .. "')"
+    )
 
     player:SendBroadcastMessage("Aura " .. buffId .. " added to zone " .. zoneId)
 end
@@ -195,8 +205,8 @@ local function removeAuraFromZone(player, zoneId, buffId)
         end
     end
 
-    local query = WorldDBQuery("SELECT * FROM " ..
-        sqlName .. " WHERE zoneId = " .. zoneId .. " AND buffId = " .. buffId)
+    local query =
+        WorldDBQuery("SELECT * FROM " .. sqlName .. " WHERE zoneId = " .. zoneId .. " AND buffId = " .. buffId)
     if query == nil then
         player:SendBroadcastMessage("Aura " .. buffId .. " is not added to zone " .. zoneId)
         return false
@@ -207,8 +217,8 @@ local function removeAuraFromZone(player, zoneId, buffId)
     player:SendBroadcastMessage("Aura " .. buffId .. " removed from zone " .. zoneId)
 end
 local function updateAuraInZone(player, zoneId, buffId, amount, duration, comment)
-    local query = WorldDBQuery("SELECT * FROM " ..
-        sqlName .. " WHERE zoneId = " .. zoneId .. " AND buffId = " .. buffId)
+    local query =
+        WorldDBQuery("SELECT * FROM " .. sqlName .. " WHERE zoneId = " .. zoneId .. " AND buffId = " .. buffId)
     if query == nil then
         player:SendBroadcastMessage("Aura " .. buffId .. " is not added to zone " .. zoneId)
         return false
@@ -218,16 +228,22 @@ local function updateAuraInZone(player, zoneId, buffId, amount, duration, commen
         if zoneId == 0 then
             comment = "All Zones"
         else
+            -- comment = GetAreaName(zoneId)
+            -- add so it gets areaname and buff name
             comment = GetAreaName(zoneId) .. " " .. GetSpellInfo(buffId)
         end
     end
 
-    WorldDBExecute("UPDATE " ..
+    WorldDBExecute(
+        "UPDATE " ..
         sqlName ..
         " SET amount = " ..
         amount ..
         ", duration = " ..
-        duration .. ", comment = '" .. comment .. "' WHERE zoneId = " .. zoneId .. " AND buffId = " .. buffId)
+        duration ..
+        ", comment = '" ..
+        comment .. "' WHERE zoneId = " .. zoneId .. " AND buffId = " .. buffId
+    )
 
     player:SendBroadcastMessage("Aura " .. buffId .. " in zone " .. zoneId .. " updated")
 
@@ -244,7 +260,6 @@ local function updateAuraInZone(player, zoneId, buffId, amount, duration, commen
     end
 end
 
-
 local function listAllAuras(player)
     local query = WorldDBQuery("SELECT * FROM " .. sqlName)
     if query then
@@ -255,11 +270,12 @@ local function listAllAuras(player)
             local duration = query:GetUInt32(3)
             local comment = query:GetString(4)
 
-
-            player:SendBroadcastMessage("Zone: " ..
+            player:SendBroadcastMessage(
+                "Zone: " ..
                 comment ..
                 " (ID: " ..
-                zoneId .. "), Aura: " .. buffId .. ", Amount: " .. amount .. ", Duration: " .. duration)
+                zoneId .. "), Aura: " .. buffId .. ", Amount: " .. amount .. ", Duration: " .. duration
+            )
         until not query:NextRow()
     else
         player:SendBroadcastMessage("No auras found in any zone")
@@ -276,16 +292,17 @@ local function listAurasInZone(player, zoneId)
             local duration = query:GetUInt32(3)
             local comment = query:GetString(4)
 
-            player:SendBroadcastMessage("Zone: " ..
+            player:SendBroadcastMessage(
+                "Zone: " ..
                 GetAreaName(zoneId) ..
                 " (ID: " ..
-                zoneId .. "), Aura: " .. buffId .. ", Amount: " .. amount .. ", Duration: " .. duration)
+                zoneId .. "), Aura: " .. buffId .. ", Amount: " .. amount .. ", Duration: " .. duration
+            )
         until not query:NextRow()
     else
         player:SendBroadcastMessage("No auras found in zone " .. zoneId)
     end
 end
-
 
 -- Update function
 local function updateZoneBuffs()
@@ -313,20 +330,27 @@ local function executeAuraZoneCommand(player, command, args)
             gmRankRequired = 2,
             description = "Adds aura to current player's zone",
             execute = function(player, args)
-                local buffId, amount, duration, comment = tonumber(args[1]), tonumber(args[2]) or 0,
-                    tonumber(args[3]) or 0, args[4] or ""
+                local buffId, amount, duration, comment =
+                    tonumber(args[1]),
+                    tonumber(args[2]) or 0,
+                    tonumber(args[3]) or 0,
+                    args[4] or ""
                 addZoneAura(player, buffId, amount, duration, comment)
-            end,
+            end
         },
         ["add"] = {
             enabled = true,
             gmRankRequired = 2,
             description = "Adds aura to a specific zone",
             execute = function(player, args)
-                local zoneId, buffId, amount, duration, comment = tonumber(args[1]), tonumber(args[2]),
-                    tonumber(args[3]) or 0, tonumber(args[4]) or 0, args[5] or ""
+                local zoneId, buffId, amount, duration, comment =
+                    tonumber(args[1]),
+                    tonumber(args[2]),
+                    tonumber(args[3]) or 0,
+                    tonumber(args[4]) or 0,
+                    args[5] or ""
                 addAuraToZone(player, zoneId, buffId, amount, duration, comment)
-            end,
+            end
         },
         ["del"] = {
             enabled = true,
@@ -335,16 +359,19 @@ local function executeAuraZoneCommand(player, command, args)
             execute = function(player, args)
                 local zoneId, buffId = tonumber(args[1]), tonumber(args[2])
                 removeAuraFromZone(player, zoneId, buffId)
-            end,
+            end
         },
         ["update"] = {
             enabled = true,
             gmRankRequired = 2,
             description = "Updates an aura's details in a specific zone",
             execute = function(player, args)
+                --------------------------------------------------------------------
                 local zoneId, buffId, amount, duration, comment = unpack(args)
                 if not zoneId or not buffId then
-                    player:SendBroadcastMessage("Usage: .fetch update <zoneId> <buffId> [<amount> <duration> <comment>]")
+                    player:SendBroadcastMessage(
+                        "Usage: .fetch update <zoneId> <buffId> [<amount> <duration> <comment>]"
+                    )
                     return
                 end
                 amount = tonumber(amount) or 0
@@ -352,7 +379,7 @@ local function executeAuraZoneCommand(player, command, args)
                 -- comment = comment or ""
                 comment = table.concat(args, " ", 6)
                 updateAuraInZone(player, tonumber(zoneId), tonumber(buffId), amount, duration, comment)
-            end,
+            end
         },
         ["list"] = {
             -- List all auras in all zones or list all auras in a specific zone if zoneId is provided
@@ -366,9 +393,9 @@ local function executeAuraZoneCommand(player, command, args)
                 else
                     listAllAuras(player)
                 end
-            end,
+            end
         },
-        ["force"] = {
+        ["refresh"] = {
             -- List all auras in all zones or list all auras in a specific zone if zoneId is provided
             enabled = true,
             gmRankRequired = 2,
@@ -377,7 +404,7 @@ local function executeAuraZoneCommand(player, command, args)
                 -- checkZone(event, player)
                 -- applyAllZones(player)
                 updateZoneBuffs()
-            end,
+            end
         },
         ["help"] = {
             enabled = true,
@@ -391,10 +418,9 @@ local function executeAuraZoneCommand(player, command, args)
                         player:SendBroadcastMessage(".fetch " .. command .. " " .. cmdTable.description)
                     end
                 end
-            end,
-        },
+            end
+        }
     }
-
 
     if config.chatCommands[command] and config.chatCommands[command].enabled then
         if player:GetGMRank() < config.chatCommands[command].gmRankRequired then
@@ -417,9 +443,8 @@ local function onChat(event, player, msg, Type, lang)
     if #args == 0 then
         return
     end
-    local command = args[1]:lower() -- Get the command
-    table.remove(args, 1)           -- Remove the command from the args table
-
+    local command = args[1]:lower()                                          -- Get the command
+    table.remove(args, 1)                                                    -- Remove the command from the args table
 
     if command == "fetch" then                                               -- If the command is .fetch
         executeAuraZoneCommand(player, args[1], { select(2, unpack(args)) }) -- Execute the command
@@ -427,12 +452,8 @@ local function onChat(event, player, msg, Type, lang)
     return false
 end
 
-
 RegisterPlayerEvent(PLAYER_EVENT_ON_LOGIN, onEnterWorld)
 RegisterPlayerEvent(PLAYER_EVENT_ON_CHAT, onChat)
 RegisterPlayerEvent(PLAYER_EVENT_ON_UPDATE_ZONE, checkZone)
-
-
-
 
 initializeZoneBuffs()
