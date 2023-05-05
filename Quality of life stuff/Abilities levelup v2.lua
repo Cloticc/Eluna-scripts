@@ -2,13 +2,13 @@
 -- AUTO LEARN SKILLS MOD
 ------------------------------------------------------------------------------------------------
 local EnableModule = true
-local AnnounceModule = true -- Announce module on player login ?
+local AnnounceModule = true  -- Announce module on player login ?
 
-local MaxLevel = false -- Set to true to enable max level skills instantly when login
-local MaxPlayerLevel = 80 -- Max player level change to your liking.
+local MaxLevel = false       -- Set to true to enable max level skills instantly when login
+local MaxPlayerLevel = 80    -- Max player level change to your liking.
 
-local AutoDualSpec = true -- Auto learn Dual Specialization
-local AutoRiding = true -- Auto learn Riding
+local AutoDualSpec = true    -- Auto learn Dual Specialization
+local AutoRiding = true      -- Auto learn Riding
 
 local NorthrendFlyLevel = 68 -- Which level to learn Cold Weather Flying
 --
@@ -304,7 +304,7 @@ local SKILL = {
         [80] = { 48066, 48068, 48073, 48074, 48078, 48125, 48158, 48161, 48162, 53023, 64843, 64901 }
     },
     [CLASS_DEATHKNIGHT] = {
-        [55] = { 198, 199 },
+        [55] = { 198, 199, 49142, 53428 },
         [56] = { 49998, 46584, 50842, 53343, 53341 },
         [57] = { 48263, 53342, 54447, 47528 },
         [58] = { 45524, 48721 },
@@ -911,11 +911,11 @@ local TALENTSKILL = {
 }
 
 local RIDING = {
-    [20] = { 33388 }, -- Apprentince Riding (75)
-    [40] = { 33391 }, -- Journeyman Riding (150)
-    [60] = { 34090 }, -- Expert Riding (225)
+    [20] = { 33388 },                -- Apprentince Riding (75)
+    [40] = { 33391 },                -- Journeyman Riding (150)
+    [60] = { 34090 },                -- Expert Riding (225)
     [NorthrendFlyLevel] = { 54197 }, -- Cold Weather Flying
-    [70] = { 34091 } -- Artisan Riding (300)
+    [70] = { 34091 }                 -- Artisan Riding (300)
 }
 
 local function onLevelChange(event, player, oldLevel)
@@ -1004,7 +1004,7 @@ end
 
 RegisterPlayerEvent(13, onLevelChange) -- PLAYER_EVENT_ON_LEVEL_CHANGE
 RegisterPlayerEvent(39, onLearnTalent) -- PLAYER_EVENT_ON_LEARN_TALENTS
-RegisterPlayerEvent(30, onFirstLogin) -- PLAYER_EVENT_ON_FIRST_LOGIN
+RegisterPlayerEvent(30, onFirstLogin)  -- PLAYER_EVENT_ON_FIRST_LOGIN
 
 if (AnnounceModule) then
     RegisterPlayerEvent(30, onLogin) -- PLAYER_EVENT_ON_LOGIN
