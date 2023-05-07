@@ -1,5 +1,7 @@
 # A Custom Racial UI
 
+Files coming this week still some cleaning up to do.
+
 ## Prerequisites
 
 * [AIO](https://github.com/Rochet2/AIO) Installed
