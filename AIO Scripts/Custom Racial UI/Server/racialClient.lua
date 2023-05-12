@@ -17,7 +17,7 @@ local customRacial = {
 
     tableCommands = {
         -- add the commands to open window here
-        "/customracial", "/cr", "/racialchange", "/racialswitch"
+        "/customracial", "/rc", "/racialchange", "/racialswitch"
 
     },
     activeRacialSpells = {},
