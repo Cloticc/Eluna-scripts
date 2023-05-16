@@ -3,6 +3,7 @@ local AIO = AIO or require("AIO")
 if AIO.AddAddon() then return end
 
 
+
 --    "/customracial", "/cr", "/racialchange", "/racialswitch"  commands to open chat
 -- Should be self explanatory what tables do   Tabinfo handle the left side of tabs and racialSpells handle the right side of tabs. U can change maxActiveSpells to change how many spells u can have active at once in each tab.
 
@@ -28,23 +29,12 @@ customRacial.tabInfo = {
     { id = 2, name = "Passive",    maxActiveSpells = 2, icon = "spell_nature_wispsplode" },
     { id = 3, name = "Weapon",     maxActiveSpells = 1, icon = "ability_meleedamage" },
     { id = 4, name = "Profession", maxActiveSpells = 2, icon = "inv_misc_gear_01" },
-    -- { id = 5, name = "Other",      maxActiveSpells = 2, icon = "inv_misc_gear_01" },
-    ----------------------------------------------------------
-    -----------------[Shit fuck]------------------------------
-    ----------------------------------------------------------
+    -- { id = 5, name = "Other",      maxActiveSpells = 2, icon = "inv_misc_gear_01" }, -- -- example
+
 
 
 }
 
-
--- customRacial.maxActiveSpells = {
---     utility = 1,
---     passive = 2,
---     weapon = 1,
---     profession = 2
---     -- other = 1, -- -- example
-
--- }
 
 -- { id = 5, name = "Other",      icon = "inv_misc_book_09" }, -- -- example
 customRacial.racialSpells = {
@@ -99,17 +89,17 @@ customRacial.racialSpells = {
 
     },
 
-    [5] = { -- Other
-        -- { id = 674,   itemType = "spell", costType = "gold", cost = 100 },
-        -- { id = 46917, itemType = "spell", costType = "gold", cost = 100 },
-        -- { id = 2901,  itemType = "item",  costType = "gold", cost = 100 },
-        -- { id = 7005,  itemType = "item",  costType = "gold", cost = 100 },
-        { id = 39505, itemType = "item", costType = "gold", cost = 100 },
-        { id = 20815, itemType = "item", costType = "gold", cost = 100 },
+    -- [5] = { -- Other
+    --     { id = 674,   itemType = "spell", costType = "gold", cost = 100 },
+    --     { id = 46917, itemType = "spell", costType = "gold", cost = 100 },
+    --     { id = 2901,  itemType = "item",  costType = "gold", cost = 100 },
+    --     { id = 7005,  itemType = "item",  costType = "gold", cost = 100 },
+    --     { id = 39505, itemType = "item",  costType = "gold", cost = 100 },
+    --     { id = 20815, itemType = "item",  costType = "gold", cost = 100 },
+    --     { id = 5956,  itemType = "item",  costType = "gold", cost = 100 },
 
 
-
-    } -- -- example
+    -- } -- -- example
 
 
 
@@ -344,10 +334,8 @@ local function createTabButton(id, text, icon, onClick, OnEnter, OnLeave)
     -- Set tab textures
     button:SetNormalTexture("Interface/Racial_UI/StoreFrame_Main")
     button:SetHighlightTexture("Interface/Racial_UI/StoreFrame_Main")
-    button:GetNormalTexture():SetTexCoord(
-        CoordsToTexCoords(1024, 768, 897, 1023, 960))
-    button:GetHighlightTexture():SetTexCoord(
-        CoordsToTexCoords(1024, 768, 960, 1023, 1023))
+    button:GetNormalTexture():SetTexCoord(CoordsToTexCoords(1024, 770, 900, 1024, 960))
+    button:GetHighlightTexture():SetTexCoord(CoordsToTexCoords(1024, 770, 960, 1024, 1024))
 
     -- Set Category name
     button.Name = button:CreateFontString()
@@ -423,7 +411,6 @@ end)
 
 
 
-
 -- -- Button for the spells it create
 local function createItemButton(parent, index, id, text, icon, onClick, itemType, costType, cost)
     -- isPassive = IsPassiveSpell(index, "bookType") or IsPassiveSpell("name")
@@ -449,6 +436,8 @@ local function createItemButton(parent, index, id, text, icon, onClick, itemType
     iconTexture:SetSize(32, 32)
     iconTexture:SetTexture(icon)
     iconTexture:SetPoint("LEFT", 0, 0)
+
+
 
     local textLabel = button:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     textLabel:SetText(text)
@@ -613,20 +602,26 @@ local function createItemButton(parent, index, id, text, icon, onClick, itemType
 
         if isActive and not self.overlay then
             self.overlay = self:CreateTexture(nil, "OVERLAY")
-            self.overlay:SetAllPoints(self)
-        end
-
-        if self.overlay then
-            -- self.overlay:SetShown(isActive)
-            if isActive then
-                self.overlay:Show()
-            else
-                self.overlay:Hide()
-            end
+            self.overlay:SetTexture("Interface/Racial_UI/DressingRoom")
+            self.overlay:SetTexCoord(CoordsToTexCoords(512, 358, 42, 399, 84))
+            self.overlay:SetWidth(32)
+            self.overlay:SetHeight(32)
+            self.overlay:SetPoint("CENTER", iconTexture, "CENTER", 0, 0)
+        elseif not isActive and not self.overlay then
+            self.overlay = self:CreateTexture(nil, "OVERLAY")
+            self.overlay:SetTexture("Interface/Racial_UI/DressingRoom")
+            self.overlay:SetTexCoord(CoordsToTexCoords(512, 441, 0, 483, 42))
+            self.overlay:SetWidth(32)
+            self.overlay:SetHeight(32)
+            self.overlay:SetPoint("CENTER", iconTexture, "CENTER", 0, 0)
+        elseif isActive then
+            self.overlay:SetTexture("Interface/Racial_UI/DressingRoom")
+            self.overlay:SetTexCoord(CoordsToTexCoords(512, 358, 42, 399, 84))
+        else
+            self.overlay:SetTexture("Interface/Racial_UI/DressingRoom")
+            self.overlay:SetTexCoord(CoordsToTexCoords(512, 441, 0, 483, 42))
         end
     end)
-
-
 
     button:SetScript("OnMouseDown", function(self, button)
         if IsShiftKeyDown() then
