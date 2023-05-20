@@ -2,15 +2,14 @@
 local AIO = AIO or require("AIO")
 if AIO.AddAddon() then return end
 
-
+-- ignore the costType for now and cost. Just set as "gold" and 100 it's not used yet.
 
 --    "/customracial", "/cr", "/racialchange", "/racialswitch"  commands to open chat
 -- Should be self explanatory what tables do   Tabinfo handle the left side of tabs and racialSpells handle the right side of tabs. U can change maxActiveSpells to change how many spells u can have active at once in each tab.
 
 
-
-local isWorldIconOn = false
-local isCOmmandsOn = true
+local isWorldIconOn = false -- if u want to show the world port icon on the screen
+local isCOmmandsOn = true   -- if u want to show the commands in chat
 
 local customRacial = {
     racialButtons = {},                                    -- storing the buttons
@@ -29,8 +28,10 @@ customRacial.tabInfo = {
     { id = 2, name = "Passive",    maxActiveSpells = 2, icon = "spell_nature_wispsplode" },
     { id = 3, name = "Weapon",     maxActiveSpells = 1, icon = "ability_meleedamage" },
     { id = 4, name = "Profession", maxActiveSpells = 2, icon = "inv_misc_gear_01" },
-    -- { id = 5, name = "Other",      maxActiveSpells = 2, icon = "inv_misc_gear_01" }, -- -- example
-
+    -- { id = 5, name = "Other",      maxActiveSpells = 2, icon = "inv_misc_gear_01" },  --example
+    ----------------------------------------------------------
+    -----------------[Shit fuck]------------------------------
+    ----------------------------------------------------------
 
 
 }
@@ -150,6 +151,16 @@ local function CoordsToTexCoords(size, xTop, yTop, xBottom, yBottom)
     return Left, Right, Top, Bottom
 end
 
+local function Clamp(value, min, max) -- clamp a value between a min and max might use later
+    if value < min then
+        return min
+    elseif value > max then
+        return max
+    else
+        return value
+    end
+end
+
 
 
 
@@ -197,8 +208,7 @@ mainFrame.CloseButton.texture = mainFrame.CloseButton:CreateTexture(nil,
     "BACKGROUND")
 -- mainFrame.CloseButton.texture:SetTexture("Interface/Racial_UI/TitanLogo")
 mainFrame.CloseButton.texture:SetTexture("Interface/Racial_UI/Transmogrify")
-mainFrame.CloseButton.texture:SetTexCoord(
-    CoordsToTexCoords(512, 485, 85, 511, 115))
+mainFrame.CloseButton.texture:SetTexCoord(CoordsToTexCoords(512, 485, 85, 511, 115))
 mainFrame.CloseButton.texture:SetAllPoints(mainFrame.CloseButton)
 
 mainFrame.CloseButton:SetSize(20, 20)
@@ -217,7 +227,16 @@ mainFrame.CloseButton:SetScript("OnLeave",
 local categoryList = CreateFrame("Frame", nil, mainFrame)
 categoryList:SetSize(150, 300)
 categoryList:SetPoint("TOPLEFT", 15, -35)
-
+-- categoryList:SetBackdrop(
+--     {
+--         bgFile = "Interface/Tooltips/UI-Tooltip-Background",
+--         edgeFile = "Interface/Tooltips/UI-Tooltip-Border",
+--         tile = true,
+--         tileSize = 16,
+--         edgeSize = 16,
+--         insets = { left = 4, right = 4, top = 4, bottom = 4 }
+--     }
+-- )
 categoryList:SetBackdropColor(0, 0, 0, 0.8)
 
 local itemList = CreateFrame("Frame", nil, mainFrame)
@@ -226,6 +245,17 @@ itemList:SetPoint("TOPRIGHT", -15, -45)
 
 itemList:SetBackdropColor(0, 0, 0, 0.8)
 
+-- itemList:SetBackdrop(
+--     {
+--         bgFile = "Interface/Tooltips/UI-Tooltip-Background",
+--         edgeFile = "Interface/Tooltips/UI-Tooltip-Border",
+--         tile = true,
+--         tileSize = 16,
+--         edgeSize = 16,
+
+--         insets = { left = 4, right = 4, top = 4, bottom = 4 }
+--     }
+-- )
 
 local scrollFrame = CreateFrame("ScrollFrame", "CustomRacial_ScrollFrame",
     itemList, "UIPanelScrollFrameTemplate")
@@ -277,6 +307,7 @@ tabButtonsScrollFrame:SetScrollChild(tabButtonsContentFrame)
 local tabInfo = customRacial.tabInfo
 local contentHeightTab = #tabInfo * 35 -- assuming each tab button is 40 pixels high
 tabButtonsContentFrame:SetSize(200, contentHeightTab)
+
 
 
 
@@ -623,6 +654,49 @@ local function createItemButton(parent, index, id, text, icon, onClick, itemType
         end
     end)
 
+    -- button:SetScript("OnUpdate",
+    --     function(self, elapsed, ...) -- Attach the update function to the model
+    --         if itemType == "spell" then
+    --             if IsSpellKnown(id) then
+    --                 -- set button to alpha 1
+    --                 self:SetAlpha(1)
+    --                 self.active = true
+    --                 -- check if overlay texture exists if not create it
+    --                 if not self.overlay then
+    --                     self.overlay = self:CreateTexture(nil, "OVERLAY")
+    --                     -- fit to button size and position
+    --                     self.overlay:SetAllPoints(self)
+    --                     -- print("overlay created")
+    --                 end
+    --                 self.overlay:Show()
+    --             else
+    --                 self.active = false
+    --                 self:SetAlpha(0.5)
+    --                 if self.overlay then self.overlay:Hide() end
+    --             end
+    --         elseif itemType == "item" then
+    --             local itemCount = GetItemCount(id)
+    --             if itemCount > 0 then
+    --                 -- set button to alpha 1
+    --                 self:SetAlpha(1)
+    --                 self.active = true
+    --                 -- check if overlay texture exists if not create it
+    --                 if not self.overlay then
+    --                     self.overlay = self:CreateTexture(nil, "OVERLAY")
+
+    --                     -- fit to button size and position
+    --                     self.overlay:SetAllPoints(self)
+    --                     -- print("overlay created")
+    --                 end
+    --                 self.overlay:Show()
+    --             else
+    --                 self.active = false
+    --                 self:SetAlpha(0.5)
+    --                 if self.overlay then self.overlay:Hide() end
+    --             end
+    --         end
+    --     end)
+
     button:SetScript("OnMouseDown", function(self, button)
         if IsShiftKeyDown() then
             local spellName = GetSpellInfo(id)
@@ -913,3 +987,8 @@ resetButton.ButtonText:SetText("Reset All")
 
 -- Set the OnClick script for the reset button to call the resetSpells function
 resetButton:SetScript("OnClick", function(self) resetSpells() end)
+
+
+
+
+----

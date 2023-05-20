@@ -5,6 +5,7 @@ local AIO = AIO or require("AIO")
 
 
 
+
 local enableItem = false  -- set to true if you want to use an item to remove racial
 local itemRequired = 4540 -- item required to remove racial
 local amountRequired = 1  -- amount of item required to remove racial
@@ -12,9 +13,9 @@ local amountRequired = 1  -- amount of item required to remove racial
 local IsNpc = false       --  set to true if you want to use an npc to open UI at
 local npcEntry = 50252    --  npc entry to open UI at
 
-
-
 local racialHandler = AIO.AddHandlers("RACIAL_SERVER", {})
+
+
 
 ----------------------------------------------------------
 -----------------[Npc Interaction]------------------------
@@ -66,7 +67,19 @@ if IsNpc then
         -- player:GossipSendMenu(menuId, object)
     end
 
+    -- local function vendorOnSelection(event, player, object, sender, intid, code)
+    --     if (intid == 1) then
+    --         -- send menu for racial change
 
+    --         AIO.Handle(player, "RACIAL_CLIENT", "racialOpenUI")
+    --         player:GossipComplete()
+    --     elseif (intid == 2) then -- add this line to handle the new option
+    --         -- AIO.Handle(player, "RACIAL_SERVER", "racialOpenUI")
+    --         player:GossipComplete()
+    --     elseif (intid == 999) then
+    --         player:GossipComplete()
+    --     end
+    -- end
 
     RegisterCreatureEvent(npcEntry, CREATURE_EVENT_ON_MOVE_IN_LOS, creatureOnMoveInLos)
     RegisterCreatureEvent(npcEntry, CREATURE_EVENT_ON_SPAWN, creatureOnSpawn)
@@ -84,6 +97,8 @@ local function hasRequiredItem(player)
         return true
     end
 end
+
+
 
 
 function racialHandler.racialActivate(player, spellId, itemType)
