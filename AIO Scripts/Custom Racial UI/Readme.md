@@ -1,6 +1,5 @@
 # A Custom Racial UI
 
-Files coming this week still some cleaning up to do.
 
 ## Prerequisites
 
