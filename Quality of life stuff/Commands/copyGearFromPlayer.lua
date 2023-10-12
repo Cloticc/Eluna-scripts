@@ -5,6 +5,7 @@ local storeIds = {}
 local function copyPlayerGear(event, player, msg, Type, lang)
     -- add if msg is equal to #copyGearFromPlayer then
     if (msg == copyPlayersAmazingGear) then
+        -- add if not gm return
         if (not player:IsGM()) then
             return false
         end
