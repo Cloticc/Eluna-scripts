@@ -9,4 +9,4 @@ This is a custom store system for the AIO Scripts. It is a simple system that al
 * Reload the game once that's done. It will appear in the store.
 
 
-![Store](customStore.png "Custom Store System")
+![Store](customStore.png?raw=true "Custom Store System")
