@@ -8,4 +8,4 @@ This is a custom store system for the AIO Scripts. It is a simple system that al
 * Open the client file and add your own custom store items.
 * Reload the game once that's done. It will appear in the store.
 
-![Custom Store](customstore.png)
+![Custom Store](https://ibb.co/1LbGcpP)
