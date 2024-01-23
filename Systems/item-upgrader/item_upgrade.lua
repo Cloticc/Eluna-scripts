@@ -62,12 +62,16 @@ local function itemHello(event, player, item, target)
 
 	-- get table data from itemUpgrades
 	for entry, upgradeData in pairs(itemUpgrades) do
-		-- Check if player has the item
-		if player:HasItem(entry) then
+		-- Check if player has the item and the necessary cost items
+		local hasCost1 = not (upgradeData[2] == 0 or upgradeData[2] == -1 or upgradeData[3] == 0 or upgradeData[3] == -1)
+		local hasCost2 = not (upgradeData[4] == 0 or upgradeData[4] == -1 or upgradeData[5] == 0 or upgradeData[5] == -1)
+
+		if player:HasItem(entry) and 
+		   (not hasCost1 or player:HasItem(upgradeData[2], upgradeData[3])) and 
+		   (not hasCost2 or player:HasItem(upgradeData[4], upgradeData[5])) then
 			local upgradeText = string.format("Upgrade %s to %s",
 				GetItemLink(entry),
 				GetItemLink(upgradeData[1])
-
 			)
 			player:GossipMenuAddItem(1, upgradeText, 0, entry)
 		end
@@ -78,16 +82,25 @@ end
 
 local function upgradeItem(player, intid, upgradeData)
 	-- If the "Confirm Upgrade" button was clicked, perform the upgrade
-	if player:HasItem(intid) and player:HasItem(upgradeData[2], upgradeData[3]) and player:HasItem(upgradeData[4], upgradeData[5]) then
+	local hasCost1 = not (upgradeData[2] == 0 or upgradeData[2] == -1 or upgradeData[3] == 0 or upgradeData[3] == -1)
+	local hasCost2 = not (upgradeData[4] == 0 or upgradeData[4] == -1 or upgradeData[5] == 0 or upgradeData[5] == -1)
+
+	if player:HasItem(intid) and
+			(not hasCost1 or player:HasItem(upgradeData[2], upgradeData[3])) and
+			(not hasCost2 or player:HasItem(upgradeData[4], upgradeData[5])) then
 		-- Generate a random number between 1 and 100
 		local rand = math.random(100)
-		debugMessage("Random number", rand)
+
 		-- Check if the random number is less than or equal to the upgrade chance
 		if rand <= upgradeData[6] then
 			-- Remove the original item and the upgrade cost from the player's inventory
 			player:RemoveItem(intid, 1)
-			player:RemoveItem(upgradeData[2], upgradeData[3])
-			player:RemoveItem(upgradeData[4], upgradeData[5])
+			if hasCost1 then
+				player:RemoveItem(upgradeData[2], upgradeData[3])
+			end
+			if hasCost2 then
+				player:RemoveItem(upgradeData[4], upgradeData[5])
+			end
 
 			-- Add the upgraded item to the player's inventory
 			player:AddItem(upgradeData[1], 1)
@@ -134,17 +147,31 @@ local function itemSelect(event, player, object, sender, intid, code, menuId)
 		player:GossipMenuAddItem(1, upgradeText, 0, intid)
 
 		-- Display the cost in the submenu
-		if type(upgradeData[2]) ~= 'number' or upgradeData[2] <= 0 then
-			player:SendBroadcastMessage("Error: Invalid ItemEntry." .. upgradeData[2])
+		local costText = "Cost: "
+
+		-- Check if the first cost item is valid
+		if type(upgradeData[2]) == 'number' and upgradeData[2] > 0 and upgradeData[3] > 0 then
+			costText = costText .. string.format("%dx %s", upgradeData[3], GetItemLink(upgradeData[2]))
 		else
-			local costText = string.format("Cost: %dx %s and %dx %s",
-				upgradeData[3],
-				GetItemLink(upgradeData[2]),
-				upgradeData[5],
-				GetItemLink(upgradeData[4])
-			)
-			player:GossipMenuAddItem(1, costText, 0, intid)
+			print("Error: Invalid ItemEntry." ..
+			upgradeData[2] .. " Check File " .. _G.debug.getinfo(1).source .. ":" .. _G.debug.getinfo(1).currentline)
 		end
+
+		-- Check if the second cost item is valid
+		if type(upgradeData[4]) == 'number' and upgradeData[4] > 0 and upgradeData[5] > 0 then
+			costText = costText .. string.format(" and %dx %s", upgradeData[5], GetItemLink(upgradeData[4]))
+		else
+			print("Error: Invalid ItemEntry." ..
+			upgradeData[4] .. " Check File " .. _G.debug.getinfo(1).source .. ":" .. _G.debug.getinfo(1).currentline)
+		end
+
+		-- If no cost items are valid, the upgrade is free
+		if costText == "Cost: " then
+			costText = "Cost: Free"
+		end
+
+		player:GossipMenuAddItem(1, costText, 0, intid)
+
 		-- Display the chance in the submenu
 		local chanceText = string.format("Chance: %d%%", upgradeData[6])
 		player:GossipMenuAddItem(1, chanceText, 0, intid)
@@ -163,3 +190,5 @@ end
 
 RegisterItemEvent(triggerItem, 2, itemHello);
 RegisterItemGossipEvent(triggerItem, 2, itemSelect);
+
+
