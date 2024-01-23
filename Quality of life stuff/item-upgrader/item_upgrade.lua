@@ -135,7 +135,7 @@ local function itemSelect(event, player, object, sender, intid, code, menuId)
 
 		-- Display the cost in the submenu
 		if type(upgradeData[2]) ~= 'number' or upgradeData[2] <= 0 then
-			player:SendBroadcastMessage("Error: Invalid ItemEntry.")
+			player:SendBroadcastMessage("Error: Invalid ItemEntry." .. upgradeData[2])
 		else
 			local costText = string.format("Cost: %dx %s and %dx %s",
 				upgradeData[3],
