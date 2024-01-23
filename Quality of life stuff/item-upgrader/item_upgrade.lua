@@ -134,14 +134,17 @@ local function itemSelect(event, player, object, sender, intid, code, menuId)
 		player:GossipMenuAddItem(1, upgradeText, 0, intid)
 
 		-- Display the cost in the submenu
-		local costText = string.format("Cost: %dx %s and %dx %s",
-			upgradeData[3],
-			GetItemLink(upgradeData[2]),
-			upgradeData[5],
-			GetItemLink(upgradeData[4])
-		)
-		player:GossipMenuAddItem(1, costText, 0, intid)
-
+		if type(upgradeData[2]) ~= 'number' or upgradeData[2] <= 0 then
+			player:SendBroadcastMessage("Error: Invalid ItemEntry.")
+		else
+			local costText = string.format("Cost: %dx %s and %dx %s",
+				upgradeData[3],
+				GetItemLink(upgradeData[2]),
+				upgradeData[5],
+				GetItemLink(upgradeData[4])
+			)
+			player:GossipMenuAddItem(1, costText, 0, intid)
+		end
 		-- Display the chance in the submenu
 		local chanceText = string.format("Chance: %d%%", upgradeData[6])
 		player:GossipMenuAddItem(1, chanceText, 0, intid)
