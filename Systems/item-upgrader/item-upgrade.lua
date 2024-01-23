@@ -99,11 +99,11 @@ local function itemHello(event, player, item, target)
 
 	-- Add "Previous Page" and "Next Page" options if necessary
 	if currentPage > 1 then
-		print("Previous Page" .. currentPage .. " " .. totalPages .. ") " .. currentPage - 1)
+		debugMessage("Previous Page" .. currentPage .. " " .. totalPages .. ") " .. currentPage - 1)
 		player:GossipMenuAddItem(0, "Previous Page", 0, currentPage - 1)
 	end
 	if currentPage < totalPages then
-		print("Next Page" .. currentPage .. " " .. totalPages .. ") " .. currentPage + 1)
+		debugMessage("Next Page" .. currentPage .. " " .. totalPages .. ") " .. currentPage + 1)
 		player:GossipMenuAddItem(0, "Next Page", 0, currentPage + 1)
 	end
 
