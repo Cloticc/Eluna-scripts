@@ -1,4 +1,8 @@
-local triggerItem = 414 --Crafting Orb (invalid, target:GetEntry() can write ID directly)
+local triggerItem = 414 -- Item that triggers the menu when used
+
+local itemsPerPage = 10 -- Number of items to display per page
+
+
 ----------------------------------------------------------
 -----------------[Don't edit below]-----------------------
 ----------------------------------------------------------
@@ -48,6 +52,10 @@ end
 
 loadDataBase()
 
+local currentPage = 1 -- Current page number
+local totalPages = 1  -- Total number of pages
+
+
 local function itemHello(event, player, item, target)
 	if (player:IsInCombat()) then
 		player:SendAreaTriggerMessage("You are in combat!")
@@ -61,24 +69,47 @@ local function itemHello(event, player, item, target)
 	player:GossipClearMenu()
 
 	-- get table data from itemUpgrades
+	local items = {}
 	for entry, upgradeData in pairs(itemUpgrades) do
 		-- Check if player has the item and the necessary cost items
 		local hasCost1 = not (upgradeData[2] == 0 or upgradeData[2] == -1 or upgradeData[3] == 0 or upgradeData[3] == -1)
 		local hasCost2 = not (upgradeData[4] == 0 or upgradeData[4] == -1 or upgradeData[5] == 0 or upgradeData[5] == -1)
 
-		if player:HasItem(entry) and 
-		   (not hasCost1 or player:HasItem(upgradeData[2], upgradeData[3])) and 
-		   (not hasCost2 or player:HasItem(upgradeData[4], upgradeData[5])) then
-			local upgradeText = string.format("Upgrade %s to %s",
-				GetItemLink(entry),
-				GetItemLink(upgradeData[1])
-			)
-			player:GossipMenuAddItem(1, upgradeText, 0, entry)
+		if player:HasItem(entry) and
+				(not hasCost1 or player:HasItem(upgradeData[2], upgradeData[3])) and
+				(not hasCost2 or player:HasItem(upgradeData[4], upgradeData[5])) then
+			table.insert(items, { entry, upgradeData })
 		end
+	end
+
+	local totalItems = #items
+	totalPages = math.ceil(totalItems / itemsPerPage)
+
+	-- Display items for the current page
+	local start = (currentPage - 1) * itemsPerPage + 1
+	local end_ = math.min(start + itemsPerPage - 1, totalItems)
+	for i = start, end_ do
+		local entry, upgradeData = unpack(items[i])
+		local upgradeText = string.format("Upgrade %s to %s",
+			GetItemLink(entry),
+			GetItemLink(upgradeData[1])
+		)
+		player:GossipMenuAddItem(1, upgradeText, 0, entry)
+	end
+
+	-- Add "Previous Page" and "Next Page" options if necessary
+	if currentPage > 1 then
+		print("Previous Page" .. currentPage .. " " .. totalPages .. ") " .. currentPage - 1)
+		player:GossipMenuAddItem(0, "Previous Page", 0, currentPage - 1)
+	end
+	if currentPage < totalPages then
+		print("Next Page" .. currentPage .. " " .. totalPages .. ") " .. currentPage + 1)
+		player:GossipMenuAddItem(0, "Next Page", 0, currentPage + 1)
 	end
 
 	player:GossipSendMenu(1, item)
 end
+
 
 local function upgradeItem(player, intid, upgradeData)
 	-- If the "Confirm Upgrade" button was clicked, perform the upgrade
@@ -118,6 +149,19 @@ local function upgradeItem(player, intid, upgradeData)
 end
 
 local function itemSelect(event, player, object, sender, intid, code, menuId)
+	-- Check if the intid corresponds to the "Next Page" or "Previous Page" options
+	if intid == currentPage - 1 then
+		-- "Previous Page" was clicked
+		currentPage = currentPage - 1
+		itemHello(event, player, object, sender)
+		return
+	elseif intid == currentPage + 1 then
+		-- "Next Page" was clicked
+		currentPage = currentPage + 1
+		itemHello(event, player, object, sender)
+		return
+	end
+
 	-- Retrieve the upgrade data for the clicked item
 	local upgradeData = itemUpgrades[intid]
 
@@ -154,7 +198,7 @@ local function itemSelect(event, player, object, sender, intid, code, menuId)
 			costText = costText .. string.format("%dx %s", upgradeData[3], GetItemLink(upgradeData[2]))
 		else
 			print("Error: Invalid ItemEntry." ..
-			upgradeData[2] .. " Check File " .. _G.debug.getinfo(1).source .. ":" .. _G.debug.getinfo(1).currentline)
+				upgradeData[2] .. " Check File " .. _G.debug.getinfo(1).source .. ":" .. _G.debug.getinfo(1).currentline)
 		end
 
 		-- Check if the second cost item is valid
@@ -162,7 +206,7 @@ local function itemSelect(event, player, object, sender, intid, code, menuId)
 			costText = costText .. string.format(" and %dx %s", upgradeData[5], GetItemLink(upgradeData[4]))
 		else
 			print("Error: Invalid ItemEntry." ..
-			upgradeData[4] .. " Check File " .. _G.debug.getinfo(1).source .. ":" .. _G.debug.getinfo(1).currentline)
+				upgradeData[4] .. " Check File " .. _G.debug.getinfo(1).source .. ":" .. _G.debug.getinfo(1).currentline)
 		end
 
 		-- If no cost items are valid, the upgrade is free
@@ -190,5 +234,4 @@ end
 
 RegisterItemEvent(triggerItem, 2, itemHello);
 RegisterItemGossipEvent(triggerItem, 2, itemSelect);
-
 
