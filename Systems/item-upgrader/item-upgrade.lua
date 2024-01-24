@@ -41,7 +41,8 @@ local itemUpgrades = {}
 -- Define a new function to perform the database query
 local function loadDataBase()
 	local result = WorldDBQuery(
-		"SELECT entry, upgraded_entry, cost_1, amount_1, cost_2, amount_2,cost_3, amount_3, chance FROM custom_item_upgrader_v1")
+	"SELECT entry, upgraded_entry, cost_1, amount_1, cost_2, amount_2,cost_3, amount_3, chance FROM " ..
+	custom_item_upgrader)
 	if (result) then
 		repeat
 			local entry, upgraded_entry, cost_1, amount_1, cost_2, amount_2, cost_3, amount_3, chance = result:GetUInt32(0),
@@ -266,3 +267,4 @@ end
 
 RegisterItemEvent(triggerItem, 2, itemHello);
 RegisterItemGossipEvent(triggerItem, 2, itemSelect);
+
