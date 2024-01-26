@@ -1,4 +1,7 @@
-local triggerItem = 414                                -- Item that triggers the menu when used
+local triggerItem = 414                    -- Item that triggers the menu when used
+
+local checkClassRestrictionsEnabled = true -- Set to false to disable class restrictions
+
 
 local itemsPerPage = 10                                -- Number of items to display per page
 
@@ -38,12 +41,29 @@ end
 
 -- math.randomseed(tonumber(tostring(os.time()):reverse():sub(1,6))) --Random number seed
 local itemUpgrades = {}
+local itemClasses = {}
+
+local allowedClasses = {
+	[1] = "Warrior",
+	[2] = "Paladin",
+	[3] = "Hunter",
+	[4] = "Rogue",
+	[5] = "Priest",
+	[6] = "Death Knight",
+	[7] = "Shaman",
+	[8] = "Mage",
+	[9] = "Warlock",
+	[11] = "Druid"
+}
+
 -- Define a new function to perform the database query
-local function loadDataBase()
+local function loadItemUpgrades()
 	local result = WorldDBQuery(
-	"SELECT entry, upgraded_entry, cost_1, amount_1, cost_2, amount_2,cost_3, amount_3, chance FROM " ..
-	custom_item_upgrader)
-	if (result) then
+		"SELECT entry, upgraded_entry, cost_1, amount_1, cost_2, amount_2, cost_3, amount_3, chance FROM " ..
+		custom_item_upgrader
+	)
+
+	if result then
 		repeat
 			local entry, upgraded_entry, cost_1, amount_1, cost_2, amount_2, cost_3, amount_3, chance = result:GetUInt32(0),
 					result:GetUInt32(1),
@@ -58,7 +78,62 @@ local function loadDataBase()
 	end
 end
 
+
+
+local function loadItemClasses()
+	-- local result = WorldDBQuery("SELECT entry, AllowableClass FROM item_template")
+	local result = WorldDBQuery("SELECT entry, AllowableClass FROM item_template WHERE AllowableClass > 0")
+
+	if result then
+		repeat
+			local entry, AllowableClass = result:GetUInt32(0), result:GetUInt32(1)
+			if AllowableClass ~= 0 then
+				-- If AllowableClass is -1, set it to a bitmask representing all classes
+				if AllowableClass == -1 then
+					AllowableClass = 0x7FF -- Bitmask for all classes (1+2+4+8+16+32+64+128+256+1024)
+				end
+				itemClasses[entry] = AllowableClass
+				debugMessage("Item", entry, "AllowableClass", AllowableClass)
+			end
+		until not result:NextRow()
+	end
+end
+
+
+local function loadDataBase()
+	loadItemUpgrades()
+	loadItemClasses()
+end
+
 loadDataBase()
+
+local function bitwise_and(a, b)
+	local result = 0
+	local bitval = 1
+	while a > 0 and b > 0 do
+		if a % 2 == 1 and b % 2 == 1 then -- if last bits of a and b are 1
+			result = result + bitval      -- set a bit of result to 1
+		end
+		bitval = bitval * 2 -- shift to next bit
+		a = math.floor(a / 2) -- shift bits to right
+		b = math.floor(b / 2)
+	end
+	return result
+end
+
+local function checkClassRestrictions(item, class)
+	local allowableClassMask = itemClasses[item]
+	if allowableClassMask then
+		-- Shift 1 to the left by (class - 1) places to create a mask for the class
+		local classMask = 2 ^ (class - 1)
+		-- Check if the bitwise AND of allowableClassMask and classMask is not zero
+		-- If it's not zero, then the class is allowed
+		return bitwise_and(allowableClassMask, classMask) ~= 0
+	else
+		-- If the item is not in the itemClasses array, assume it has no class restrictions
+		return true
+	end
+end
 
 local currentPage = 1 -- Current page number
 local totalPages = 1  -- Total number of pages
@@ -87,11 +162,14 @@ local function itemHello(event, player, item, target)
 	for entry, upgradeData in pairs(itemUpgrades) do
 		-- Check if player has the item
 		if player:HasItem(entry) then
-			table.insert(items, { entry, upgradeData })
+			if not checkClassRestrictionsEnabled or checkClassRestrictions(entry, player:GetClass()) then
+				table.insert(items, { entry, upgradeData })
+			end
+			-- table.insert(items, { entry, upgradeData })
 		end
 	end
 
-
+ 
 	local totalItems = #items
 	totalPages = math.ceil(totalItems / itemsPerPage)
 
@@ -267,4 +345,3 @@ end
 
 RegisterItemEvent(triggerItem, 2, itemHello);
 RegisterItemGossipEvent(triggerItem, 2, itemSelect);
-
