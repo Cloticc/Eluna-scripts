@@ -125,7 +125,7 @@ local function checkClassRestrictions(item, class)
 	local allowableClassMask = itemClasses[item]
 	if allowableClassMask then
 		-- Shift 1 to the left by (class - 1) places to create a mask for the class
-		local classMask = 2 ^ (class - 1)
+		local classMask = 2 ^ (class - 1) 
 		-- Check if the bitwise AND of allowableClassMask and classMask is not zero
 		-- If it's not zero, then the class is allowed
 		return bitwise_and(allowableClassMask, classMask) ~= 0
