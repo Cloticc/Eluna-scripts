@@ -2,15 +2,15 @@
 -- AUTO LEARN SKILLS MOD
 ------------------------------------------------------------------------------------------------
 local EnableModule = true
-local AnnounceModule = true  -- Announce module on player login ?
+local AnnounceModule = true -- Announce module on player login ?
 
-local MaxLevel = false       -- Set to true to enable max level skills instantly when login
-local MaxPlayerLevel = 80    -- Max player level change to your liking.
+local MaxLevel = false      -- Set to true to enable max level skills instantly when login
+local MaxPlayerLevel = 80   -- Max player level change to your liking.
 
-local AutoDualSpec = true    -- Auto learn Dual Specialization
-local AutoRiding = true      -- Auto learn Riding
+local AutoDualSpec = true   -- Auto learn Dual Specialization
+local AutoRiding = true     -- Auto learn Riding
 
-local NorthrendFlyLevel = 68 -- Which level to learn Cold Weather Flying
+local NorthrendFlyLevel = 1 -- Which level to learn Cold Weather Flying
 --
 -- (68 = When alt characters can learn from Tome of Cold Weather Flight)
 -- (77 = Level to learn it from trainer, for first character)
@@ -26,17 +26,18 @@ local NorthrendFlyLevel = 68 -- Which level to learn Cold Weather Flying
     Author Email: 247321453@qq.com
     Modification date: 2014-3-12
     Function: When the player levels up, automatically learn the skills of the corresponding level
-
     Completely remade by kebabstorm
-
-
-
+    Code edits and update missin spells by clotic
 ]]
 if (not EnableModule) then
     return
 end
 
 local FILE_NAME = string.match(debug.getinfo(1, "S").source, "[^/\\]*.lua$")
+
+local PLAYER_EVENT_ON_LEVEL_CHANGE = 13
+local PLAYER_EVENT_ON_LEARN_TALENTS = 39
+local PLAYER_EVENT_ON_FIRST_LOGIN = 30
 
 local CLASS_WARRIOR = 1
 local CLASS_PALADIN = 2
@@ -304,7 +305,7 @@ local SKILL = {
         [80] = { 48066, 48068, 48073, 48074, 48078, 48125, 48158, 48161, 48162, 53023, 64843, 64901 }
     },
     [CLASS_DEATHKNIGHT] = {
-        [55] = { 198, 199, 49142, 53428 },
+        [55] = { 198, 199 },
         [56] = { 49998, 46584, 50842, 53343, 53341 },
         [57] = { 48263, 53342, 54447, 47528 },
         [58] = { 45524, 48721 },
@@ -381,8 +382,7 @@ local SKILL = {
         [77] = { 49276 },
         [78] = { 49236, 58582, 58734, 58753 },
         [79] = { 49231, 49238 },
-        [80] = { 49233, 49271, 49273, 49277, 49281, 51514, 51994, 55459, 58643, 58656, 58704, 58739, 58745, 58749, 58757,
-            58774, 58790, 58796, 58804, 60043, 61657 }
+        [80] = { 49233, 49271, 49273, 49277, 49281, 51514, 51994, 55459, 58643, 58656, 58704, 58739, 58745, 58749, 58757, 58774, 58790, 58796, 58804, 60043, 61657 }
     },
     [CLASS_MAGE] = {
         [1] = { 1459, 1180, 201 },
@@ -728,8 +728,7 @@ local TALENTSKILL = {
             [70] = { 34917 },
             [75] = { 48159 },
             [80] = { 48160 }
-        },
-
+        }
     },
     [CLASS_DEATHKNIGHT] = {
         [55050] = {
@@ -798,7 +797,7 @@ local TALENTSKILL = {
             [66] = { 27132 },
             [70] = { 33938 },
             [73] = { 42890 },
-            [77] = { 42981 }
+            -- [77] = { 42981 }
         },
         [11113] = {
             [36] = { 13018 },
@@ -911,13 +910,12 @@ local TALENTSKILL = {
 }
 
 local RIDING = {
-    [20] = { 33388 },                -- Apprentince Riding (75)
-    [40] = { 33391 },                -- Journeyman Riding (150)
-    [60] = { 34090 },                -- Expert Riding (225)
+    [10] = { 33388 },                -- Apprentince Riding (75)
+    [20] = { 33391, 34090 },         -- Journeyman Riding (150)
+    -- [40] = { 34090 },                -- Expert Riding (225)
     [NorthrendFlyLevel] = { 54197 }, -- Cold Weather Flying
     [70] = { 34091 }                 -- Artisan Riding (300)
 }
-
 local function onLevelChange(event, player, oldLevel)
     local class = player:GetClass()
     local level = player:GetLevel()
@@ -996,17 +994,17 @@ local function onLogin(event, player)
 end
 
 local function onFirstLogin(event, player)
-    if (MaxLevel) then
+    if MaxLevel then
         player:SetLevel(MaxPlayerLevel)
     end
     onLevelChange(1, player, 0)
 end
 
-RegisterPlayerEvent(13, onLevelChange) -- PLAYER_EVENT_ON_LEVEL_CHANGE
-RegisterPlayerEvent(39, onLearnTalent) -- PLAYER_EVENT_ON_LEARN_TALENTS
-RegisterPlayerEvent(30, onFirstLogin)  -- PLAYER_EVENT_ON_FIRST_LOGIN
+RegisterPlayerEvent(PLAYER_EVENT_ON_LEVEL_CHANGE, onLevelChange)  -- PLAYER_EVENT_ON_LEVEL_CHANGE = 13
+RegisterPlayerEvent(PLAYER_EVENT_ON_LEARN_TALENTS, onLearnTalent) -- PLAYER_EVENT_ON_LEARN_TALENTS = 39
+RegisterPlayerEvent(PLAYER_EVENT_ON_FIRST_LOGIN, onFirstLogin)    -- PLAYER_EVENT_ON_FIRST_LOGIN = 30
 
-if (AnnounceModule) then
+if AnnounceModule then
     RegisterPlayerEvent(30, onLogin) -- PLAYER_EVENT_ON_LOGIN
 end
 
