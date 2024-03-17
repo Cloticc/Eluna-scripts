@@ -4,7 +4,7 @@ local npcEntry = 2118 -- The entry of the NPC
 -------------------------------
 
 CharDBQuery(
-  "CREATE TABLE IF NOT EXISTS `custom_gold_storage` (`account` int(11) NOT NULL, `name` varchar(255) NOT NULL, `gold` int(11) NOT NULL, PRIMARY KEY (`account`)) ENGINE=InnoDB DEFAULT CHARSET=utf8;"
+  "CREATE TABLE IF NOT EXISTS `custom_gold_storage` (`account` int(11) NOT NULL, `name` varchar(255) NOT NULL, `gold` bigint(20) NOT NULL, PRIMARY KEY (`account`)) ENGINE=InnoDB DEFAULT CHARSET=utf8;"
 )
 
 
@@ -71,13 +71,19 @@ local function displayTop5()
   return topPlayers
 end
 
+-- Function to deal with big numbers
+local function comma_value(n)
+  local left,num,right = string.match(n,'^([^%d]*%d)(%d*)(.-)$')
+  return left..(num:reverse():gsub('(%d%d%d)','%1,'):reverse())..right
+end
+
 local menuIds = 0x7FFFFFFF
 local function objectOnSpawn(event, creature)
   creature:SetNPCFlags(3)
 end
 
 local function helloOnVendor(event, player, creature)
-  player:GossipSetText(string.format("You have %d gold in your account.", checkBalance(player)))
+  player:GossipSetText(string.format("You have %s gold stored.", comma_value(checkBalance(player))))
   player:GossipMenuAddItem(7, "I would like to store my gold.", 1, 1, true)
   player:GossipMenuAddItem(7, "I would like to withdraw my gold.", 1, 2, true)
   -- player:GossipMenuAddItem(0, "--------------------------------------", 1, 3)
@@ -86,8 +92,8 @@ local function helloOnVendor(event, player, creature)
 
   local topPlayers = displayTop5()
   for i, topPlayer in ipairs(topPlayers) do
-    print(topPlayer.name, topPlayer.gold)
-    player:GossipMenuAddItem(7, string.format("%d. %s - %d gold", i, topPlayer.name, topPlayer.gold), 1, 3)
+    print(topPlayer.name, comma_value(topPlayer.gold))
+    player:GossipMenuAddItem(0, string.format("%d. %s - %s gold", i, topPlayer.name, comma_value(topPlayer.gold)), 1, 3)
   end
 
   player:GossipSendMenu(menuIds, creature)
