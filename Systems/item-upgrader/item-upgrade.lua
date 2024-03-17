@@ -1,6 +1,6 @@
 local triggerItem = 414                    -- Item that triggers the menu when used
 
-local checkClassRestrictionsEnabled = true -- Set to false to disable class restrictions
+local checkClassRestrictionsEnabled = true -- Set to false to disable class restrictions so mage can upgrade warrior items and vice versa
 
 
 local itemsPerPage = 10                                -- Number of items to display per page
@@ -107,6 +107,7 @@ end
 
 loadDataBase()
 
+
 local function bitwise_and(a, b)
 	local result = 0
 	local bitval = 1
@@ -114,8 +115,8 @@ local function bitwise_and(a, b)
 		if a % 2 == 1 and b % 2 == 1 then -- if last bits of a and b are 1
 			result = result + bitval      -- set a bit of result to 1
 		end
-		bitval = bitval * 2 -- shift to next bit
-		a = math.floor(a / 2) -- shift bits to right
+		bitval = bitval * 2             -- shift to next bit
+		a = math.floor(a / 2)           -- shift bits to right
 		b = math.floor(b / 2)
 	end
 	return result
@@ -125,7 +126,7 @@ local function checkClassRestrictions(item, class)
 	local allowableClassMask = itemClasses[item]
 	if allowableClassMask then
 		-- Shift 1 to the left by (class - 1) places to create a mask for the class
-		local classMask = 2 ^ (class - 1) 
+		local classMask = 2 ^ (class - 1)
 		-- Check if the bitwise AND of allowableClassMask and classMask is not zero
 		-- If it's not zero, then the class is allowed
 		return bitwise_and(allowableClassMask, classMask) ~= 0
@@ -142,7 +143,15 @@ local function stripColor(s)
 	return string.gsub(s, "|c%x%x%x%x%x%x%x%x(.-)|r", "%1")
 end
 
-
+local function GetItemLinkWithColor(entry, color)
+	local itemTemplate = GetItemTemplate(entry)
+	if itemTemplate then
+			local itemName = itemTemplate:GetName()
+			local itemLink = string.format("|Hitem:%d|h[%s]|h", entry, itemName)
+			return color .. itemLink .. "|r"
+	end
+	return nil
+end
 
 local function itemHello(event, player, item, target)
 	-- if (player:IsInCombat()) then
@@ -169,7 +178,7 @@ local function itemHello(event, player, item, target)
 		end
 	end
 
- 
+
 	local totalItems = #items
 	totalPages = math.ceil(totalItems / itemsPerPage)
 
@@ -177,16 +186,16 @@ local function itemHello(event, player, item, target)
 	local start = (currentPage - 1) * itemsPerPage + 1
 	local end_ = math.min(start + itemsPerPage - 1, totalItems)
 	for i = start, end_ do
-		local itemData = items[i]
-		if itemData then
-			local entry = itemData[1]
-			local upgradeData = itemData[2]
-			local upgradeText = string.format("Upgrade %s to %s",
-				GetItemLink(entry),
-				GetItemLink(upgradeData[1])
-			)
-			player:GossipMenuAddItem(1, upgradeText, 0, entry)
-		end
+			local itemData = items[i]
+			if itemData then
+					local entry = itemData[1]
+					local upgradeData = itemData[2]
+					local upgradeText = string.format("Upgrade %s to %s",
+							GetItemLinkWithColor(entry, "|cFFFF0000"),
+							GetItemLinkWithColor(upgradeData[1], "|cFF00FF00")
+					)
+					player:GossipMenuAddItem(1, upgradeText, 0, entry)
+			end
 	end
 
 
@@ -203,16 +212,29 @@ local function itemHello(event, player, item, target)
 	player:GossipSendMenu(1, item)
 end
 
+local function hasCost(player, upgradeData, index)
+	local costIndex = index * 2
+	local amountIndex = costIndex + 1
+	if upgradeData[costIndex] <= 0 or upgradeData[amountIndex] <= 0 then
+		-- If the cost or amount is zero or negative, the upgrade is free
+		return true
+	else
+		-- Otherwise, check if the player has the necessary items
+		return player:HasItem(upgradeData[costIndex], upgradeData[amountIndex])
+	end
+end
+
+local function removeCost(player, upgradeData, index)
+	local costIndex = index * 2
+	local amountIndex = costIndex + 1
+	if hasCost(player, upgradeData, index) then
+		player:RemoveItem(upgradeData[costIndex], upgradeData[amountIndex])
+	end
+end
+
 local function upgradeItem(player, intid, upgradeData)
 	-- If the "Confirm Upgrade" button was clicked, perform the upgrade
-	local hasCost1 = not (upgradeData[2] == 0 or upgradeData[2] == -1 or upgradeData[3] == 0 or upgradeData[3] == -1)
-	local hasCost2 = not (upgradeData[4] == 0 or upgradeData[4] == -1 or upgradeData[5] == 0 or upgradeData[5] == -1)
-	local hasCost3 = not (upgradeData[6] == 0 or upgradeData[6] == -1 or upgradeData[7] == 0 or upgradeData[7] == -1)
-
-	if player:HasItem(intid) and
-			(not hasCost1 or player:HasItem(upgradeData[2], upgradeData[3])) and
-			(not hasCost2 or player:HasItem(upgradeData[4], upgradeData[5])) and
-			(not hasCost3 or player:HasItem(upgradeData[6], upgradeData[7])) then
+	if player:HasItem(intid) and hasCost(player, upgradeData, 1) and hasCost(player, upgradeData, 2) and hasCost(player, upgradeData, 3) then
 		-- Generate a random number between 1 and 100
 		local rand = math.random(100)
 
@@ -220,14 +242,8 @@ local function upgradeItem(player, intid, upgradeData)
 		if rand <= upgradeData[8] then
 			-- Remove the original item and the upgrade cost from the player's inventory
 			player:RemoveItem(intid, 1)
-			if hasCost1 then
-				player:RemoveItem(upgradeData[2], upgradeData[3])
-			end
-			if hasCost2 then
-				player:RemoveItem(upgradeData[4], upgradeData[5])
-			end
-			if hasCost3 then
-				player:RemoveItem(upgradeData[6], upgradeData[7])
+			for i = 1, 3 do
+				removeCost(player, upgradeData, i)
 			end
 
 			-- Add the upgraded item to the player's inventory
@@ -236,14 +252,8 @@ local function upgradeItem(player, intid, upgradeData)
 			player:SendBroadcastMessage("Item upgraded successfully.")
 		else
 			-- Remove the upgrade cost from the player's inventory
-			if hasCost1 then
-				player:RemoveItem(upgradeData[2], upgradeData[3])
-			end
-			if hasCost2 then
-				player:RemoveItem(upgradeData[4], upgradeData[5])
-			end
-			if hasCost3 then
-				player:RemoveItem(upgradeData[6], upgradeData[7])
+			for i = 1, 3 do
+				removeCost(player, upgradeData, i)
 			end
 
 			player:SendBroadcastMessage("Upgrade attempt failed, The materials were consumed.")
@@ -254,89 +264,63 @@ local function upgradeItem(player, intid, upgradeData)
 end
 
 
-
-
 local function itemSelect(event, player, object, sender, intid, code, menuId)
-	-- Check if the intid corresponds to the "Next Page" or "Previous Page" options
-	if intid == currentPage - 1 then
-		-- "Previous Page" was clicked
-		currentPage = currentPage - 1
+	local function changePage(delta)
+		currentPage = currentPage + delta
 		itemHello(event, player, object, sender)
+	end
+
+	local function addMenuItem(text)
+		player:GossipMenuAddItem(1, text, 0, intid)
+	end
+
+	if intid == currentPage - 1 then
+		changePage(-1)
 		return
 	elseif intid == currentPage + 1 then
-		-- "Next Page" was clicked
-		currentPage = currentPage + 1
-		itemHello(event, player, object, sender)
+		changePage(1)
 		return
 	end
 
-	-- Retrieve the upgrade data for the clicked item
 	local upgradeData = itemUpgrades[intid]
+	local upgradeIndices = { item = 1, cost1 = 2, amount1 = 3, cost2 = 4, amount2 = 5, cost3 = 6, amount3 = 7, chance = 8 }
 
 	if sender == 1 then
-		player:GossipComplete() -- Close the menu
-		-- itemHello(event, player, object, sender) ---- Reopen the menu
+		player:GossipComplete()
 		upgradeItem(player, intid, upgradeData)
 	elseif upgradeData then
 		player:GossipClearMenu()
 		local itemLink = GetItemLink(intid)
-		local upgradeLink = GetItemLink(upgradeData[1])
+		local upgradeLink = GetItemLink(upgradeData[upgradeIndices.item])
 		player:SendBroadcastMessage(string.format("You selected: %s", itemLink))
 		player:SendBroadcastMessage(string.format("Upgrades to: %s", upgradeLink))
-		-- Display the upgrade cost and chance in the submenu disabled cus i didnt like the layout change so it has its own rows now
-		-- local upgradeText = string.format("Upgrade %s to %s\nCost: %dx %s and %dx %s\nChance: %d%%",
-		-- 	GetItemLink(intid),
-		-- 	GetItemLink(upgradeData[1]),
-		-- 	upgradeData[3],
-		-- 	GetItemLink(upgradeData[2]),
-		-- 	upgradeData[5],
-		-- 	GetItemLink(upgradeData[4]),
-		-- 	upgradeData[6]
-		-- )
-		-- player:GossipMenuAddItem(1, upgradeText, 0, intid)
-		-- Display the upgrade in the submenu
 
 		local upgradeText = string.format("Upgrade %s to %s",
-			"|cFFFF0000" .. stripColor(GetItemLink(intid)) .. "|r",
-			"|cFF00FF00" .. stripColor(GetItemLink(upgradeData[1])) .. "|r"
+			"|cFFFF0000" .. stripColor(itemLink) .. "|r",
+			"|cFF00FF00" .. stripColor(upgradeLink) .. "|r"
 		)
-		player:GossipMenuAddItem(1, upgradeText, 0, intid)
+		addMenuItem(upgradeText)
 
-		-- Display the cost in the submenu
 		local costText = "Cost:"
-
-		-- Check if the first cost item is valid
-		if type(upgradeData[2]) == 'number' and upgradeData[2] > 0 and upgradeData[3] > 0 then
-			costText = costText .. "\n" .. string.format("%dx %s", upgradeData[3], GetItemLink(upgradeData[2]))
+		for i = 1, 3 do
+			local costIndex = upgradeIndices["cost" .. i]
+			local amountIndex = upgradeIndices["amount" .. i]
+			if type(upgradeData[costIndex]) == 'number' and upgradeData[costIndex] > 0 and upgradeData[amountIndex] > 0 then
+				costText = costText ..
+				"\n" .. string.format("%dx %s", upgradeData[amountIndex], GetItemLink(upgradeData[costIndex]))
+			end
 		end
 
-		-- Check if the second cost item is valid
-		if type(upgradeData[4]) == 'number' and upgradeData[4] > 0 and upgradeData[5] > 0 then
-			costText = costText .. "\n" .. string.format("%dx %s", upgradeData[5], GetItemLink(upgradeData[4]))
-		end
-
-		-- Check if the third cost item is valid
-		if type(upgradeData[6]) == 'number' and upgradeData[6] > 0 and upgradeData[7] > 0 then
-			costText = costText .. "\n" .. string.format("%dx %s", upgradeData[7], GetItemLink(upgradeData[6]))
-		end
-
-		-- If no cost items are valid, the upgrade is free
 		if costText == "Cost:" then
 			costText = costText .. " Free"
 		end
+		addMenuItem(costText)
 
-		player:GossipMenuAddItem(1, costText, 0, intid)
+		local chanceText = string.format("Chance: %d%%", upgradeData[upgradeIndices.chance])
+		addMenuItem(chanceText)
 
-		-- Display the chance in the submenu
-		local chanceText = string.format("Chance: %d%%", upgradeData[8])
-		player:GossipMenuAddItem(1, chanceText, 0, intid)
-		-- Add a confirm button to the submenu
 		player:GossipMenuAddItem(0, "Confirm Upgrade", 1, intid, nil, "Are you sure you want to upgrade this item?")
-
-
-		-- player:GossipComplete()
 	else
-		-- If the clicked item does not have upgrade data, display an error message
 		player:SendBroadcastMessage("This item cannot be upgraded.")
 	end
 
