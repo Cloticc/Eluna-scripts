@@ -2,9 +2,12 @@ local npcEntry = 2118 -- The entry of the NPC
 
 
 -------------------------------
+
 CharDBQuery(
-  "CREATE TABLE IF NOT EXISTS `custom_gold_storage` (`guid` int(11) NOT NULL, `name` varchar(255) NOT NULL, `account` int(11) NOT NULL, `gold` int(11) NOT NULL, PRIMARY KEY (`guid`)) ENGINE=InnoDB DEFAULT CHARSET=utf8;"
+  "CREATE TABLE IF NOT EXISTS `custom_gold_storage` (`account` int(11) NOT NULL, `name` varchar(255) NOT NULL, `gold` int(11) NOT NULL, PRIMARY KEY (`account`)) ENGINE=InnoDB DEFAULT CHARSET=utf8;"
 )
+
+
 
 -- Function to store gold
 local function storeGold(player, amount)
@@ -19,12 +22,11 @@ local function storeGold(player, amount)
     return
   end
 
-  local guid = player:GetGUIDLow()
-  local playerName = player:GetName()
   local accountId = player:GetAccountId()
+  local playerName = player:GetName()
   local query = string.format(
-    "INSERT INTO `custom_gold_storage` (`guid`, `name`, `account`, `gold`) VALUES (%d, '%s', %d, %d) ON DUPLICATE KEY UPDATE `gold` = `gold` + %d, `name` = '%s', `account` = %d;",
-    guid, playerName, accountId, amount, amount, playerName, accountId)
+    "INSERT INTO `custom_gold_storage` (`account`, `name`, `gold`) VALUES (%d, '%s', %d) ON DUPLICATE KEY UPDATE `gold` = `gold` + %d, `name` = VALUES(`name`);",
+    accountId, playerName, amount, amount)
   CharDBQuery(query)
 
   player:ModifyMoney(-amount * 10000)
@@ -32,9 +34,9 @@ end
 
 -- Function to withdraw gold
 local function withdrawGold(player, amount)
-  local guid = player:GetGUIDLow()
+  local accountId = player:GetAccountId()
   local query = string.format(
-    "UPDATE `custom_gold_storage` SET `gold` = `gold` - %d WHERE `guid` = %d AND `gold` >= %d;", amount, guid, amount)
+    "UPDATE `custom_gold_storage` SET `gold` = `gold` - %d WHERE `account` = %d AND `gold` >= %d;", amount, accountId, amount)
   CharDBQuery(query)
 
   player:ModifyMoney(amount * 10000)
@@ -42,8 +44,8 @@ end
 
 -- Function to check balance
 local function checkBalance(player)
-  local guid = player:GetGUIDLow()
-  local query = string.format("SELECT `gold` FROM `custom_gold_storage` WHERE `guid` = %d;", guid)
+  local accountId = player:GetAccountId()
+  local query = string.format("SELECT `gold` FROM `custom_gold_storage` WHERE `account` = %d;", accountId)
   local result = CharDBQuery(query)
   if result then
     local gold = result:GetUInt32(0)
@@ -55,14 +57,13 @@ end
 
 -- Function to display top 5 players with most gold
 local function displayTop5()
-  local query = "SELECT `name`, `gold` FROM `custom_gold_storage` ORDER BY `gold` DESC LIMIT 5;"
+  local query = "SELECT `name`, SUM(`gold`) as total_gold FROM `custom_gold_storage` GROUP BY `account` ORDER BY total_gold DESC LIMIT 5;"
   local result = CharDBQuery(query)
   local topPlayers = {}
   if result then
     for i = 1, result:GetRowCount() do
       local playerName = result:GetString(0)
       local gold = result:GetUInt32(1)
-      print(playerName, gold)
       table.insert(topPlayers, { name = playerName, gold = gold })
       result:NextRow()
     end
@@ -79,12 +80,14 @@ local function helloOnVendor(event, player, creature)
   player:GossipSetText(string.format("You have %d gold in your account.", checkBalance(player)))
   player:GossipMenuAddItem(7, "I would like to store my gold.", 1, 1, true)
   player:GossipMenuAddItem(7, "I would like to withdraw my gold.", 1, 2, true)
-  player:GossipMenuAddItem(0, "Leaderboard", 1, 3)
-print("helloOnVendor")
+  -- player:GossipMenuAddItem(0, "--------------------------------------", 1, 3)
+  player:GossipMenuAddItem(0, "-----------Leaderboard------------", 1, 3)
+  -- player:GossipMenuAddItem(0, "--------------------------------------", 1, 3)
+
   local topPlayers = displayTop5()
   for i, topPlayer in ipairs(topPlayers) do
     print(topPlayer.name, topPlayer.gold)
-    player:GossipMenuAddItem(7, string.format("%d. %s - %d gold", i, topPlayer.name, topPlayer.gold), 1, 3, true)
+    player:GossipMenuAddItem(7, string.format("%d. %s - %d gold", i, topPlayer.name, topPlayer.gold), 1, 3)
   end
 
   player:GossipSendMenu(menuIds, creature)
