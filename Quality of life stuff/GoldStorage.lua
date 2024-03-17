@@ -1,12 +1,10 @@
+local npcEntry = 2118 -- The entry of the NPC
 
-local npcEntry = 1198 -- The entry of the NPC
 
-
- -------------------------------
-
+-------------------------------
 CharDBQuery(
-  "CREATE TABLE IF NOT EXISTS `custom_gold_storage` (`guid` int(11) NOT NULL, `gold` int(11) NOT NULL, PRIMARY KEY (`guid`)) ENGINE=InnoDB DEFAULT CHARSET=utf8;")
-
+  "CREATE TABLE IF NOT EXISTS `custom_gold_storage` (`guid` int(11) NOT NULL, `name` varchar(255) NOT NULL, `account` int(11) NOT NULL, `gold` int(11) NOT NULL, PRIMARY KEY (`guid`)) ENGINE=InnoDB DEFAULT CHARSET=utf8;"
+)
 
 -- Function to store gold
 local function storeGold(player, amount)
@@ -22,9 +20,11 @@ local function storeGold(player, amount)
   end
 
   local guid = player:GetGUIDLow()
+  local playerName = player:GetName()
+  local accountId = player:GetAccountId()
   local query = string.format(
-    "INSERT INTO `custom_gold_storage` (`guid`, `gold`) VALUES (%d, %d) ON DUPLICATE KEY UPDATE `gold` = `gold` + %d;",
-    guid, amount, amount)
+    "INSERT INTO `custom_gold_storage` (`guid`, `name`, `account`, `gold`) VALUES (%d, '%s', %d, %d) ON DUPLICATE KEY UPDATE `gold` = `gold` + %d, `name` = '%s', `account` = %d;",
+    guid, playerName, accountId, amount, amount, playerName, accountId)
   CharDBQuery(query)
 
   player:ModifyMoney(-amount * 10000)
@@ -39,6 +39,7 @@ local function withdrawGold(player, amount)
 
   player:ModifyMoney(amount * 10000)
 end
+
 -- Function to check balance
 local function checkBalance(player)
   local guid = player:GetGUIDLow()
@@ -53,16 +54,16 @@ local function checkBalance(player)
 end
 
 -- Function to display top 5 players with most gold
-local function displayTop5(player)
-  local query = "SELECT `guid`, `gold` FROM `custom_gold_storage` ORDER BY `gold` DESC LIMIT 5;"
+local function displayTop5()
+  local query = "SELECT `name`, `gold` FROM `custom_gold_storage` ORDER BY `gold` DESC LIMIT 5;"
   local result = CharDBQuery(query)
   local topPlayers = {}
   if result then
     for i = 1, result:GetRowCount() do
-      local guid = result:GetUInt32(0)
-      local name = GetPlayerByGUID(guid):GetName()
+      local playerName = result:GetString(0)
       local gold = result:GetUInt32(1)
-      table.insert(topPlayers, { name = name, gold = gold })
+      print(playerName, gold)
+      table.insert(topPlayers, { name = playerName, gold = gold })
       result:NextRow()
     end
   end
@@ -78,12 +79,14 @@ local function helloOnVendor(event, player, creature)
   player:GossipSetText(string.format("You have %d gold in your account.", checkBalance(player)))
   player:GossipMenuAddItem(7, "I would like to store my gold.", 1, 1, true)
   player:GossipMenuAddItem(7, "I would like to withdraw my gold.", 1, 2, true)
-  player:GossipMenuAddItem(0, "-------------------------------------------", 1,3)
-  
-  local topPlayers = displayTop5(player)
-  for i, playerInfo in ipairs(topPlayers) do
-    player:GossipMenuAddItem(0, string.format("%s has %d gold.", playerInfo.name, playerInfo.gold), 0, 0)
+  player:GossipMenuAddItem(0, "-------------------------------------------", 1, 3)
+print("helloOnVendor")
+  local topPlayers = displayTop5()
+  for i, topPlayer in ipairs(topPlayers) do
+    print(topPlayer.name, topPlayer.gold)
+    player:GossipMenuAddItem(7, string.format("%d. %s - %d gold", i, topPlayer.name, topPlayer.gold), 1, 3, true)
   end
+
   player:GossipSendMenu(menuIds, creature)
 end
 
