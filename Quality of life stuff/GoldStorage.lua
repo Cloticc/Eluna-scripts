@@ -79,7 +79,7 @@ local function helloOnVendor(event, player, creature)
   player:GossipSetText(string.format("You have %d gold in your account.", checkBalance(player)))
   player:GossipMenuAddItem(7, "I would like to store my gold.", 1, 1, true)
   player:GossipMenuAddItem(7, "I would like to withdraw my gold.", 1, 2, true)
-  player:GossipMenuAddItem(0, "-------------------------------------------", 1, 3)
+  player:GossipMenuAddItem(0, "Leaderboard", 1, 3)
 print("helloOnVendor")
   local topPlayers = displayTop5()
   for i, topPlayer in ipairs(topPlayers) do
