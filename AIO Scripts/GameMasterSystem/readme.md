@@ -7,6 +7,7 @@ Require that you have dbc files inside the db.
 
 ## Installation
 
+if you have issue adding dbc to db try use [stoneharry](https://github.com/stoneharry/WoW-Spell-Editor) worked for me
 put the folder in you server lua_scripts/AIO_Server folder the "gameMasterClient.lua" and "gameMasterServer.lua"
 
 ## Visual Guide
