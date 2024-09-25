@@ -25,3 +25,4 @@ lua_scripts/
 ```
 
 ![](src/assets/2024-09-25-14-18-30.png)
+[video](https://streamable.com/e76v5t)
