@@ -5,8 +5,70 @@ local GameMasterSystem = AIO.AddHandlers("GameMasterSystem", {})
 
 -- configuration
 local config = {
-    debug = false,
-    defaultPageSize = 15
+    debug = true,
+    defaultPageSize = 100,
+
+    removeFromWorld = true
+}
+
+-- Mapping of NPC type names to their corresponding type IDs
+local npcTypes = {
+    ["none"] = 0,
+    ["beast"] = 1,
+    ["dragonkin"] = 2,
+    ["demon"] = 3,
+    ["elemental"] = 4,
+    ["giant"] = 5,
+    ["undead"] = 6,
+    ["humanoid"] = 7,
+    ["critter"] = 8,
+    ["mechanical"] = 9,
+    ["not specified"] = 10,
+    ["totem"] = 11,
+    ["non-combat pet"] = 12,
+    ["gas cloud"] = 13,
+    ["wild pet"] = 14,
+    ["aberration"] = 15
+}
+
+-- Mapping of GameObject type names to their corresponding type IDs
+local gameObjectTypes = {
+    ["door"] = 0,
+    ["button"] = 1,
+    ["questgiver"] = 2,
+    ["chest"] = 3,
+    ["binder"] = 4,
+    ["generic"] = 5,
+    ["trap"] = 6,
+    ["chair"] = 7,
+    ["spell focus"] = 8,
+    ["text"] = 9,
+    ["goober"] = 10,
+    ["transport"] = 11,
+    ["areadamage"] = 12,
+    ["camera"] = 13,
+    ["map object"] = 14,
+    ["mo transport"] = 15,
+    ["duel arbiter"] = 16,
+    ["fishingnode"] = 17,
+    ["summoning ritual"] = 18,
+    ["mailbox"] = 19,
+    ["do not use"] = 20,
+    ["guardpost"] = 21,
+    ["spellcaster"] = 22,
+    ["meetingstone"] = 23,
+    ["flagstand"] = 24,
+    ["fishinghole"] = 25,
+    ["flagdrop"] = 26,
+    ["mini game"] = 27,
+    ["do not use 2"] = 28,
+    ["capture point"] = 29,
+    ["aura generator"] = 30,
+    ["dungeon difficulty"] = 31,
+    ["barber chair"] = 32,
+    ["destructible_building"] = 33,
+    ["guild bank"] = 34,
+    ["trapdoor"] = 35
 }
 
 -- Function to escape special characters in a string
@@ -28,6 +90,7 @@ local function debugMessage(...)
     end
 end
 
+-- Function to validate the page size
 local function validatePageSize(pageSize)
     local minPageSize = 10
     local maxPageSize = 500
@@ -40,19 +103,179 @@ local function validatePageSize(pageSize)
     end
 end
 
+-- Function to validate the sort order
+local function validateSortOrder(order)
+    local validOrders = {
+        ASC = true,
+        DESC = true
+    }
+    return validOrders[order:upper()] and order:upper() or "ASC"
+end
+
+-- Function to fetch model data from the SQL tables
+-- function GameMasterSystem.getModelDataNpc(player, modelId)
+--     local query = string.format("SELECT * FROM creaturedisplayinfo WHERE ModelID = %d", modelId)
+--     local result = WorldDBQuery(query)
+--     if result then
+--         local data = {
+--             modelId = result:GetUInt32(0),
+--             texture1 = result:GetString(6),
+--             texture2 = result:GetString(7),
+--             texture3 = result:GetString(8),
+--             portraitTexture = result:GetString(9)
+--         }
+--         AIO.Handle(player, "GameMasterSystem", "receiveModelDataNpc", data)
+--     else
+--         player:SendBroadcastMessage("Error: Model data not found for ModelID: " .. modelId)
+--     end
+-- end
+
 -- local npcData = {}
 
+local queries = {
+    TrinityCore = {
+        loadCreatureDisplays = function()
+            return [[
+                SELECT `entry`, `name`, `subname`, `IconName`, `type_flags`, `type`, `family`, `rank`, `KillCredit1`, `KillCredit2`, `HealthModifier`, `ManaModifier`, `RacialLeader`, `MovementType`, `modelId1`, `modelId2`, `modelId3`, `modelId4` 
+                FROM `creature_template`
+            ]]
+        end,
+        npcData = function(sortOrder, pageSize, offset)
+            return string.format([[ 
+                SELECT entry, modelid1, modelid2, modelid3, modelid4, name, subname, type 
+                FROM creature_template 
+                WHERE modelid1 != 0 OR modelid2 != 0 OR modelid3 != 0 OR modelid4 != 0 
+                ORDER BY entry %s
+                LIMIT %d OFFSET %d;
+            ]], sortOrder, pageSize, offset)
+        end,
+        gobData = function(sortOrder, pageSize, offset)
+            return string.format([[ 
+            SELECT g.entry, g.displayid, g.name, m.ModelName 
+            FROM gameobject_template g 
+            LEFT JOIN gameobjectdisplayinfo m ON g.displayid = m.ID 
+            ORDER BY g.entry %s
+            LIMIT %d OFFSET %d;
+            ]], sortOrder, pageSize, offset)
+        end,
+        spellData = function(sortOrder, pageSize, offset)
+            return string.format([[ 
+            SELECT id, spellName0, spellDescription0, spellToolTip0 
+            FROM spell 
+            ORDER BY id %s
+            LIMIT %d OFFSET %d;
+            ]], sortOrder, pageSize, offset)
+        end,
+        searchNpcData = function(query, typeId, sortOrder, pageSize, offset)
+            return string.format([[ 
+                SELECT entry, modelid1, modelid2, modelid3, modelid4, name, subname, type
+                FROM creature_template 
+                WHERE name LIKE '%%%s%%' OR subname LIKE '%%%s%%' OR entry LIKE '%%%s%%' %s
+                ORDER BY entry %s
+                LIMIT %d OFFSET %d;
+            ]], query, query, query, typeId and string.format("OR type = %d", typeId) or "", sortOrder, pageSize,
+                offset * pageSize)
+        end,
+        searchGobData = function(query, typeId, sortOrder, pageSize, offset)
+            return string.format([[ 
+                SELECT g.entry, g.displayid, g.name, g.type, m.ModelName 
+                FROM gameobject_template g 
+                LEFT JOIN gameobjectdisplayinfo m ON g.displayid = m.ID 
+                WHERE g.name LIKE '%%%s%%' OR g.entry LIKE '%%%s%%' %s
+                ORDER BY g.entry %s
+                LIMIT %d OFFSET %d;
+            ]], query, query, typeId and string.format("OR g.type = %d", typeId) or "", sortOrder, pageSize,
+                offset * pageSize)
+        end,
+        searchSpellData = function(query, sortOrder, pageSize, offset)
+            return string.format([[ 
+                SELECT id, spellName0, spellDescription0, spellToolTip0 
+                FROM spell 
+                WHERE spellName0 LIKE '%%%s%%' OR id LIKE '%%%s%%' 
+                ORDER BY id %s
+                LIMIT %d OFFSET %d;
+            ]], query, query, sortOrder, pageSize, offset * pageSize)
+        end
+    },
+    AzerothCore = {
+        loadCreatureDisplays = function()
+            return [[
+                SELECT ct.`entry`, ct.`name`, ct.`subname`, ct.`IconName`, ct.`type_flags`, ct.`type`, ct.`family`, ct.`rank`, ct.`KillCredit1`, ct.`KillCredit2`, ct.`HealthModifier`, ct.`ManaModifier`, ct.`RacialLeader`, ct.`MovementType`, ctm.`CreatureDisplayID` 
+                FROM `creature_template` ct 
+                LEFT JOIN `creature_template_model` ctm ON ct.`entry` = ctm.`CreatureID`
+            ]]
+        end,
+        npcData = function(sortOrder, pageSize, offset)
+            return string.format([[ 
+                SELECT ct.entry, ctm.CreatureDisplayID, ct.name, ct.subname, ct.type 
+                FROM creature_template ct
+                LEFT JOIN creature_template_model ctm ON ct.entry = ctm.CreatureID
+                ORDER BY ct.entry %s
+                LIMIT %d OFFSET %d;
+            ]], sortOrder, pageSize, offset)
+        end,
+        gobData = function(sortOrder, pageSize, offset)
+            return string.format([[ 
+                SELECT g.entry, g.displayId, g.name, g.type, g.size, m.ModelName 
+                FROM gameobject_template g 
+                LEFT JOIN gameobjectdisplayinfo m ON g.displayId = m.ID 
+                ORDER BY g.entry %s
+                LIMIT %d OFFSET %d;
+            ]], sortOrder, pageSize, offset)
+        end,
+        spellData = function(sortOrder, pageSize, offset)
+            return string.format([[ 
+            SELECT id, spellName0, spellDescription0, spellToolTip0 
+            FROM spell 
+            ORDER BY id %s
+            LIMIT %d OFFSET %d;
+            ]], sortOrder, pageSize, offset)
+        end,
+        searchNpcData = function(query, typeId, sortOrder, pageSize, offset)
+            return string.format([[ 
+                SELECT ct.entry, ctm.CreatureDisplayID, ct.name, ct.subname, ct.type
+                FROM creature_template ct
+                LEFT JOIN creature_template_model ctm ON ct.entry = ctm.CreatureID
+                WHERE ct.name LIKE '%%%s%%' OR ct.subname LIKE '%%%s%%' OR ct.entry LIKE '%%%s%%' %s
+                ORDER BY ct.entry %s
+                LIMIT %d OFFSET %d;
+            ]], query, query, query, typeId and string.format("OR ct.type = %d", typeId) or "", sortOrder, pageSize,
+            offset)
+        end,
+        searchGobData = function(query, typeId, sortOrder, pageSize, offset)
+            return string.format([[ 
+                SELECT g.entry, g.displayId, g.name, g.type, g.size, m.ModelName 
+                FROM gameobject_template g 
+                LEFT JOIN gameobjectdisplayinfo m ON g.displayId = m.ID 
+                WHERE g.name LIKE '%%%s%%' OR g.entry LIKE '%%%s%%' %s
+                ORDER BY g.entry %s
+                LIMIT %d OFFSET %d;
+            ]], query, query, typeId and string.format("OR g.type = %d", typeId) or "", sortOrder, pageSize, offset)
+        end,
+        searchSpellData = function(query, sortOrder, pageSize, offset)
+            return string.format([[ 
+                SELECT id, spellName0, spellDescription0, spellToolTip0 
+                FROM spell 
+                WHERE spellName0 LIKE '%%%s%%' OR id LIKE '%%%s%%' 
+                ORDER BY id %s
+                LIMIT %d OFFSET %d;
+            ]], query, query, sortOrder, pageSize, offset * pageSize)
+        end
+    }
+}
+
+-- Function to get the appropriate query based on the core name
+local function getQuery(coreName, queryType)
+    -- debugMessage("coreName: ", coreName , "queryType: ", queryType)
+    return queries[coreName] and queries[coreName][queryType] or nil
+end
+
 -- Function to query NPC data from the database with pagination
-function GameMasterSystem.getNPCData(player, offset, pageSize)
+function GameMasterSystem.getNPCData(player, offset, pageSize, sortOrder)
     offset = offset or 0
     pageSize = validatePageSize(pageSize or config.defaultPageSize)
-
-    local query = string.format([[ 
-        SELECT entry, modelid1, modelid2, modelid3, modelid4, name, subname, type 
-        FROM creature_template 
-        WHERE modelid1 != 0 OR modelid2 != 0 OR modelid3 != 0 OR modelid4 != 0 
-        LIMIT %d OFFSET %d;
-    ]], pageSize, offset)
+    sortOrder = validateSortOrder(sortOrder or "DESC")
+    local query = getQuery(GetCoreName(), "npcData")(sortOrder, pageSize, offset)
 
     local result = WorldDBQuery(query)
     local npcData = {}
@@ -80,14 +303,21 @@ function GameMasterSystem.getNPCData(player, offset, pageSize)
 end
 
 -- Server-side handler to search NPC data
-function GameMasterSystem.searchNPCData(player, query, offset, pageSize)
+function GameMasterSystem.searchNPCData(player, query, offset, pageSize, sortOrder)
     query = escapeString(query) -- Escape special characters
-    local searchQuery = string.format([[ 
-        SELECT entry, modelid1, modelid2, modelid3, modelid4, name, subname, type
-        FROM creature_template 
-        WHERE name LIKE '%%%s%%' OR subname LIKE '%%%s%%' OR entry LIKE '%%%s%%'
-        LIMIT %d OFFSET %d;
-    ]], query, query, query, pageSize, offset * pageSize)
+    local typeId = nil
+    sortOrder = validateSortOrder(sortOrder or "DESC")
+
+    local typeQuery = query:match("^%((.-)%)$")
+    if typeQuery then
+        typeId = npcTypes[typeQuery]
+        if not typeId then
+            player:SendBroadcastMessage("Invalid NPC type: " .. typeQuery)
+            return
+        end
+    end
+
+    local searchQuery = getQuery(GetCoreName(), "searchNpcData")(query, typeId, sortOrder, pageSize, offset)
 
     local result = WorldDBQuery(searchQuery)
     local npcData = {}
@@ -113,36 +343,13 @@ function GameMasterSystem.searchNPCData(player, query, offset, pageSize)
     AIO.Handle(player, "GameMasterSystem", "receiveNPCData", npcData, offset, pageSize, hasMoreData)
 end
 
--- Function to fetch model data from the SQL tables
-function GameMasterSystem.getModelDataNpc(player, modelId)
-    local query = string.format("SELECT * FROM creaturedisplayinfo WHERE ModelID = %d", modelId)
-    local result = WorldDBQuery(query)
-    if result then
-        local data = {
-            modelId = result:GetUInt32(0),
-            texture1 = result:GetString(6),
-            texture2 = result:GetString(7),
-            texture3 = result:GetString(8),
-            portraitTexture = result:GetString(9)
-        }
-        AIO.Handle(player, "GameMasterSystem", "receiveModelDataNpc", data)
-    else
-        player:SendBroadcastMessage("Error: Model data not found for ModelID: " .. modelId)
-    end
-end
-
-
 -- Function to query GameObject data from the database with pagination
-function GameMasterSystem.getGameObjectData(player, offset, pageSize)
+function GameMasterSystem.getGameObjectData(player, offset, pageSize, sortOrder)
     offset = offset or 0
     pageSize = validatePageSize(pageSize or config.defaultPageSize)
+    sortOrder = validateSortOrder(sortOrder or "DESC")
 
-    local query = string.format([[ 
-        SELECT g.entry, g.displayid, g.name, m.ModelName 
-        FROM gameobject_template g 
-        LEFT JOIN gameobjectdisplayinfo m ON g.displayid = m.ID 
-        LIMIT %d OFFSET %d;
-    ]], pageSize, offset)
+    local query = getQuery(GetCoreName(), "gobData")(sortOrder, pageSize, offset)
 
     local result = WorldDBQuery(query)
     local gobData = {}
@@ -157,8 +364,6 @@ function GameMasterSystem.getGameObjectData(player, offset, pageSize)
             }
             table.insert(gobData, gob)
         until not result:NextRow()
-    else
-        debugMessage("No results returned from query")
     end
 
     local hasMoreData = #gobData == pageSize
@@ -171,16 +376,23 @@ function GameMasterSystem.getGameObjectData(player, offset, pageSize)
 end
 
 -- Server-side handler to search GameObject data
-function GameMasterSystem.searchGameObjectData(player, query, offset, pageSize)
+function GameMasterSystem.searchGameObjectData(player, query, offset, pageSize, sortOrder)
     query = escapeString(query) -- Escape special characters
-    local searchQuery = string.format([[ 
-        SELECT g.entry, g.displayid, g.name, m.ModelName 
-        FROM gameobject_template g 
-        LEFT JOIN gameobjectdisplayinfo m ON g.displayid = m.ID 
-        WHERE g.name LIKE '%%%s%%' OR g.entry LIKE '%%%s%%' 
-        LIMIT %d OFFSET %d;
-    ]], query, query, pageSize, offset * pageSize)
+    local typeId = nil
+    sortOrder = validateSortOrder(sortOrder or "DESC")
 
+    -- Check if the query is enclosed in parentheses
+    local typeQuery = query:match("^%((.-)%)$")
+    if typeQuery then
+        typeQuery = typeQuery:lower() -- Convert the type query to lowercase
+        typeId = gameObjectTypes[typeQuery] -- Get the type ID from the extracted type name
+        if not typeId then
+            player:SendBroadcastMessage("Invalid GameObject type: " .. typeQuery)
+            return
+        end
+    end
+
+    local searchQuery = getQuery(GetCoreName(), "searchGobData")(query, typeId, sortOrder, pageSize, offset)
     local result = WorldDBQuery(searchQuery)
     local gobData = {}
 
@@ -190,7 +402,8 @@ function GameMasterSystem.searchGameObjectData(player, query, offset, pageSize)
                 entry = result:GetUInt32(0),
                 displayid = result:GetUInt32(1),
                 name = result:GetString(2),
-                modelName = result:GetString(3)
+                type = result:GetUInt32(3),
+                modelName = result:GetString(4)
             }
             table.insert(gobData, gob)
         until not result:NextRow()
@@ -206,14 +419,12 @@ function GameMasterSystem.searchGameObjectData(player, query, offset, pageSize)
 end
 
 -- Server-side handler to get the spell data for tab3
-function GameMasterSystem.getSpellData(player, offset, pageSize)
+function GameMasterSystem.getSpellData(player, offset, pageSize, sortOrder)
     offset = offset or 0
     pageSize = validatePageSize(pageSize or config.defaultPageSize)
-    local query = string.format([[ 
-        SELECT id, spellName0, spellDescription0, spellToolTip0 
-        FROM spell 
-        LIMIT %d OFFSET %d;
-    ]], pageSize, offset)
+    sortOrder = validateSortOrder(sortOrder or "DESC")
+
+    local query = getQuery(GetCoreName(), "spellData")(sortOrder, pageSize, offset)
 
     local result = WorldDBQuery(query)
     local spellData = {}
@@ -239,47 +450,12 @@ function GameMasterSystem.getSpellData(player, offset, pageSize)
     end
 end
 
--- -- Server-side handler to get the spell_dbc data
--- function GameMasterSystem.getSpellDBCData(player, offset, pageSize)
---     offset = offset or 0
---     pageSize = validatePageSize(pageSize or config.defaultPageSize)
---     local query = string.format([[ 
---         SELECT Id, SpellName 
---         FROM spell_dbc 
---         LIMIT %d OFFSET %d;
---     ]], pageSize, offset)
-
---     local result = WorldDBQuery(query)
---     local spellDBCData = {}
-
---     if result then
---         repeat
---             local spell = {
---                 spellID = result:GetUInt32(0),
---                 spellName = result:GetString(1)
---             }
---             table.insert(spellDBCData, spell)
---         until not result:NextRow()
---     end
-
---     local hasMoreData = #spellDBCData == pageSize
-
---     if #spellDBCData == 0 then
---         player:SendBroadcastMessage("No spell_dbc data available for the given page.")
---     else
---         AIO.Handle(player, "GameMasterSystem", "receiveSpellDBCData", spellDBCData, offset, pageSize, hasMoreData)
---     end
--- end
-
 -- Server-side handler to search spell data
-function GameMasterSystem.searchSpellData(player, query, offset, pageSize)
+function GameMasterSystem.searchSpellData(player, query, offset, pageSize, sortOrder)
     query = escapeString(query) -- Escape special characters
-    local searchQuery = string.format([[ 
-        SELECT id, spellName0, spellDescription0, spellToolTip0 
-        FROM spell 
-        WHERE spellName0 LIKE '%%%s%%' OR id LIKE '%%%s%%' 
-        LIMIT %d OFFSET %d;
-    ]], query, query, pageSize, offset * pageSize)
+    sortOrder = validateSortOrder(sortOrder or "DESC")
+
+    local searchQuery = getQuery(GetCoreName(), "searchSpellData")(query, sortOrder, pageSize, offset)
 
     local result = WorldDBQuery(searchQuery)
     local spellData = {}
@@ -304,39 +480,6 @@ function GameMasterSystem.searchSpellData(player, query, offset, pageSize)
         AIO.Handle(player, "GameMasterSystem", "receiveSpellData", spellData, offset, pageSize, hasMoreData)
     end
 end
-
--- -- Server-side handler to search spell_dbc data
--- function GameMasterSystem.searchSpellDBCData(player, query, offset, pageSize)
---     query = escapeString(query) -- Escape special characters
---     local searchQuery = string.format([[ 
---         SELECT Id, SpellName 
---         FROM spell_dbc 
---         WHERE SpellName LIKE '%%%s%%' OR Id LIKE '%%%s%%' 
---         LIMIT %d OFFSET %d;
---     ]], query, query, pageSize, offset * pageSize)
-
---     local result = WorldDBQuery(searchQuery)
---     local spellDBCData = {}
-
---     if result then
---         repeat
---             local spell = {
---                 spellID = result:GetUInt32(0),
---                 spellName = result:GetString(1)
---             }
---             table.insert(spellDBCData, spell)
---         until not result:NextRow()
---     end
-
---     local hasMoreData = #spellDBCData == pageSize
-
---     if #spellDBCData == 0 then
---         player:SendBroadcastMessage("No spell_dbc data found for the given query and page.")
---     else
---         AIO.Handle(player, "GameMasterSystem", "receiveSpellDBCData", spellDBCData, offset, pageSize, hasMoreData)
---     end
--- end
-
 
 ----------------------------------------------------------
 
@@ -379,7 +522,8 @@ function GameMasterSystem.spawnNpcEntity(player, entry)
     -- local spawnedCreature = player:SpawnCreature(entry, x, y, z, oppositeAngle)
 
     -- Replaced with PerformIngameSpawn
-    local spawnedCreature = PerformIngameSpawn(1, entry, mapId, instanceId, x, y, z, oppositeAngle, save, durorresptime, phase)
+    local spawnedCreature = PerformIngameSpawn(1, entry, mapId, instanceId, x, y, z, oppositeAngle, save, durorresptime,
+        phase)
 
     if not spawnedCreature then
         debugMessage("Failed to spawn entity with entry:", entry)
@@ -396,7 +540,7 @@ function GameMasterSystem.deleteNpcEntity(player, entry)
 
     local creature = player:GetNearestCreature(100, entry)
     if creature then
-        creature:RemoveFromWorld(false)
+        creature:RemoveFromWorld(config.removeFromWorld)
     end
 
 end
@@ -436,10 +580,10 @@ function GameMasterSystem.spawnGameObject(player, entry)
 
     -- Commented out the old SummonGameObject method
     -- local gob = player:SummonGameObject(entry, x, y, z, oppositeAngle, respawnTime)
-    
+
     -- Replaced with PerformIngameSpawn
     local gob = PerformIngameSpawn(2, entry, mapId, instanceId, x, y, z, oppositeAngle, save, durorresptime, phase)
-    
+
     sendSuccessMessage(player, "spawn request for GameObject with entry: " .. entry)
     if not gob then
         debugMessage("Failed to spawn GameObject with entry:", entry)
@@ -457,7 +601,7 @@ function GameMasterSystem.deleteGameObjectEntity(player, entry)
     local gob = player:GetNearObject(100, 3, entry)
     sendSuccessMessage(player, "Received delete request for GameObject with entry: " .. entry)
     if gob then
-        gob:RemoveFromWorld(false)
+        gob:RemoveFromWorld(config.removeFromWorld)
     end
 
 end
@@ -477,7 +621,7 @@ function GameMasterSystem.spawnAndDeleteNpcEntity(player, entry)
     local spawnedCreature = player:SpawnCreature(entry, x, y, z, oppositeAngle)
 
     if spawnedCreature and spawnedCreature:IsInWorld() then
-        spawnedCreature:RemoveFromWorld(false)
+        spawnedCreature:RemoveFromWorld(config.removeFromWorld)
         spawnedCreature:SetFaction(player:GetFaction())
     else
         sendErrorMessage(player, "Failed to spawn entity with entry: " .. entry)
@@ -549,11 +693,7 @@ local function LoadCreatureDisplays()
     local query = nil
     local coreName = GetCoreName()
 
-    if coreName == "TrinityCore" then
-        query = "SELECT `entry`, `name`, `subname`, `IconName`, `type_flags`, `type`, `family`, `rank`, `KillCredit1`, `KillCredit2`, `HealthModifier`, `ManaModifier`, `RacialLeader`, `MovementType`, `modelId1`, `modelId2`, `modelId3`, `modelId4` FROM `creature_template`"
-    elseif coreName == "AzerothCore" then
-        query = "SELECT `entry`, `name`, `subname`, `IconName`, `type_flags`, `type`, `family`, `rank`, `KillCredit1`, `KillCredit2`, `HealthModifier`, `ManaModifier`, `RacialLeader`, `MovementType` FROM `creature_template`"
-    end
+    local query = getQuery(coreName, "loadCreatureDisplays")()
 
     local result = WorldDBQuery(query)
 
@@ -569,30 +709,14 @@ local function LoadCreatureDisplays()
             end
 
             local entry = result:GetUInt32(0)
-            local creatureDisplay = {
-                entry,
-                result:GetString(1),
-                result:GetString(2),
-                result:GetString(3),
-                result:GetUInt32(4),
-                result:GetUInt32(5),
-                result:GetUInt32(6),
-                result:GetUInt32(7),
-                result:GetUInt32(8),
-                result:GetUInt32(9),
-                model1,
-                model2,
-                model3,
-                model4,
-                result:GetFloat(10),
-                result:GetFloat(11),
-                result:GetUInt32(12),
-                result:GetUInt32(13)
-            }
+            local creatureDisplay = {entry, result:GetString(1), result:GetString(2), result:GetString(3),
+                                     result:GetUInt32(4), result:GetUInt32(5), result:GetUInt32(6), result:GetUInt32(7),
+                                     result:GetUInt32(8), result:GetUInt32(9), model1, model2, model3, model4,
+                                     result:GetFloat(10), result:GetFloat(11), result:GetUInt32(12),
+                                     result:GetUInt32(13)}
 
             if coreName == "AzerothCore" then
                 -- Adjust the indices for AzerothCore since it has fewer columns
-                creatureDisplay[11] = nil
                 creatureDisplay[12] = nil
                 creatureDisplay[13] = nil
                 creatureDisplay[14] = nil

@@ -11,20 +11,11 @@ local gobData = {}
 local spellData = {}
 local currentSearchQuery = ""
 
-local contentFrames, mainFrame, currentOffset, activeTab, refreshButton, nextButton, prevButton
+local contentFrames, mainFrame, currentOffset, activeTab, refreshButton, nextButton, prevButton, sortOrder
 -- Configuration
 local config = {
-    debug = false,
-    tabs = {{
-        name = "Creature",
-        content = "Creature Content"
-    }, {
-        name = "Objects",
-        content = "Game Objects"
-    }, {
-        name = "Spell",
-        content = "Spell Content"
-    }},
+    debug = true,
+
     bgWidth = 800,
     bgHeight = 600,
 
@@ -34,6 +25,70 @@ local config = {
 
 }
 
+local sortOptions = {{
+    text = "Ascending",
+    value = "ASC"
+}, {
+    text = "Descending",
+    value = "DESC"
+} -- Add more options here in the future
+}
+-- Define menu items
+local menuItems = {{
+    text = "Creature",
+    func = function()
+        activeTab = 1
+        currentOffset = 0
+        handleAIO(activeTab, currentSearchQuery, currentOffset, config.pageSize, sortOrder)
+        config.showTab(contentFrames, activeTab)
+    end
+}, {
+    text = "Objects",
+    func = function()
+        activeTab = 2
+        currentOffset = 0
+        handleAIO(activeTab, currentSearchQuery, currentOffset, config.pageSize, sortOrder)
+        config.showTab(contentFrames, activeTab)
+    end
+}, {
+    text = "Spell",
+    func = function()
+        activeTab = 3
+        currentOffset = 0
+        handleAIO(activeTab, currentSearchQuery, currentOffset, config.pageSize, sortOrder)
+        config.showTab(contentFrames, activeTab)
+    end
+}, {
+    text = "item here later",
+    hasArrow = true,
+    menuList = 4,
+    subItems = {{
+        text = "Item 1",
+        func = function()
+            print("Item 1 clicked")
+        end
+    }, {
+        text = "Item 2",
+        func = function()
+            print("Item 2 clicked")
+        end
+    }, {
+        text = "Sub Menu 3",
+        hasArrow = true,
+        menuList = 5,
+        subItems = {{
+            text = "Sub Item 1",
+            func = function()
+                print("Sub Item 1 clicked")
+            end
+        }, {
+            text = "Sub Item 2",
+            func = function()
+                print("Sub Item 2 clicked")
+            end
+        }}
+    }}
+}}
 -- Define handlers table
 local handlers = {
     [1] = {
@@ -50,12 +105,12 @@ local handlers = {
     }
 }
 -- Utility function to handle AIO calls
-local function handleAIO(activeTab, query, offset, pageSize)
+function handleAIO(activeTab, query, offset, pageSize, sortOrder)
     local handler = handlers[activeTab]
     if query == "" then
-        AIO.Handle("GameMasterSystem", handler.get, offset, pageSize)
+        AIO.Handle("GameMasterSystem", handler.get, offset, pageSize, sortOrder)
     else
-        AIO.Handle("GameMasterSystem", handler.search, query, offset, pageSize)
+        AIO.Handle("GameMasterSystem", handler.search, query, offset, pageSize, sortOrder)
     end
 end
 
@@ -137,7 +192,7 @@ local function createContentFrames(parent, tabConfig)
 end
 
 -- Function to show the selected tab's content
-local function showTab(frames, index)
+function config.showTab(frames, index)
     activeTab = index
     for i, frame in ipairs(frames) do
         if i == index then
@@ -158,6 +213,7 @@ local function refreshModels()
                 AIO.Handle("GameMasterSystem", "spawnAndDeleteNpcEntity", npc.entry)
             end
         end
+        -- Add a delay before refreshing NPC cards
         C_Timer.After(0.5, function()
             config.updateNpcCards(npcData)
         end)
@@ -167,6 +223,7 @@ local function refreshModels()
                 AIO.Handle("GameMasterSystem", "spawnAndDeleteGameObjectEntity", gob.entry)
             end
         end
+        -- Add a delay before refreshing GameObject cards
         C_Timer.After(0.5, function()
             config.updateGameObjectCards(gobData)
         end)
@@ -176,6 +233,7 @@ local function refreshModels()
                 AIO.Handle("GameMasterSystem", "refreshSpellEntity", spell.entry)
             end
         end
+        -- Add a delay before refreshing Spell cards
         C_Timer.After(0.5, function()
             config.updateSpellCards(spellData)
         end)
@@ -299,24 +357,72 @@ function config.updateSpellCards(filteredData)
     tab3ContentFrame.cards = generateSpellCards(tab3ContentFrame, filteredData)
 end
 
+-- Global variable to keep track of whether there are more pages available
+local hasMoreData = false
+
+-- Function to update pagination buttons based on data availability
+local function updatePaginationButtons(hasMoreDataFlag)
+    hasMoreData = hasMoreDataFlag -- Update the global variable
+
+    if hasMoreData then
+        nextButton:Enable()
+    else
+        nextButton:Disable()
+    end
+
+    if currentOffset > 0 then
+        prevButton:Enable()
+    else
+        prevButton:Disable()
+    end
+end
+
+-- -- Function to enable mouse wheel scrolling with increased jump
+-- local function enableMouseWheelScrolling(frame)
+--     frame:EnableMouseWheel(true)
+--     frame:SetScript("OnMouseWheel", function(self, delta)
+
+--         -- Determine jump size based on Shift key state still kinda broken if i change the jump size 1 to something else it will not work properly
+--         local jump = IsShiftKeyDown() and 100 or 1
+
+--         if delta > 0 then
+--             currentOffset = math.max(0, currentOffset - jump)
+--         else
+--             if hasMoreData then
+--                 currentOffset = currentOffset + jump
+--             end
+--         end
+
+--         debugMessage("Current offset:", currentOffset)
+
+--         handleAIO(activeTab, currentSearchQuery, currentOffset, config.pageSize, sortOrder)
+--     end)
+-- end
+
 -- Function to enable mouse wheel scrolling with increased jump
 local function enableMouseWheelScrolling(frame)
     frame:EnableMouseWheel(true)
     frame:SetScript("OnMouseWheel", function(self, delta)
-        local jump = IsShiftKeyDown() and 250 or 10 -- Increase the jump to 100 rows if Shift is held, otherwise 5 rows
+     
+        -- Determine jump size based on Shift key state
+        local jump = IsShiftKeyDown() and 100 or 1
+
+        -- Update currentOffset based on mouse wheel direction
         if delta > 0 then
-            if currentOffset > 0 then
-                currentOffset = math.max(0, currentOffset - jump)
-                handleAIO(activeTab, currentSearchQuery, currentOffset, config.pageSize)
-            end
+            -- Scroll up
+            currentOffset = math.max(0, currentOffset - jump)
         else
-            if (activeTab == 1 and #npcData == config.pageSize and nextButton:IsEnabled()) or
-                (activeTab == 2 and #gobData == config.pageSize and nextButton:IsEnabled()) or
-                (activeTab == 3 and #spellData == config.pageSize and nextButton:IsEnabled()) then
+            -- Scroll down
+            if hasMoreData then
                 currentOffset = currentOffset + jump
-                handleAIO(activeTab, currentSearchQuery, currentOffset, config.pageSize)
             end
         end
+
+        -- Ensure currentOffset is within valid bounds
+        currentOffset = math.max(0, currentOffset)
+
+        -- Call handleAIO with updated offset
+        handleAIO(activeTab, currentSearchQuery, currentOffset, config.pageSize, sortOrder)
     end)
 end
 
@@ -331,7 +437,7 @@ local function createPaginationButtons(parent)
     nextButton:SetScript("OnClick", function()
         if nextButton:IsEnabled() then
             currentOffset = currentOffset + 1
-            handleAIO(activeTab, currentSearchQuery, currentOffset, config.pageSize)
+            handleAIO(activeTab, currentSearchQuery, currentOffset, config.pageSize, sortOrder)
         end
     end)
 
@@ -344,7 +450,7 @@ local function createPaginationButtons(parent)
     prevButton:SetScript("OnClick", function()
         if currentOffset > 0 then
             currentOffset = currentOffset - 1
-            handleAIO(activeTab, currentSearchQuery, currentOffset, config.pageSize)
+            handleAIO(activeTab, currentSearchQuery, currentOffset, config.pageSize, sortOrder)
         end
     end)
 
@@ -415,11 +521,12 @@ function GameMasterSystem.receiveNPCData(player, data, offset, pageSize, hasMore
     tab1ContentFrame.cards = generateNpcCards(tab1ContentFrame, npcData)
 
     currentOffset = offset
-    if hasMoreData then
-        nextButton:Enable()
-    else
-        nextButton:Disable()
-    end
+    -- if hasMoreData then
+    --     nextButton:Enable()
+    -- else
+    --     nextButton:Disable()
+    -- end
+    updatePaginationButtons(hasMoreData)
 end
 
 -- Handler to receive GameObject data from the server
@@ -441,11 +548,12 @@ function GameMasterSystem.receiveGameObjectData(player, data, offset, pageSize, 
     tab2ContentFrame.cards = generateCardsForGameObjects(tab2ContentFrame, gobData)
 
     currentOffset = offset
-    if hasMoreData then
-        nextButton:Enable()
-    else
-        nextButton:Disable()
-    end
+    -- if hasMoreData then
+    --     nextButton:Enable()
+    -- else
+    --     nextButton:Disable()
+    -- end
+    updatePaginationButtons(hasMoreData)
 end
 
 -- Handler to receive Spell data from the server
@@ -467,81 +575,50 @@ function GameMasterSystem.receiveSpellData(player, data, offset, pageSize, hasMo
     tab3ContentFrame.cards = generateSpellCards(tab3ContentFrame, spellData)
 
     currentOffset = offset
-    if hasMoreData then
-        nextButton:Enable()
-    else
-        nextButton:Disable()
-    end
+    -- if hasMoreData then
+    --     nextButton:Enable()
+    -- else
+    --     nextButton:Disable()
+    -- end
+    updatePaginationButtons(hasMoreData)
 end
 
--- Define menu items
-local menuItems = {
-    {
-        text = "Creature",
-        func = function()
-            activeTab = 1
-            currentOffset = 0
-            AIO.Handle("GameMasterSystem", "getNPCData", currentOffset, config.pageSize)
-            showTab(contentFrames, activeTab)
+-- Function to create the dropdown menu for sorting order
+local function createSortOrderDropdown(parent)
+    local dropdown = CreateFrame("Frame", "SortOrderDropdown", parent, "UIDropDownMenuTemplate")
+    dropdown:SetPoint("TOPLEFT", parent, "TOPLEFT", 165, -10)
+    local maxTextLength = 0
+    for _, option in ipairs(sortOptions) do
+        local textLength = string.len(option.text)
+        if textLength > maxTextLength then
+            maxTextLength = textLength
         end
-    },
-    {
-        text = "Objects",
-        func = function()
-            activeTab = 2
-            currentOffset = 0
-            AIO.Handle("GameMasterSystem", "getGameObjectData", currentOffset, config.pageSize)
-            showTab(contentFrames, activeTab)
+    end
+
+    local width = maxTextLength * 8
+    UIDropDownMenu_SetWidth(dropdown, width)
+    UIDropDownMenu_SetText(dropdown, "Sort Order")
+
+    local function OnClick(self)
+        sortOrder = self.value
+        UIDropDownMenu_SetSelectedValue(dropdown, self.value)
+        currentOffset = 0 -- Reset offset when sort order changes
+        handleAIO(activeTab, currentSearchQuery, currentOffset, config.pageSize, sortOrder)
+    end
+
+    local function initialize(self, level)
+        local info = UIDropDownMenu_CreateInfo()
+        for _, option in ipairs(sortOptions) do
+            info.text = option.text
+            info.value = option.value
+            info.func = OnClick
+            info.checked = (sortOrder == option.value)
+            UIDropDownMenu_AddButton(info, level)
         end
-    },
-    {
-        text = "Spell",
-        func = function()
-            activeTab = 3
-            currentOffset = 0
-            AIO.Handle("GameMasterSystem", "getSpellData", currentOffset, config.pageSize)
-            showTab(contentFrames, activeTab)
-        end
-    },
-    {
-        text = "item here later",
-        hasArrow = true,
-        menuList = 4,
-        subItems = {
-            {
-                text = "Item 1",
-                func = function()
-                    print("Item 1 clicked")
-                end
-            },
-            {
-                text = "Item 2",
-                func = function()
-                    print("Item 2 clicked")
-                end
-            },
-            {
-                text = "Sub Menu 3",
-                hasArrow = true,
-                menuList = 5,
-                subItems = {
-                    {
-                        text = "Sub Item 1",
-                        func = function()
-                            print("Sub Item 1 clicked")
-                        end
-                    },
-                    {
-                        text = "Sub Item 2",
-                        func = function()
-                            print("Sub Item 2 clicked")
-                        end
-                    }
-                }
-            }
-        }
-    }
-}
+    end
+
+    UIDropDownMenu_Initialize(dropdown, initialize)
+end
 
 -- Function to initialize the dropdown menu
 local function initializeDropdownMenu(frame, level, menuList)
@@ -578,7 +655,6 @@ local function initializeDropdownMenu(frame, level, menuList)
         end
     end
 end
-
 
 -- Function to calculate card dimensions based on mainFrame size
 local function calculateCardDimensions(parent)
@@ -837,11 +913,11 @@ local function createSearchInput(parent)
             currentSearchQuery = ""
             currentOffset = 0
             if activeTab == 1 then
-                AIO.Handle("GameMasterSystem", "getNPCData", currentOffset, config.pageSize)
+                AIO.Handle("GameMasterSystem", "getNPCData", currentOffset, config.pageSize, sortOrder)
             elseif activeTab == 2 then
-                AIO.Handle("GameMasterSystem", "getGameObjectData", currentOffset, config.pageSize)
+                AIO.Handle("GameMasterSystem", "getGameObjectData", currentOffset, config.pageSizem, sortOrder)
             elseif activeTab == 3 then
-                AIO.Handle("GameMasterSystem", "getSpellData", currentOffset, config.pageSize)
+                AIO.Handle("GameMasterSystem", "getSpellData", currentOffset, config.pageSize, sortOrder)
             end
         end
     end)
@@ -872,14 +948,14 @@ local function createSearchInput(parent)
         placeholderText:Show()
         currentSearchQuery = ""
         currentOffset = 0
-        handleAIO(activeTab, currentSearchQuery, currentOffset, config.pageSize)
+        handleAIO(activeTab, currentSearchQuery, currentOffset, config.pageSize, sortOrder)
     end)
 
     local function updateSearchResults()
         local query = searchBox:GetText()
         currentSearchQuery = query
         currentOffset = 0
-        handleAIO(activeTab, query, currentOffset, config.pageSize)
+        handleAIO(activeTab, query, currentOffset, config.pageSize, sortOrder)
     end
 
     searchBox:SetScript("OnTextChanged", function(self)
@@ -1076,28 +1152,15 @@ end
 local function initializeUI()
     mainFrame = createMainFrame()
     contentFrames = createContentFrames(mainFrame, menuItems)
-    -- for i, tabConfig in ipairs(config.tabs) do
-    --     local tab = createTab(mainFrame, tabConfig.name, i - 1, function()
-    --         showTab(contentFrames, i)
-    --         currentOffset = 0
-    --         handleAIO(i, "", currentOffset, config.pageSize)
-    --         if i == 1 then
-    --             refreshButton:Enable()
-    --         else
-    --             refreshButton:Disable()
-    --         end
-    --     end)
-    --     config.tabs[i].tab = tab
-    -- end
 
-    showTab(contentFrames, 1)
+    config.showTab(contentFrames, 1)
     currentOffset = 0
-    AIO.Handle("GameMasterSystem", "getNPCData", currentOffset, config.pageSize)
+    handleAIO(activeTab, currentSearchQuery, currentOffset, config.pageSize, sortOrder)
 
     createPaginationButtons(mainFrame)
     enableMouseWheelScrolling(mainFrame)
-    createSearchInput(mainFrame) -- Add search input field
-
+    createSearchInput(mainFrame)
+    createSortOrderDropdown(mainFrame)
     -- Add Refresh Button
     refreshButton = createRefreshButton(mainFrame)
 
@@ -1114,6 +1177,8 @@ SlashCmdList["GAMEMASTERUI"] = function(msg)
             mainFrame:ClearAllPoints()
             mainFrame:SetPoint("CENTER")
             mainFrame:Show()
+
+            handleAIO(activeTab, currentSearchQuery, currentOffset, config.pageSize, sortOrder)
 
         end
     else
