@@ -15,6 +15,7 @@ local contentFrames, mainFrame, currentOffset, activeTab, refreshButton, nextBut
 -- Configuration
 local config = {
 	debug = true,
+	requiredGmLevel = 2,
 
 	bgWidth = 800,
 	bgHeight = 600,
@@ -63,6 +64,7 @@ local menuItems = {
 			config.showTab(contentFrames, activeTab)
 		end,
 	},
+
 	{
 		text = "item here later",
 		hasArrow = true,
@@ -83,7 +85,7 @@ local menuItems = {
 			{
 				text = "Sub Menu 3",
 				hasArrow = true,
-				menuList = 5,
+				menuList = { 4, 3 },
 				subItems = {
 					{
 						text = "Sub Item 1",
@@ -172,18 +174,6 @@ local function copyIcon(entity)
 	end
 end
 
--- creates tabs
--- local function createTab(parent, name, index, onClick)
---     local tab = CreateFrame("Button", name, parent, "GameMenuButtonTemplate")
---     tab:SetSize(100, 30)
---     tab:SetPoint("TOPLEFT", parent, "TOPLEFT", 10, -30 * index - 10)
---     tab:SetText(name)
---     tab:SetNormalFontObject("GameFontNormal")
---     tab:SetHighlightFontObject("GameFontHighlight")
---     tab:SetScript("OnClick", onClick)
---     return tab
--- end
-
 -- Create content frames such as NPC, GameObject, Spell, etc.
 local function createContentFrames(parent, tabConfig)
 	local frames = {}
@@ -215,41 +205,6 @@ function config.showTab(frames, index)
 			frame:Hide()
 			-- debugMessage("Hiding frame for tab:", i)
 		end
-	end
-end
-
--- Function to handle refresh button click for model preview
-local function refreshModels()
-	if activeTab == 1 then
-		for _, npc in ipairs(npcData) do
-			if npc and npc.entry then
-				AIO.Handle("GameMasterSystem", "spawnAndDeleteNpcEntity", npc.entry)
-			end
-		end
-		-- Add a delay before refreshing NPC cards
-		C_Timer.After(0.5, function()
-			config.updateNpcCards(npcData)
-		end)
-	elseif activeTab == 2 then
-		for _, gob in ipairs(gobData) do
-			if gob and gob.entry then
-				AIO.Handle("GameMasterSystem", "spawnAndDeleteGameObjectEntity", gob.entry)
-			end
-		end
-		-- Add a delay before refreshing GameObject cards
-		C_Timer.After(0.5, function()
-			config.updateGameObjectCards(gobData)
-		end)
-	elseif activeTab == 3 then
-		for _, spell in ipairs(spellData) do
-			if spell and spell.entry then
-				AIO.Handle("GameMasterSystem", "refreshSpellEntity", spell.entry)
-			end
-		end
-		-- Add a delay before refreshing Spell cards
-		C_Timer.After(0.5, function()
-			config.updateSpellCards(spellData)
-		end)
 	end
 end
 
@@ -404,28 +359,6 @@ local function updatePaginationButtons(hasMoreDataFlag)
 	end
 end
 
--- -- Function to enable mouse wheel scrolling with increased jump
--- local function enableMouseWheelScrolling(frame)
---     frame:EnableMouseWheel(true)
---     frame:SetScript("OnMouseWheel", function(self, delta)
-
---         -- Determine jump size based on Shift key state still kinda broken if i change the jump size 1 to something else it will not work properly
---         local jump = IsShiftKeyDown() and 100 or 1
-
---         if delta > 0 then
---             currentOffset = math.max(0, currentOffset - jump)
---         else
---             if hasMoreData then
---                 currentOffset = currentOffset + jump
---             end
---         end
-
---         debugMessage("Current offset:", currentOffset)
-
---         handleAIO(activeTab, currentSearchQuery, currentOffset, config.pageSize, sortOrder)
---     end)
--- end
-
 -- Function to enable mouse wheel scrolling with increased jump
 local function enableMouseWheelScrolling(frame)
 	frame:EnableMouseWheel(true)
@@ -483,41 +416,6 @@ local function createPaginationButtons(parent)
 	addSimpleTooltip(nextButton, "Click to go to the next page\nYou can also use the scroll wheel to move pages")
 	addSimpleTooltip(prevButton, "Click to go to the previous page\nYou can also use the scroll wheel to move pages")
 end
-
--- -- Handle received model data
--- function GameMasterSystem.receiveModelData(player, data)
--- 	if not data or not data.modelId then
--- 		debugMessage("Invalid model data received")
--- 		return
--- 	end
-
--- 	local model = _G["model" .. data.type .. data.modelId]
--- 	if not model then
--- 		debugMessage("Model frame not found for ID:", data.modelId)
--- 		return
--- 	end
-
--- 	debugMessage("Model data received for", data.type, ":", data.modelId)
--- 	model:ClearModel()
--- 	model:SetDisplayInfo(data.modelId)
-
--- 	local textures = { data.texture1, data.texture2, data.texture3 }
--- 	for _, texture in ipairs(textures) do
--- 		if texture then
--- 			model:SetModel(texture)
--- 		end
--- 	end
-
--- 	if data.portraitTexture then
--- 		model:SetPortraitTexture(data.portraitTexture)
--- 	end
-
--- 	-- Optionally, you could add error handling or logging here
--- 	-- For example:
--- 	-- if not pcall(function() model:SetDisplayInfo(data.modelId) end) then
--- 	--     print("Error setting display info for model: " .. data.modelId)
--- 	-- end
--- end
 
 -- Specific functions to generate cards for NPCs, GameObjects, and Spells
 local function generateNpcCards(parent, npcData)
@@ -654,30 +552,38 @@ local function initializeDropdownMenu(frame, level, menuList)
 			info.text = item.text
 			info.hasArrow = item.subItems and #item.subItems > 0
 			info.menuList = item.menuList
-			info.func = function()
-				item.func()
+			info.func = item.func
+		-- 	info.func = function()
+		-- 		item.func()
 
-				if item.text == "Creature" then
-					refreshButton:Enable()
-				else
-					refreshButton:Disable()
-				end
-			end
+		-- 		if item.text == "Creature" then
+		-- 				refreshButton:Enable()
+		-- 		else
+		-- 				refreshButton:Disable()
+		-- 		end
+		-- end
 			UIDropDownMenu_AddButton(info, level)
 		end
 	elseif level == 2 and menuList then
-		for _, subItem in ipairs(menuItems[menuList].subItems) do
-			info.text = subItem.text
-			info.hasArrow = subItem.subItems and #subItem.subItems > 0
-			info.menuList = subItem.menuList
-			info.func = subItem.func
-			UIDropDownMenu_AddButton(info, level)
+		local parentItem = menuItems[menuList]
+		if parentItem and parentItem.subItems then
+			for _, subItem in ipairs(parentItem.subItems) do
+				info.text = subItem.text
+				info.hasArrow = subItem.subItems and #subItem.subItems > 0
+				info.menuList = subItem.menuList
+				info.func = subItem.func
+				UIDropDownMenu_AddButton(info, level)
+			end
 		end
 	elseif level == 3 and menuList then
-		for _, subSubItem in ipairs(menuItems[4].subItems[3].subItems) do
-			info.text = subSubItem.text
-			info.func = subSubItem.func
-			UIDropDownMenu_AddButton(info, level)
+		local parentItem = menuItems[menuList[1]]
+		local subItem = parentItem and parentItem.subItems and parentItem.subItems[menuList[2]]
+		if subItem and subItem.subItems then
+			for _, subSubItem in ipairs(subItem.subItems) do
+				info.text = subSubItem.text
+				info.func = subSubItem.func
+				UIDropDownMenu_AddButton(info, level)
+			end
 		end
 	end
 end
@@ -1375,32 +1281,6 @@ function generateCards(parent, data, type)
 	return cards
 end
 
--- -- Function to create the refresh button
--- local function createRefreshButton(parent)
--- 	local button = CreateFrame("Button", nil, parent, "GameMenuButtonTemplate")
--- 	button:SetSize(100, 30)
--- 	button:SetPoint("BOTTOM", parent, "BOTTOM", 0, 10)
--- 	button:SetText("Refresh")
--- 	button:SetNormalFontObject("GameFontNormal")
--- 	button:SetHighlightFontObject("GameFontHighlight")
--- 	button:SetScript("OnClick", function()
--- 		refreshModels()
--- 	end)
-
--- 	-- Add tooltip to the refresh button
--- 	button:SetScript("OnEnter", function(self)
--- 		addSimpleTooltip(
--- 			self,
--- 			"Click to refresh the model preview if you don't see the models\nThis will try to spawn and delete the entities"
--- 		)
--- 	end)
--- 	button:SetScript("OnLeave", function(self)
--- 		GameTooltip:Hide()
--- 	end)
-
--- 	return button
--- end
-
 -- Initialize the UI
 local function initializeUI()
 	mainFrame = createMainFrame()
@@ -1452,7 +1332,7 @@ SlashCmdList["GAMEMASTERUI"] = function(msg)
 
 			-- Delay to ensure gmLevel is updated before checking
 			customTimer(0.5, function()
-				if gmLevel >= 2 then
+				if gmLevel >= config.requiredGmLevel then
 					-- debugMessage("Opening Game Master UI with GM Level: ", gmLevel)
 					mainFrame:ClearAllPoints()
 					mainFrame:SetPoint("CENTER")
