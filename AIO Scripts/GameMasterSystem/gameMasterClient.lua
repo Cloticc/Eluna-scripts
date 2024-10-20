@@ -14,7 +14,7 @@ local currentSearchQuery = ""
 local contentFrames, mainFrame, currentOffset, activeTab, refreshButton, nextButton, prevButton, sortOrder
 -- Configuration
 local config = {
-	debug = true,
+	debug = false,
 	requiredGmLevel = 2,
 
 	bgWidth = 800,

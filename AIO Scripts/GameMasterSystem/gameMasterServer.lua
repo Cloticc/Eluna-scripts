@@ -5,7 +5,7 @@ local GameMasterSystem = AIO.AddHandlers("GameMasterSystem", {})
 
 -- configuration
 local config = {
-	debug = true,
+	debug = false,
 	defaultPageSize = 100,
 
 	removeFromWorld = true,
