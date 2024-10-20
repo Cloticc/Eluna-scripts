@@ -3,7 +3,7 @@
 ## Requirements
 
 Require Eluna and AIO.
-Require that you have dbc files inside the db.
+Require that you have dbc file gameobjectdisplayinfo inside the db.
 
 ## Installation
 
@@ -17,7 +17,7 @@ put the folder in you server lua_scripts/AIO_Server folder the "gameMasterClient
 
 Here's a visual representation:
 
-```
+```plaintext
 lua_scripts/
 └── AIO_Server/
   ├── GameMasterSystem/
@@ -25,5 +25,6 @@ lua_scripts/
   │   └── gameMasterServer.lua
 ```
 
-![](src/assets/2024-09-29-20-25-39.png)
-[video](https://streamable.com/e76v5t)
+![Game Master UI](src/assets/2024-10-20-16-04-05.png)
+![Game Master UI1](src/assets/2024-10-20-16-00-51.png){ width=25% } ![Game Master UI2](src/assets/2024-10-20-16-03-08.png){ width=25% }
+[video old version](https://streamable.com/e76v5t)
