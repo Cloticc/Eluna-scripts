@@ -25,6 +25,10 @@ lua_scripts/
   │   └── gameMasterServer.lua
 ```
 
-![Game Master UI](src/assets/2024-10-20-16-04-05.png)
-![Game Master UI1](src/assets/2024-10-20-16-00-51.png){ width=25% } ![Game Master UI2](src/assets/2024-10-20-16-03-08.png){ width=25% }
+<div style="display: flex; gap: 10px;">
+  <img src="src/assets/2024-10-20-16-04-05.png" alt="Game Master UI" style="width: 25%;">
+  <img src="src/assets/2024-10-20-16-00-51.png" alt="Game Master UI1" style="width: 25%;">
+  <img src="src/assets/2024-10-20-16-03-08.png" alt="Game Master UI2" style="width: 25%;">
+</div>
+
 [video old version](https://streamable.com/e76v5t)
