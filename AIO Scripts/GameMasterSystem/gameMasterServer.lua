@@ -116,16 +116,16 @@ local queries = {
 	TrinityCore = {
 		loadCreatureDisplays = function()
 			return [[
-                SELECT `entry`, `name`, `subname`, `IconName`, `type_flags`, `type`, `family`, `rank`, `KillCredit1`, `KillCredit2`, `HealthModifier`, `ManaModifier`, `RacialLeader`, `MovementType`, `modelId1`, `modelId2`, `modelId3`, `modelId4` 
+                SELECT `entry`, `name`, `subname`, `IconName`, `type_flags`, `type`, `family`, `rank`, `KillCredit1`, `KillCredit2`, `HealthModifier`, `ManaModifier`, `RacialLeader`, `MovementType`, `modelId1`, `modelId2`, `modelId3`, `modelId4`
                 FROM `creature_template`
             ]]
 		end,
 		npcData = function(sortOrder, pageSize, offset)
 			return string.format(
-				[[ 
-                SELECT entry, modelid1, modelid2, modelid3, modelid4, name, subname, type 
-                FROM creature_template 
-                WHERE modelid1 != 0 OR modelid2 != 0 OR modelid3 != 0 OR modelid4 != 0 
+				[[
+                SELECT entry, modelid1, modelid2, modelid3, modelid4, name, subname, type
+                FROM creature_template
+                WHERE modelid1 != 0 OR modelid2 != 0 OR modelid3 != 0 OR modelid4 != 0
                 ORDER BY entry %s
                 LIMIT %d OFFSET %d;
             ]],
@@ -136,10 +136,10 @@ local queries = {
 		end,
 		gobData = function(sortOrder, pageSize, offset)
 			return string.format(
-				[[ 
-            SELECT g.entry, g.displayid, g.name, m.ModelName 
-            FROM gameobject_template g 
-            LEFT JOIN gameobjectdisplayinfo m ON g.displayid = m.ID 
+				[[
+            SELECT g.entry, g.displayid, g.name, m.ModelName
+            FROM gameobject_template g
+            LEFT JOIN gameobjectdisplayinfo m ON g.displayid = m.ID
             ORDER BY g.entry %s
             LIMIT %d OFFSET %d;
             ]],
@@ -150,9 +150,9 @@ local queries = {
 		end,
 		spellData = function(sortOrder, pageSize, offset)
 			return string.format(
-				[[ 
-            SELECT id, spellName0, spellDescription0, spellToolTip0 
-            FROM spell 
+				[[
+            SELECT id, spellName0, spellDescription0, spellToolTip0
+            FROM spell
             ORDER BY id %s
             LIMIT %d OFFSET %d;
             ]],
@@ -163,9 +163,9 @@ local queries = {
 		end,
 		searchNpcData = function(query, typeId, sortOrder, pageSize, offset)
 			return string.format(
-				[[ 
+				[[
                 SELECT entry, modelid1, modelid2, modelid3, modelid4, name, subname, type
-                FROM creature_template 
+                FROM creature_template
                 WHERE name LIKE '%%%s%%' OR subname LIKE '%%%s%%' OR entry LIKE '%%%s%%' %s
                 ORDER BY entry %s
                 LIMIT %d OFFSET %d;
@@ -181,10 +181,10 @@ local queries = {
 		end,
 		searchGobData = function(query, typeId, sortOrder, pageSize, offset)
 			return string.format(
-				[[ 
-                SELECT g.entry, g.displayid, g.name, g.type, m.ModelName 
-                FROM gameobject_template g 
-                LEFT JOIN gameobjectdisplayinfo m ON g.displayid = m.ID 
+				[[
+                SELECT g.entry, g.displayid, g.name, g.type, m.ModelName
+                FROM gameobject_template g
+                LEFT JOIN gameobjectdisplayinfo m ON g.displayid = m.ID
                 WHERE g.name LIKE '%%%s%%' OR g.entry LIKE '%%%s%%' %s
                 ORDER BY g.entry %s
                 LIMIT %d OFFSET %d;
@@ -199,10 +199,10 @@ local queries = {
 		end,
 		searchSpellData = function(query, sortOrder, pageSize, offset)
 			return string.format(
-				[[ 
-                SELECT id, spellName0, spellDescription0, spellToolTip0 
-                FROM spell 
-                WHERE spellName0 LIKE '%%%s%%' OR id LIKE '%%%s%%' 
+				[[
+                SELECT id, spellName0, spellDescription0, spellToolTip0
+                FROM spell
+                WHERE spellName0 LIKE '%%%s%%' OR id LIKE '%%%s%%'
                 ORDER BY id %s
                 LIMIT %d OFFSET %d;
             ]],
@@ -213,19 +213,50 @@ local queries = {
 				offset * pageSize
 			)
 		end,
+
+		spellVisualData = function(sortOrder, pageSize, offset)
+			return string.format(
+				[[
+            SELECT ID, Name, FilePath, AreaEffectSize, Scale, MinAllowedScale, MaxAllowedScale
+            FROM spellvisualeffectname
+            ORDER BY ID %s
+            LIMIT %d OFFSET %d;
+            ]],
+				sortOrder,
+				pageSize,
+				offset
+			)
+		end,
+		searchSpellVisualData = function(query, sortOrder, pageSize, offset)
+			return string.format(
+				[[
+            SELECT ID, Name, FilePath, AreaEffectSize, Scale, MinAllowedScale, MaxAllowedScale
+            FROM spellvisualeffectname
+            WHERE Name LIKE '%%%s%%' OR ID LIKE '%%%s%%'
+            ORDER BY ID %s
+            LIMIT %d OFFSET %d;
+            ]],
+				query,
+				query,
+				sortOrder,
+				pageSize,
+				offset * pageSize
+			)
+		end,
 	},
+
 	AzerothCore = {
 		loadCreatureDisplays = function()
 			return [[
-                SELECT ct.`entry`, ct.`name`, ct.`subname`, ct.`IconName`, ct.`type_flags`, ct.`type`, ct.`family`, ct.`rank`, ct.`KillCredit1`, ct.`KillCredit2`, ct.`HealthModifier`, ct.`ManaModifier`, ct.`RacialLeader`, ct.`MovementType`, ctm.`CreatureDisplayID` 
-                FROM `creature_template` ct 
+                SELECT ct.`entry`, ct.`name`, ct.`subname`, ct.`IconName`, ct.`type_flags`, ct.`type`, ct.`family`, ct.`rank`, ct.`KillCredit1`, ct.`KillCredit2`, ct.`HealthModifier`, ct.`ManaModifier`, ct.`RacialLeader`, ct.`MovementType`, ctm.`CreatureDisplayID`
+                FROM `creature_template` ct
                 LEFT JOIN `creature_template_model` ctm ON ct.`entry` = ctm.`CreatureID`
             ]]
 		end,
 		npcData = function(sortOrder, pageSize, offset)
 			return string.format(
-				[[ 
-                SELECT ct.entry, ctm.CreatureDisplayID, ct.name, ct.subname, ct.type 
+				[[
+                SELECT ct.entry, ctm.CreatureDisplayID, ct.name, ct.subname, ct.type
                 FROM creature_template ct
                 LEFT JOIN creature_template_model ctm ON ct.entry = ctm.CreatureID
                 ORDER BY ct.entry %s
@@ -238,10 +269,10 @@ local queries = {
 		end,
 		gobData = function(sortOrder, pageSize, offset)
 			return string.format(
-				[[ 
-            SELECT g.entry, g.displayid, g.name, m.ModelName 
-            FROM gameobject_template g 
-            LEFT JOIN gameobjectdisplayinfo m ON g.displayid = m.ID 
+				[[
+            SELECT g.entry, g.displayid, g.name, m.ModelName
+            FROM gameobject_template g
+            LEFT JOIN gameobjectdisplayinfo m ON g.displayid = m.ID
             ORDER BY g.entry %s
             LIMIT %d OFFSET %d;
             ]],
@@ -252,9 +283,9 @@ local queries = {
 		end,
 		spellData = function(sortOrder, pageSize, offset)
 			return string.format(
-				[[ 
-                SELECT id, spellName0, spellDescription0, spellToolTip0 
-                FROM spell 
+				[[
+                SELECT id, spellName0, spellDescription0, spellToolTip0
+                FROM spell
                 ORDER BY id %s
                 LIMIT %d OFFSET %d;
             ]],
@@ -265,7 +296,7 @@ local queries = {
 		end,
 		searchNpcData = function(query, typeId, sortOrder, pageSize, offset)
 			return string.format(
-				[[ 
+				[[
                 SELECT ct.entry, ctm.CreatureDisplayID, ct.name, ct.subname, ct.type
                 FROM creature_template ct
                 LEFT JOIN creature_template_model ctm ON ct.entry = ctm.CreatureID
@@ -284,10 +315,10 @@ local queries = {
 		end,
 		searchGobData = function(query, typeId, sortOrder, pageSize, offset)
 			return string.format(
-				[[ 
-                SELECT g.entry, g.displayid, g.name, g.type, m.ModelName 
-                FROM gameobject_template g 
-                LEFT JOIN gameobjectdisplayinfo m ON g.displayid = m.ID 
+				[[
+                SELECT g.entry, g.displayid, g.name, g.type, m.ModelName
+                FROM gameobject_template g
+                LEFT JOIN gameobjectdisplayinfo m ON g.displayid = m.ID
                 WHERE g.name LIKE '%%%s%%' OR g.entry LIKE '%%%s%%' %s
                 ORDER BY g.entry %s
                 LIMIT %d OFFSET %d;
@@ -302,10 +333,10 @@ local queries = {
 		end,
 		searchSpellData = function(query, sortOrder, pageSize, offset)
 			return string.format(
-				[[ 
-                SELECT id, spellName0, spellDescription0, spellToolTip0 
-                FROM spell 
-                WHERE spellName0 LIKE '%%%s%%' OR id LIKE '%%%s%%' 
+				[[
+                SELECT id, spellName0, spellDescription0, spellToolTip0
+                FROM spell
+                WHERE spellName0 LIKE '%%%s%%' OR id LIKE '%%%s%%'
                 ORDER BY id %s
                 LIMIT %d OFFSET %d;
             ]],
@@ -323,6 +354,78 @@ local queries = {
 local function getQuery(coreName, queryType)
 	-- debugMessage("coreName: ", coreName , "queryType: ", queryType)
 	return queries[coreName] and queries[coreName][queryType] or nil
+end
+
+--  Function to ge the spell visual data
+function GameMasterSystem.getSpellVisualData(player, offset, pageSize, sortOrder)
+	offset = offset or 0
+	pageSize = validatePageSize(pageSize or config.defaultPageSize)
+	sortOrder = validateSortOrder(sortOrder or "DESC")
+
+	local coreName = GetCoreName()
+	local query = getQuery(coreName, "spellVisualData")(sortOrder, pageSize, offset)
+
+	local result = WorldDBQuery(query)
+
+	local spellVisualData = {}
+
+	if result then
+		repeat
+			local spellVisual = {
+				ID = result:GetUInt32(0),
+				Name = result:GetString(1),
+				FilePath = result:GetString(2),
+				AreaEffectSize = result:GetFloat(3),
+				Scale = result:GetFloat(4),
+				MinAllowedScale = result:GetFloat(5),
+				MaxAllowedScale = result:GetFloat(6),
+			}
+
+			table.insert(spellVisualData, spellVisual)
+		until not result:NextRow()
+	end
+
+	local hasMoreData = #spellVisualData == pageSize
+
+	if #spellVisualData == 0 then
+		player:SendBroadcastMessage("No spell visual data available for the given page.")
+	else
+		AIO.Handle(player, "GameMasterSystem", "receiveSpellVisualData", spellVisualData, offset, pageSize, hasMoreData)
+	end
+end
+
+-- Function to search spell visual data
+function GameMasterSystem.searchSpellVisualData(player, query, offset, pageSize, sortOrder)
+	query = escapeString(query) -- Escape special characters
+	sortOrder = validateSortOrder(sortOrder or "DESC")
+	local coreName = GetCoreName()
+
+	local searchQuery = getQuery(coreName, "searchSpellVisualData")(query, sortOrder, pageSize, offset)
+	local result = WorldDBQuery(searchQuery)
+	local spellVisualData = {}
+
+	if result then
+		repeat
+			local spellVisual = {
+				ID = result:GetUInt32(0),
+				Name = result:GetString(1),
+				FilePath = result:GetString(2),
+				AreaEffectSize = result:GetFloat(3),
+				Scale = result:GetFloat(4),
+				MinAllowedScale = result:GetFloat(5),
+				MaxAllowedScale = result:GetFloat(6),
+			}
+			table.insert(spellVisualData, spellVisual)
+		until not result:NextRow()
+	end
+
+	local hasMoreData = #spellVisualData == pageSize
+
+	if #spellVisualData == 0 then
+		player:SendBroadcastMessage("No spell visual data found for the given query and page.")
+	else
+		AIO.Handle(player, "GameMasterSystem", "receiveSpellVisualData", spellVisualData, offset, pageSize, hasMoreData)
+	end
 end
 
 -- Function to query NPC data from the database with pagination
@@ -577,13 +680,63 @@ local function calculatePosition(player, distance)
 	return x, y, z, oppositeAngle
 end
 
+-- Enhanced Messaging Functions for GameMasterSystem
+
+-- Function to send a broadcast message to a player with a specific type and optional color
+local function sendMessage(player, messageType, message)
+	if not player or not message then
+		return
+	end
+
+	-- Define message types with their prefixes and colors
+	local messageTypes = {
+		error = { prefix = "Error: ", color = "|cFFFF0000" }, -- Red
+		success = { prefix = "Success: ", color = "|cFF00FF00" }, -- Green
+		info = { prefix = "Info: ", color = "|cFF00FFFF" }, -- Cyan
+		warning = { prefix = "Warning: ", color = "|cFFFFFF00" }, -- Yellow
+	}
+
+	local typeInfo = messageTypes[messageType:lower()]
+	if not typeInfo then
+		-- Default to info if unknown type
+		typeInfo = messageTypes.info
+	end
+
+	-- Construct the full message with color and prefix
+	local fullMessage = string.format("%s%s%s|r", typeInfo.color, typeInfo.prefix, message)
+
+	-- Send the broadcast message to the player
+	player:SendBroadcastMessage(fullMessage)
+
+	-- Log the message to the server logs with timestamp
+	local timestamp = os.date("%Y-%m-%d %H:%M:%S")
+	local logMessage = string.format("[%s] %s: %s", timestamp, messageType:upper(), message)
+	print(logMessage) -- Assuming 'print' sends to server console/log
+end
+
+-- Specific functions for error and success messages
 local function sendErrorMessage(player, message)
-	player:SendBroadcastMessage("Error: " .. message)
+	sendMessage(player, "error", message)
 end
 
 local function sendSuccessMessage(player, message)
-	player:SendBroadcastMessage("Success: " .. message)
+	sendMessage(player, "success", message)
 end
+
+-- Optional: Additional functions for info and warning messages
+local function sendInfoMessage(player, message)
+	sendMessage(player, "info", message)
+end
+
+local function sendWarningMessage(player, message)
+	sendMessage(player, "warning", message)
+end
+
+-- Usage Examples:
+-- sendErrorMessage(player, "Invalid spell ID.")
+-- sendSuccessMessage(player, "Spell learned successfully.")
+-- sendInfoMessage(player, "You have 10 seconds remaining.")
+-- sendWarningMessage(player, "Low health!")
 
 -- Server-side handler to spawn an entity
 function GameMasterSystem.spawnNpcEntity(player, entry)
@@ -609,7 +762,7 @@ function GameMasterSystem.spawnNpcEntity(player, entry)
 	if coreName == "TrinityCore" then
 		spawnedCreature =
 			PerformIngameSpawn(1, entry, mapId, instanceId, x, y, z, oppositeAngle, save, durorresptime, phase)
-	elseif coreName == "AzerothCore" then
+	elseif coreName == "AzerothCore" then -- THis is for AzerothCore this might not work if you dont restart the server after spawning in the creature
 		spawnedCreature =
 			PerformIngameSpawn(1, entry, mapId, instanceId, x, y, z, oppositeAngle, save, durorresptime, phase)
 
@@ -655,6 +808,18 @@ function GameMasterSystem.morphNpcEntity(player, entry)
 	else
 		player:SetDisplayId(entry)
 		sendSuccessMessage(player, "Morphed self with displayid: " .. entry)
+	end
+end
+
+-- Server-side handler to demorph an entity
+function GameMasterSystem.demorphNpcEntity(player)
+	local target = player:GetSelection()
+	if target then
+		target:DeMorph()
+		sendSuccessMessage(player, "Demorphed target entity.")
+	else
+		player:DeMorph()
+		sendSuccessMessage(player, "Demorphed self.")
 	end
 end
 
@@ -749,32 +914,80 @@ function GameMasterSystem.spawnAndDeleteGameObjectEntity(player, entry)
 	end
 end
 
+-- Function to get the target of the player
+function GameMasterSystem.getTarget(player)
+	local target = player:GetSelection()
+	local isSelf = false
+
+	if not target then
+		sendInfoMessage(player, "No valid target selected. Defaulting to yourself.")
+		target = player
+		isSelf = true
+	else
+		sendInfoMessage(player, "Target selected: " .. target:GetName())
+	end
+
+	return target, isSelf
+end
+
 -- Server-side handler to add spell learnSpell
 function GameMasterSystem.learnSpellEntity(player, spellID)
-	sendSuccessMessage(player, "Learning spell with spellID: " .. spellID)
-	player:LearnSpell(spellID)
+	local target, isSelf = GameMasterSystem.getTarget(player)
+
+	if not target:HasSpell(spellID) then
+		target:LearnSpell(spellID)
+		if isSelf then
+			sendSuccessMessage(player, string.format("You have successfully learned spell (ID: %d).", spellID))
+		else
+			sendSuccessMessage(player, string.format("Target has successfully learned spell (ID: %d).", spellID))
+		end
+	else
+		if isSelf then
+			sendWarningMessage(player, string.format("You already know spell (ID: %d).", spellID))
+		else
+			sendWarningMessage(player, string.format("Target already knows spell (ID: %d).", spellID))
+		end
+	end
 end
 
 -- Server-side handler to delete spell deleteEntitySpell
 function GameMasterSystem.deleteSpellEntity(player, spellID)
-	sendSuccessMessage(player, "Deleting spell with spellID: " .. spellID)
-	player:RemoveSpell(spellID)
+	local target, isSelf = GameMasterSystem.getTarget(player)
+
+	if target:HasSpell(spellID) then
+		target:RemoveSpell(spellID)
+		if isSelf then
+			sendSuccessMessage(player, string.format("You have successfully removed spell (ID: %d).", spellID))
+		else
+			sendSuccessMessage(player, string.format("Target has successfully removed spell (ID: %d).", spellID))
+		end
+	else
+		if isSelf then
+			sendWarningMessage(player, string.format("You do not know spell (ID: %d).", spellID))
+		else
+			sendWarningMessage(player, string.format("Target does not know spell (ID: %d).", spellID))
+		end
+	end
 end
 
 -- Server-side handler to castSelfSpellEntity
 function GameMasterSystem.castSelfSpellEntity(player, spellID)
-	sendSuccessMessage(player, "Casting spell with spellID: " .. spellID)
-	player:CastSpell(player, spellID, true)
+	local target, isSelf = GameMasterSystem.getTarget(player)
+	if not target or isSelf then
+		sendSuccessMessage(player, "Casting spell on yourself.")
+		player:CastSpell(player, spellID, true)
+	else
+		sendSuccessMessage(player, "Cast spell on target.")
+		player:CastSpell(target, spellID, true)
+	end
 end
 
 -- Server-side handler to castTargetSpellEntity
 function GameMasterSystem.castTargetSpellEntity(player, spellID)
-	local target = player:GetSelection()
-	if target then
-		sendSuccessMessage(player, "Casting spell with spellID: " .. spellID .. " on target.")
+	local target, isSelf = GameMasterSystem.getTarget(player)
+	if not isSelf then
+		sendSuccessMessage(player, "Cast spell from target.")
 		target:CastSpell(player, spellID, true)
-	else
-		sendErrorMessage(player, "No target selected")
 	end
 end
 
@@ -829,36 +1042,71 @@ end
 
 LoadCreatureDisplays()
 
+-- Constants for packet information
+local CREATURE_QUERY_RESPONSE = 97
+local PACKET_SIZE = 100
+local DEFAULT_STRING = ""
+local DEFAULT_FLAGS = 0
+
+---Sends creature information to the player
+---@param player Player The player object receiving the packet
+---@param data table Creature data containing entry, name, flags etc.
+---@return boolean success Whether the packet was sent successfully
 local function SendCreatureQueryResponse(player, data)
-	local packet = CreatePacket(97, 100)
-	packet:WriteULong(data.entry)
-	packet:WriteString(data.name or "")
-	packet:WriteUByte(0)
-	packet:WriteUByte(0)
-	packet:WriteUByte(0)
-	packet:WriteString(data.subname or "")
-	packet:WriteString(data.iconName or "")
-	packet:WriteULong(data.type_flags)
-	packet:WriteULong(data.cType)
-	packet:WriteULong(data.family)
-	packet:WriteULong(data.rank)
-	packet:WriteULong(data.killCredit1)
-	packet:WriteULong(data.killCredit2)
-	packet:WriteULong(data.model1)
-	packet:WriteULong(data.model2)
-	packet:WriteULong(data.model3)
-	packet:WriteULong(data.model4)
-	packet:WriteFloat(data.healthMod)
-	packet:WriteFloat(data.manaMod)
-	packet:WriteUByte(data.racialLeader)
-	packet:WriteULong(0)
-	packet:WriteULong(0)
-	packet:WriteULong(0)
-	packet:WriteULong(0)
-	packet:WriteULong(0)
-	packet:WriteULong(0)
-	packet:WriteULong(data.movementType)
-	player:SendPacket(packet)
+	-- Input validation
+	if not player or not data then
+		return false
+	end
+
+	-- Validate required data
+	if not data.entry then
+		return false
+	end
+
+	-- Create response packet
+	local packet = CreatePacket(CREATURE_QUERY_RESPONSE, PACKET_SIZE)
+	if not packet then
+		return false
+	end
+
+	-- Helper function to safely write data
+	local function SafeWrite(value, default)
+		return value or default
+	end
+
+	-- Write packet data with safe defaults
+	pcall(function()
+		packet:WriteULong(data.entry)
+		packet:WriteString(SafeWrite(data.name, DEFAULT_STRING))
+		packet:WriteUByte(DEFAULT_FLAGS) -- Flags 1
+		packet:WriteUByte(DEFAULT_FLAGS) -- Flags 2
+		packet:WriteUByte(DEFAULT_FLAGS) -- Flags 3
+		packet:WriteString(SafeWrite(data.subname, DEFAULT_STRING))
+		packet:WriteString(SafeWrite(data.iconName, DEFAULT_STRING))
+		packet:WriteULong(SafeWrite(data.type_flags, DEFAULT_FLAGS))
+		packet:WriteULong(SafeWrite(data.cType, DEFAULT_FLAGS))
+		packet:WriteULong(SafeWrite(data.family, DEFAULT_FLAGS))
+		packet:WriteULong(SafeWrite(data.rank, DEFAULT_FLAGS))
+		packet:WriteULong(SafeWrite(data.killCredit1, DEFAULT_FLAGS))
+		packet:WriteULong(SafeWrite(data.killCredit2, DEFAULT_FLAGS))
+		packet:WriteULong(SafeWrite(data.model1, DEFAULT_FLAGS))
+		packet:WriteULong(SafeWrite(data.model2, DEFAULT_FLAGS))
+		packet:WriteULong(SafeWrite(data.model3, DEFAULT_FLAGS))
+		packet:WriteULong(SafeWrite(data.model4, DEFAULT_FLAGS))
+		packet:WriteFloat(SafeWrite(data.healthMod, 1.0))
+		packet:WriteFloat(SafeWrite(data.manaMod, 1.0))
+		packet:WriteUByte(SafeWrite(data.racialLeader, DEFAULT_FLAGS))
+
+		-- Write remaining default values
+		for i = 1, 6 do
+			packet:WriteULong(DEFAULT_FLAGS)
+		end
+		-- TODO!: This will make npc moonwalk some odd behavior
+		-- packet:WriteULong(SafeWrite(data.movementType, DEFAULT_FLAGS))
+	end)
+
+	-- Send packet and return success
+	return player:SendPacket(packet)
 end
 
 local function OnLogin(event, player)
@@ -881,3 +1129,21 @@ function GameMasterSystem.handleGMLevel(player)
 	AIO.Handle(player, "GameMasterSystem", "receiveGmLevel", gmRank)
 	-- return true
 end
+
+-- send core to player with functions
+function GameMasterSystem.getCoreName(player)
+	local coreName = GetCoreName()
+	AIO.Handle(player, "GameMasterSystem", "receiveCoreName", coreName)
+end
+
+-- -- This is one way to send it to the player kinda bad if slow pc
+-- local function SendCoreName(event, player)
+-- 	-- Send the core name to the player
+-- 	local players = GetPlayersInWorld()
+-- 	for i, v in ipairs(players) do
+-- 		AIO.Handle(v, "GameMasterSystem", "receiveCoreName", GetCoreName())
+-- 	end
+-- end
+
+-- -- RegisterPlayerEvent(3, SendCoreName)
+-- RegisterServerEvent(33, SendCoreName)
