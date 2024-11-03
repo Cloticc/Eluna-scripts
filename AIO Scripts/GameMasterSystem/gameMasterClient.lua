@@ -848,6 +848,61 @@ local function trimSpaces(value)
 	return tostring(value):match("^%s*(.-)%s*$")
 end
 
+-- Example usage of MENU_CONFIG.TYPES
+local function getEntityType(type)
+	return MENU_CONFIG.TYPES[type:upper()] or type
+end
+
+-- Register static popup dialog
+StaticPopupDialogs["CONFIRM_DELETE_ENTITY"] = {
+	text = "Are you sure you want to delete this %s with ID: %s?\nHold CTRL to skip this dialog next time.",
+	button1 = "Yes",
+	button2 = "No",
+	timeout = 0,
+	whileDead = 1,
+	hideOnEscape = true,
+	preferredIndex = 3,
+	OnAccept = function(self, data)
+		if not data or not data.type or not data.entry then
+			return
+		end
+
+		local handlers = {
+			npc = function(entry)
+				AIO.Handle("GameMasterSystem", "deleteNpcEntity", entry)
+			end,
+			gameobject = function(entry)
+				AIO.Handle("GameMasterSystem", "deleteGameObjectEntity", entry)
+			end,
+			spell = function(entry)
+				AIO.Handle("GameMasterSystem", "deleteSpellEntity", entry)
+			end,
+			spellvisual = function(entry)
+				AIO.Handle("GameMasterSystem", "deleteSpellVisualEntity", entry)
+			end,
+		}
+
+		if handlers[data.type] then
+			handlers[data.type](data.entry)
+			-- Refresh data after deletion
+			config.handleAIO(activeTab, currentSearchQuery, currentOffset, config.pageSize, sortOrder)
+		end
+	end,
+}
+
+-- Helper function to show delete confirmation
+local function showDeleteConfirmation(type, entry)
+	if not type or not entry then
+		return
+	end
+
+	local displayType = getEntityType(type):gsub("^%l", string.upper)
+	StaticPopup_Show("CONFIRM_DELETE_ENTITY", displayType, entry, {
+		type = type,
+		entry = entry,
+	})
+end
+
 -- Common menu item templates
 local MenuItems = {
 	CANCEL = {
@@ -869,10 +924,7 @@ local MenuItems = {
 				if IsControlKeyDown() then
 					handler(entry)
 				else
-					StaticPopup_Show("CONFIRM_DELETE_ENTITY", nil, nil, {
-						type = type,
-						entry = entry,
-					})
+					showDeleteConfirmation(type, entry)
 				end
 			end,
 			notCheckable = true,
