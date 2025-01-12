@@ -3,8 +3,25 @@
 ### WIP - not finished yet missing functions
 
 - Reward system for winning and losing
-- Raiting system
+- Raiting system not added yet
 
 ### look inside script for more info
 
-[![1v1](https://i.ibb.co/brwyJ8r/image.png)]
+[![1v1](image.png)]
+
+```sql
+CREATE TABLE `custom_fight_rewards` (
+	`id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+	`condition` ENUM('WIN','LOSE') NOT NULL COLLATE 'utf8mb4_unicode_ci',
+	`reward_type` ENUM('ITEM','MONEY') NOT NULL COLLATE 'utf8mb4_unicode_ci',
+	`entry` INT(10) UNSIGNED NULL DEFAULT NULL,
+	`amount` INT(10) UNSIGNED NULL DEFAULT '1',
+	`enabled` TINYINT(1) NOT NULL DEFAULT '1',
+	`description` VARCHAR(100) NULL DEFAULT NULL COLLATE 'utf8mb4_unicode_ci',
+	PRIMARY KEY (`id`) USING BTREE
+)
+COLLATE='utf8mb4_unicode_ci'
+ENGINE=InnoDB
+AUTO_INCREMENT=6
+;
+```

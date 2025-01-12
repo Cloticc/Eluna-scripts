@@ -7,9 +7,9 @@ Require that you have dbc file gameobjectdisplayinfo, spellvisualeffectname insi
 
 ## Installation
 
-if you have issue adding dbc to db try use [stoneharry spell editor](https://github.com/stoneharry/WoW-Spell-Editor) worked for me
+if you have issue adding dbc to db try use [stoneharry spell editor](https://github.com/stoneharry/WoW-Spell-Editor) worked for me.
 
-## Visual Guide
+## Visual aGuide
 
 1. Navigate to your server's `lua_scripts/AIO_Server` directory.
 2. Place the `gameMasterClient.lua` and `gameMasterServer.lua` files in this directory.
