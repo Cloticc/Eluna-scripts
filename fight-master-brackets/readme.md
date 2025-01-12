@@ -12,7 +12,7 @@
 
 ### look inside script for more info
 
-[![1v1](image.png)]
+### SQL Table
 
 ```sql
 CREATE TABLE `custom_fight_rewards` (
@@ -32,3 +32,5 @@ AUTO_INCREMENT=6
 ```
 
 if you set amount for money to 1 it will give the correct amount else it will double the amount you set
+
+[![1v1](image.png)]
