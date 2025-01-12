@@ -30,6 +30,8 @@ lua_scripts/
   <img src="src/assets/2024-10-20-16-03-08.png" alt="Game Master UI2" style="width: 25%;">
 </div>
 
+[video new version](https://streamable.com/8qgjde)
+
 [video old version](https://streamable.com/e76v5t)
 
 # Search Guide for Game Objects and NPC Types
